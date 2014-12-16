@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+<form action="">
+<input type="radio" name="mode" value="disabled" checked="true" />Disabled
+<input type="radio" name="mode" value="auto"/>Auto
+<input type="radio" name="mode" value="teleop"/>Teleop
+<input type="radio" name="mode" value="test"/>Test
+</form>
+
+<p>
+    Robot state is: <span id="robot_state">Unknown</span>
+</p>
+
+<script>
+"use strict"
+
+var state = new Object();
+state.controlFormState = 'disabled';
+state.changed = false;
+
+// TODO: There is probably a more efficient way to do this! Websockets?
+
+// TODO: Error handling!
+
+// TODO: detect when the robot simulation has disconnected
+
+// TODO: How do we efficiently communicate information back to the robot?
+
+function onData(data) {
+
+    // do something with the data here...
+    var control = data.control;
+
+    if (control.enabled) {
+        if (control.autonomous)
+            $('#robot_state').text('Autonomous')
+        else if (control.test)
+            $('#robot_state').text('Test')
+        else
+            $('#robot_state').text('Teleoperated')
+    } else {
+        $('#robot_state').text('Disabled')
+    }
+
+    // process the data.. 
+
+    // send data back to the robot here
+    // .. TODO: but only when we're not in the middle of sending data?
+    if (state.changed) {
+
+        switch (state.controlFormState) {
+            case 'disabled':
+                control.enabled = false;
+                control.autonomous = false;
+                control.test = false;
+                break;
+            case 'auto':
+                control.enabled = true;
+                control.autonomous = true;
+                control.test = false;
+                break;
+            case 'teleop':
+                control.enabled = true;
+                control.autonomous = false;
+                control.test = false;
+                break;
+        }
+
+        // this is required else the robot doesn't go into any modes
+        control.ds_attached = true;
+
+        // actually send the data back!
+        // ... there's a race condition here. :(
+
+        $.post('/api/hal_data', {'data': JSON.stringify(data)});
+        state.changed = false;    
+    }
+    
+
+    // once we're done sending it, get it again?
+
+    // silly idea here.. 
+
+}
+
+function getDataLoop() {
+    $.getJSON("/api/hal_data", onData);
+    setTimeout(getDataLoop, 100);
+}
+
+function controlFormChanged() {
+    state.controlFormState = $(this).val();
+    state.changed = true;
+}
+
+
+$(document).ready(function(){
+    $("input[name='mode']").change(controlFormChanged);
+    setTimeout(getDataLoop, 100);
+})
+
+</script>

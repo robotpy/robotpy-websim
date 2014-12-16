@@ -1,0 +1,8 @@
+*.py[cod]
+py/dist
+py/build
+__pycache__
+*.egg-info
+
+.project
+.pydevproject
