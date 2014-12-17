@@ -5,6 +5,7 @@
 </head>
 <body>
 
+<p id="control_source" ></p>
 <form action="">
 <input type="radio" name="mode" value="disabled" checked="true" />Disabled
 <input type="radio" name="mode" value="auto"/>Auto
@@ -36,6 +37,11 @@ function onData(data) {
     // do something with the data here...
     var control = data.control;
 
+    if (control.has_source) {
+        $('#control_source').text("Mode externally controlled!")
+        $("input[name='mode']").prop("checked", false)
+    }
+
     if (control.enabled) {
         if (control.autonomous)
             $('#robot_state').text('Autonomous')
@@ -51,7 +57,7 @@ function onData(data) {
 
     // send data back to the robot here
     // .. TODO: but only when we're not in the middle of sending data?
-    if (state.changed) {
+    if (state.changed & !control.has_source) {
 
         switch (state.controlFormState) {
             case 'disabled':
