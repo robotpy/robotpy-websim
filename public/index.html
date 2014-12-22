@@ -1,113 +1,97 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+	
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<script src="iomodule.js"></script>
 </head>
 <body>
+	<div id="mode">
+		<p id="control_source"></p>
+		<form action="">
+			<input type="radio" name="mode" value="disabled" checked="true" />Disabled
+			<input type="radio" name="mode" value="auto" />Auto <input
+				type="radio" name="mode" value="teleop" />Teleop <input type="radio"
+				name="mode" value="test" />Test
+		</form>
+	
+		<p>
+			Robot state is: <span id="robot_state">Unknown</span>
+		</p>
+	</div>
+	
+	
+	<script>
+		var modeModule = $('#mode').ioModule('mode', {
+			title: 'Mode',
+			init: function() {
+				var module = this;
+				this.controlFormState = 'disabled';
+				this.stateChanged = false;
+				
+				//update state when form input changes
+				$("input[name='mode']").change(function () {
+					module.controlFormState = $(this).val();
+					module.stateChanged = true;
+				});
+			},
+			getData: function(data) {
+				var control = data.control;
+				// process the data.. 
+				//console.log(this.stateChanged);
+				if(this.stateChanged && !control.has_source) {
+					switch (this.controlFormState) {
+					case 'disabled':
+						control.enabled = false;
+						control.autonomous = false;
+						control.test = false;
+						break;
+					case 'auto':
+						control.enabled = true;
+						control.autonomous = true;
+						control.test = false;
+						break;
+					case 'teleop':
+						control.enabled = true;
+						control.autonomous = false;
+						control.test = false;
+						break;
+					}
 
-<p id="control_source" ></p>
-<form action="">
-<input type="radio" name="mode" value="disabled" checked="true" />Disabled
-<input type="radio" name="mode" value="auto"/>Auto
-<input type="radio" name="mode" value="teleop"/>Teleop
-<input type="radio" name="mode" value="test"/>Test
-</form>
+					// this is required else the robot doesn't go into any modes
+					//control.ds_attached = true;
+				}
+				this.stateChanged = false;
+			},
+			setData: function(data) {
+				// do something with the data here...
+				var control = data.control;
 
-<p>
-    Robot state is: <span id="robot_state">Unknown</span>
-</p>
+				if (control.has_source) {
+					$('#control_source').text("Mode externally controlled!")
+					$("input[name='mode']").prop("checked", false)
+				}
 
-<script>
-"use strict"
+				if (control.enabled) {
+					if (control.autonomous)
+						$('#robot_state').text('Autonomous')
+					else if (control.test)
+						$('#robot_state').text('Test')
+					else
+						$('#robot_state').text('Teleoperated')
+				} else {
+					$('#robot_state').text('Disabled')
+				}
+			}
+		});
+		
+		setTimeout(function() {
+			$.startSimulator();
+		}, 1000);
+	</script>
 
-var state = new Object();
-state.controlFormState = 'disabled';
-state.changed = false;
-
-// TODO: There is probably a more efficient way to do this! Websockets?
-
-// TODO: Error handling!
-
-// TODO: detect when the robot simulation has disconnected
-
-// TODO: How do we efficiently communicate information back to the robot?
-
-function onData(data) {
-
-    // do something with the data here...
-    var control = data.control;
-
-    if (control.has_source) {
-        $('#control_source').text("Mode externally controlled!")
-        $("input[name='mode']").prop("checked", false)
-    }
-
-    if (control.enabled) {
-        if (control.autonomous)
-            $('#robot_state').text('Autonomous')
-        else if (control.test)
-            $('#robot_state').text('Test')
-        else
-            $('#robot_state').text('Teleoperated')
-    } else {
-        $('#robot_state').text('Disabled')
-    }
-
-    // process the data.. 
-
-    // send data back to the robot here
-    // .. TODO: but only when we're not in the middle of sending data?
-    if (state.changed & !control.has_source) {
-
-        switch (state.controlFormState) {
-            case 'disabled':
-                control.enabled = false;
-                control.autonomous = false;
-                control.test = false;
-                break;
-            case 'auto':
-                control.enabled = true;
-                control.autonomous = true;
-                control.test = false;
-                break;
-            case 'teleop':
-                control.enabled = true;
-                control.autonomous = false;
-                control.test = false;
-                break;
-        }
-
-        // this is required else the robot doesn't go into any modes
-        control.ds_attached = true;
-
-        // actually send the data back!
-        // ... there's a race condition here. :(
-
-        $.post('/api/hal_data', {'data': JSON.stringify(data)});
-        state.changed = false;    
-    }
-    
-
-    // once we're done sending it, get it again?
-
-    // silly idea here.. 
-
-}
-
-function getDataLoop() {
-    $.getJSON("/api/hal_data", onData);
-    setTimeout(getDataLoop, 100);
-}
-
-function controlFormChanged() {
-    state.controlFormState = $(this).val();
-    state.changed = true;
-}
-
-
-$(document).ready(function(){
-    $("input[name='mode']").change(controlFormChanged);
-    setTimeout(getDataLoop, 100);
-})
-
-</script>
+</body>
+</html>
