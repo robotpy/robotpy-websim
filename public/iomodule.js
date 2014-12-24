@@ -67,16 +67,69 @@ $.fn.ioModule = function(id, options) {
 	moduleIDsByPriorityAsc.push(id);
 	ioModule.init();
 	
+	//add iomodule class and iomodule title to element
+	$(this).addClass('iomodule');
+	$(this).prepend('<h3>' + ioModule.title + '</h3>');
+	
 	return ioModule;
 };
+
+/*
+ * Adds an IOModule from the modules folder. The id must
+ * be the name of the folder, and the three files it should
+ * contain are [id].html, [id].js, and [id].css (optional)
+ */
+$.fn.loadIOModule = function(id) {
+	var element = this;
+	var htmlPath = 'modules/' + id + '/' + id + '.html';
+	var jsPath = 'modules/' + id + '/' + id + '.js';
+	var cssPath = 'modules/' + id + '/' + id + '.css';
+
+	//html and js files are required. css is optional
+	//if either html or js isn't found, return false
+	var response = false;
+	$.ajax({
+	   async: false,
+	   type: 'GET',
+	   url: htmlPath,
+	   success: function( data ) {
+		   //add html to element
+		   element.append(data);	
+		   //add css
+		   $('head').append('<link rel="stylesheet" ' + 'href="' + cssPath + '">');
+		   element.addClass(id);
+		   //add js
+		   $.ajax({
+			   async: false,
+			   type: 'GET',
+			   url: jsPath,
+			   success: function( data ) {
+				   eval(data);
+				   //if module was successfully added 
+				   //return the module
+				   response = $.fn.getIOModule(id);
+			   },
+			   dataType: 'text'
+			});
+	   },
+	   dataType: 'text'
+	});
+
+	return response;
+};
+
+
 
 /*
  * JQuery function that gets an existing ioModule by id
  */
 $.fn.getIOModule = function(id) {
-	alert(id);
+	if(ioModules.hasOwnProperty(id) === false) {
+		return false;
+	}
 	return ioModules[id];
 };
+
 
 /*
  * JQuery function to start the simulator
