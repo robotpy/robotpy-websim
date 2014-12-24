@@ -1,0 +1,7 @@
+.analog {
+	width: 305px;
+}
+
+.analog .slider.slider-horizontal .slider-handle.round {
+  background: lightgray;
+}
