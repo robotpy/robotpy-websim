@@ -1,0 +1,23 @@
+body {
+	padding: 5px;
+}
+
+.iomodule {
+	padding: 15px;
+	padding-top: 7px;
+	margin: 4px;
+	background-color: #fff;
+	border: 2px solid #ccc;
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	border-radius: 25px;
+	display:inline-block;
+	vertical-align: top;
+}
+
+.iomodule h3 {
+	margin-top: 0px;
+	text-align: center;
+	color: #558;
+	font-weight: bold;
+}
