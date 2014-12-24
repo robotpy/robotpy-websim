@@ -1,96 +1,29 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>PyFRC HTML Interface</title>
+	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="plugins/slider/css/slider.css">
+	<link rel="stylesheet" href="iomodule.css">
 	
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<script src="plugins/slider/js/bootstrap-slider.js"></script>
 	<script src="iomodule.js"></script>
 </head>
 <body>
-	<div id="mode">
-		<p id="control_source"></p>
-		<form action="">
-			<input type="radio" name="mode" value="disabled" checked="true" />Disabled
-			<input type="radio" name="mode" value="auto" />Auto <input
-				type="radio" name="mode" value="teleop" />Teleop <input type="radio"
-				name="mode" value="test" />Test
-		</form>
-	
-		<p>
-			Robot state is: <span id="robot_state">Unknown</span>
-		</p>
-	</div>
-	
-	
+	<div id="analog"></div>
+	<div id="mode"></div>
+
 	<script>
-		var modeModule = $('#mode').ioModule('mode', {
-			title: 'Mode',
-			init: function() {
-				var module = this;
-				this.controlFormState = 'disabled';
-				this.stateChanged = false;
-				
-				//update state when form input changes
-				$("input[name='mode']").change(function () {
-					module.controlFormState = $(this).val();
-					module.stateChanged = true;
-				});
-			},
-			getData: function(data) {
-				var control = data.control;
-				// process the data.. 
-				//console.log(this.stateChanged);
-				if(this.stateChanged && !control.has_source) {
-					switch (this.controlFormState) {
-					case 'disabled':
-						control.enabled = false;
-						control.autonomous = false;
-						control.test = false;
-						break;
-					case 'auto':
-						control.enabled = true;
-						control.autonomous = true;
-						control.test = false;
-						break;
-					case 'teleop':
-						control.enabled = true;
-						control.autonomous = false;
-						control.test = false;
-						break;
-					}
-
-					// this is required else the robot doesn't go into any modes
-					//control.ds_attached = true;
-				}
-				this.stateChanged = false;
-			},
-			setData: function(data) {
-				// do something with the data here...
-				var control = data.control;
-
-				if (control.has_source) {
-					$('#control_source').text("Mode externally controlled!")
-					$("input[name='mode']").prop("checked", false)
-				}
-
-				if (control.enabled) {
-					if (control.autonomous)
-						$('#robot_state').text('Autonomous')
-					else if (control.test)
-						$('#robot_state').text('Test')
-					else
-						$('#robot_state').text('Teleoperated')
-				} else {
-					$('#robot_state').text('Disabled')
-				}
-			}
-		});
-		
-		setTimeout(function() {
+		$(document).ready(function(){
+			$('#mode').loadIOModule('mode');
+			$('#analog').loadIOModule('analog');		
 			$.startSimulator();
-		}, 1000);
+		});
 	</script>
 
 </body>
