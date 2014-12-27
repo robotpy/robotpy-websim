@@ -12,11 +12,11 @@
   position: relative;
 }
 .slider.slider-horizontal {
-  width: 210px;
+  width: 100px;
   height: 20px;
 }
 .slider.slider-horizontal .slider-track {
-  height: 10px;
+  height: 8px;
   width: 100%;
   margin-top: -5px;
   top: 50%;
@@ -28,7 +28,7 @@
   bottom: 0;
 }
 .slider.slider-horizontal .slider-handle {
-  margin-left: -10px;
+  margin-left: -9px;
   margin-top: -5px;
 }
 .slider.slider-horizontal .slider-handle.triangle {
@@ -112,8 +112,8 @@
 }
 .slider-handle {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   background-color: #0e90d2;
   background-image: -moz-linear-gradient(top, #149bdf, #0480be);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
@@ -129,9 +129,9 @@
   border: 0px solid transparent;
 }
 .slider-handle.round {
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
 }
 .slider-handle.triangle {
   background: transparent none;

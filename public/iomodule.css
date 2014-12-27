@@ -1,23 +1,32 @@
 body {
-	padding: 5px;
+	padding: 10px;
 }
 
 .iomodule {
 	padding: 15px;
-	padding-top: 7px;
-	margin: 4px;
+	padding-top: 20px;
+	margin: 6px;
 	background-color: #fff;
 	border: 2px solid #ccc;
-	-webkit-border-radius: 25px;
-	-moz-border-radius: 25px;
-	border-radius: 25px;
+	-webkit-border-radius: 10%;
+	-moz-border-radius: 10%;
+	border-radius: 10%;
 	display:inline-block;
 	vertical-align: top;
+	position: relative;
 }
 
-.iomodule h3 {
-	margin-top: 0px;
+.iomodule h4 {
+	top: -20px;
+	left: 10%;
 	text-align: center;
 	color: #558;
 	font-weight: bold;
+	position: absolute;
+	background: #666;
+	color: white;
+	padding: 3px 7px 3px 7px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }

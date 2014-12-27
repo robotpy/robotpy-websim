@@ -32,14 +32,17 @@ function IOModule(id, element)	{
 	this.priority = 0;
 	
 	//Sets the data sent to the server. The most recent
-	//data from the server will be passed. The data passed 
-	//to this function will reflect modifications made by 
-	//the getData functions of other IOModules with lower 
-	//priorities.
-	this.getData = function(data) {};
+	//data (newData) from the server will be passed by reference. 
+	//The data passed to this function will reflect modifications 
+	//made by the getData functions of other IOModules with lower 
+	//priorities. 
+	this.getData = function(newData) {};
 	
-	//Modifies the content displayed 
-	this.setData = function(data) {};
+	//Modifies the content displayed using a copy of the most 
+	//recent data from the server. A copy of an older data object (oldData)
+	//is passed which should be used to check if any changes
+	//were made in the most recent data.
+	this.setData = function(newData, oldData) {};
 	
 	//function that is called after IOModule is created
 	this.init = function() {};
@@ -69,7 +72,7 @@ $.fn.ioModule = function(id, options) {
 	
 	//add iomodule class and iomodule title to element
 	$(this).addClass('iomodule');
-	$(this).prepend('<h3>' + ioModule.title + '</h3>');
+	$(this).prepend('<h4>' + ioModule.title + '</h4>');
 	
 	return ioModule;
 };
@@ -171,32 +174,35 @@ function getDataLoop() {
 	//run again with a .1 second pause
 	//if the simulator is still running
 	if(isRunning) {
-		setTimeout(getDataLoop, 100);
+		setTimeout(getDataLoop, 20);
 	}
 }
 
-function onData(d) {
-	data = d;
-	
-	//set data
-	for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
-		id = moduleIDsByPriorityAsc[i];
-		ioModules[id].setData(data);
+function onData(newData) {
+	//update interface
+	if(data !== null) {
+		for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
+			id = moduleIDsByPriorityAsc[i];
+			ioModules[id].setData($.extend(true, {}, newData), $.extend(true, {}, data));
+		}
 	}
 	
-	//get data
+	//prepare data to be sent to the server
+	var dataToServer = $.extend(true, {}, newData);
+	
 	for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 		id = moduleIDsByPriorityAsc[i];
-		ioModules[id].getData(data);
+		ioModules[id].getData(dataToServer);
 	}
-	
 
 	// actually send the data back!
 	// ... there's a race condition here. :(
 
 	$.post('/api/hal_data', {
-		'data' : JSON.stringify(data)
+		'data' : JSON.stringify(dataToServer)
 	});
+	
+	data = $.extend(true, {}, newData);
 }
 
 }(jQuery))
