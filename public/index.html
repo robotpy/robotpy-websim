@@ -16,14 +16,19 @@
 </head>
 <body>
 	<div id="analog"></div>
+	<div id="digital"></div>
 	<div id="mode"></div>
 
 	<script>
 		$(document).ready(function(){
+			
 			$('#mode').loadIOModule('mode');
-			$('#analog').loadIOModule('analog');		
+			$('#analog').loadIOModule('analog');
+			$('#digital').loadIOModule('digital');
 			$.startSimulator();
 		});
+		
+		
 	</script>
 
 </body>

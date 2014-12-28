@@ -8,17 +8,17 @@ body {
 	margin: 6px;
 	background-color: #fff;
 	border: 2px solid #ccc;
-	-webkit-border-radius: 10%;
-	-moz-border-radius: 10%;
-	border-radius: 10%;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
 	display:inline-block;
 	vertical-align: top;
 	position: relative;
 }
 
-.iomodule h4 {
+.iomodule > h4 {
 	top: -20px;
-	left: 10%;
+	left: 5%;
 	text-align: center;
 	color: #558;
 	font-weight: bold;
@@ -29,4 +29,11 @@ body {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
+}
+
+.btn-circle {
+  width: 18px;
+  height: 18px;
+  padding: 6px 0;
+  border-radius: 9px;
 }

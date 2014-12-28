@@ -17,7 +17,7 @@ var analogModule = $('#analog').ioModule('analog', {
 		});
 		
 		setTimeout(function() {
-			for(i = 1; i <= 10; i++) {
+			for(i = 1; i <= 8; i++) {
 				module.setSliderValue(i, 0);
 			}
 		}, 100);
@@ -31,14 +31,14 @@ var analogModule = $('#analog').ioModule('analog', {
 	},
 	getData : function(dataToServer) {
 		var analogs = dataToServer.analog_in;
-		for(i = 0; i < analogs.length; i++) {
+		for(var i = 0; i < analogs.length; i++) {
 			analogs[i].value = this.getSliderValue(i + 1);
 		}
 	},
 	setData : function(newData, oldData) {
 		var analogs = newData.analog_in;
 		var oldAnalogs = oldData.analog_in;
-		for(i = 0; i < analogs.length; i++) {
+		for(var i = 0; i < analogs.length; i++) {
 			var id = '#analog-slider-' + (i + 1);
 			if(!analogs[i].initialized) {
 				$(id).addClass('hide');

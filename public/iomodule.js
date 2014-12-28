@@ -174,7 +174,7 @@ function getDataLoop() {
 	//run again with a .1 second pause
 	//if the simulator is still running
 	if(isRunning) {
-		setTimeout(getDataLoop, 20);
+		setTimeout(getDataLoop, 100);
 	}
 }
 
