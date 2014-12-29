@@ -82,8 +82,8 @@ $.fn.ioModule = function(id, options) {
  * be the name of the folder, and the three files it should
  * contain are [id].html, [id].js, and [id].css (optional)
  */
-$.fn.loadIOModule = function(id) {
-	var element = this;
+$.loadIOModule = function(id) {
+	var element = $('#' + id);
 	var htmlPath = 'modules/' + id + '/' + id + '.html';
 	var jsPath = 'modules/' + id + '/' + id + '.js';
 	var cssPath = 'modules/' + id + '/' + id + '.css';

@@ -33,7 +33,8 @@ var digitalModule = $('#digital').ioModule('digital', {
 		});
 		
 		//digital i/o, relay
-		$('.digital-io, .relay').click(function() {
+		$('.digital-io, .relay').click(function(e) {
+			e.preventDefault();
 			$(this).toggleClass('btn-success');
 			$(this).toggleClass('btn-danger');
 		});

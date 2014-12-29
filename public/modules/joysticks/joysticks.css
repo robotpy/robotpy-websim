@@ -1,0 +1,19 @@
+.joysticks {
+	width: 600px;
+}
+
+.joysticks .slider.slider-horizontal .slider-handle.round {
+  background: lightgray;
+}
+
+
+.joystick {
+	width: 150px;
+	/*
+	display: inline-block;
+	margin-left: 35px;*/
+}
+
+.joystick:first-of-type {
+	margin-left: 6px;
+}

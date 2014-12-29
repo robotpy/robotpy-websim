@@ -1,0 +1,9 @@
+.solenoid {
+	width: 250px;
+	padding-left: 30px;
+}
+
+.solenoid-input {
+	padding-left: 5px;
+	margin-bottom: 5px;
+}

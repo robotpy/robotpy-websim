@@ -18,13 +18,16 @@
 	<div id="analog"></div>
 	<div id="digital"></div>
 	<div id="mode"></div>
+	<div id="solenoid"></div>
+	<div id="joysticks"></div>
 
 	<script>
-		$(document).ready(function(){
-			
-			$('#mode').loadIOModule('mode');
-			$('#analog').loadIOModule('analog');
-			$('#digital').loadIOModule('digital');
+		$(document).ready(function(){		
+			$.loadIOModule('mode');
+			$.loadIOModule('analog');
+			$.loadIOModule('digital');
+			$.loadIOModule('solenoid');
+			$.loadIOModule('joysticks');
 			$.startSimulator();
 		});
 		
