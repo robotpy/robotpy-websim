@@ -95,27 +95,30 @@ $.loadIOModule = function(id) {
 	   async: false,
 	   type: 'GET',
 	   url: htmlPath,
-	   success: function( data ) {
+	   dataType: 'html',
+	   success: function( html ) {
 		   //add html to element
-		   element.append(data);	
+		   element.append(html);	
 		   //add css
-		   $('head').append('<link rel="stylesheet" ' + 'href="' + cssPath + '">');
+		   var cssContent = '<!-- css for ' + id + ' -->';
+		   cssContent += '<link rel="stylesheet" ' + 'href="' + cssPath + '">';
+		   $('head').append(cssContent);
 		   element.addClass(id);
 		   //add js
 		   $.ajax({
 			   async: false,
 			   type: 'GET',
 			   url: jsPath,
-			   success: function( data ) {
-				   eval(data);
-				   //if module was successfully added 
-				   //return the module
+			   dataType: 'script',
+			   success: function( js ) {
+				   var jsContent = '<!-- js for ' + id + ' -->';
+				   jsContent += '<script>' + js + '</script>';
+				   $('body').append(jsContent);
+				   //if module was successfully added return the module
 				   response = $.fn.getIOModule(id);
-			   },
-			   dataType: 'text'
+			   }
 			});
-	   },
-	   dataType: 'text'
+	   }
 	});
 
 	return response;

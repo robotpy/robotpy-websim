@@ -1,4 +1,4 @@
-var analogModule = $('#joysticks').ioModule('joysticks', {
+var joysticksModule = $('#joysticks').ioModule('joysticks', {
 	title : 'Joysticks',
 	init : function() {
 		var module = this;

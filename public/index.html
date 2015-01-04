@@ -7,11 +7,13 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="plugins/slider/css/slider.css">
+	<link rel="stylesheet" href="plugins/json-tree/json-tree.css">
 	<link rel="stylesheet" href="iomodule.css">
 	
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 	<script src="plugins/slider/js/bootstrap-slider.js"></script>
+	<script src="plugins/json-tree/json-tree.js"></script>
 	<script src="iomodule.js"></script>
 </head>
 <body>
@@ -20,6 +22,7 @@
 	<div id="mode"></div>
 	<div id="solenoid"></div>
 	<div id="joysticks"></div>
+	<div id="data-tree"></div>
 
 	<script>
 		$(document).ready(function(){		
@@ -28,6 +31,7 @@
 			$.loadIOModule('digital');
 			$.loadIOModule('solenoid');
 			$.loadIOModule('joysticks');
+			$.loadIOModule('data-tree');
 			$.startSimulator();
 		});
 		

@@ -1,0 +1,21 @@
+.json-tree ul {
+	list-style: none;
+}
+
+.json-tree li, .json-tree ul {
+	margin-bottom: 2px;
+	margin-top: 2px;
+}
+
+.json-tree button {
+	width: 15px;
+	height: 13px;
+	padding: 1px;
+	line-height: .5;
+	margin: 5px;
+}
+
+.json-tree > ul {
+	padding-left: 0px;
+	margin-left: 0px;
+}
