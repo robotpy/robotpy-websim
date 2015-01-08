@@ -13,7 +13,7 @@ import time
 
 import json
 
-from hal_impl.helpers import notify_new_ds_data
+from hal_impl.mode_helpers import notify_new_ds_data
 from hal_impl.data import hal_data
 
 class HTTPHandler(http.server.SimpleHTTPRequestHandler):
