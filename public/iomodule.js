@@ -13,6 +13,18 @@ var isRunning = false;
 
 //the last data sent from the server
 var data = null;
+
+//model of the robot
+var robot = null;
+
+//physics modules
+var physicsModules = [];
+
+//time of last update
+var timeOfLastUpdate = null;
+
+//date object
+var date = new Date();
 	
 
 /*
@@ -136,6 +148,44 @@ $.fn.getIOModule = function(id) {
 	return ioModules[id];
 };
 
+/*
+ * Initializes the robot model
+ */
+
+$.initRobot = function(r) {
+	if(isRunning) {
+		return;
+	}
+	
+	robot = $.extend({
+		//Width and height of robot in feet
+		width: 2,
+		height: 3,
+		//Starting X position of robot on the field, in feet
+		x: 18.5,
+		//Starting Y position of robot on the field, in feet
+		y: 12,
+		//Starting angle of robot in degrees; 0 is east, 90 is south
+		angle: 180		
+	}, r);
+};
+
+/*
+ * Adds a physics module. Physics module must contain
+ * init(robot) and update(data, robot) methods. Robot
+ * must be initialized before physics modules can be
+ * added.
+ */
+
+$.addPhysics = function(module) {
+	if(isRunning || robot === null) {
+		return;
+	}
+	
+	physicsModules.push(module);
+	module.init(robot);
+};
+
 
 /*
  * JQuery function to start the simulator
@@ -182,6 +232,19 @@ function getDataLoop() {
 }
 
 function onData(newData) {
+	var elapsedTime = 0;
+	var currentTime = date.getTime();
+	if(timeOfLastUpdate !== null) {
+		elapsedTime = currentTime - timeOfLastUpdate;
+	}
+	
+	timeOfLastUpdate = currentTime;
+	
+	//physics
+	for(var i = 0; i < physicsModules.length; i++) {
+		physicsModules[i].update(newData, robot, elapsedTime);
+	}
+	
 	//update interface
 	if(data !== null) {
 		for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
@@ -193,7 +256,7 @@ function onData(newData) {
 	//prepare data to be sent to the server
 	var dataToServer = $.extend(true, {}, newData);
 	
-	for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
+	for(var i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 		id = moduleIDsByPriorityAsc[i];
 		ioModules[id].getData(dataToServer);
 	}
