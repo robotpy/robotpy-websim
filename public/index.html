@@ -9,20 +9,40 @@
 	<link rel="stylesheet" href="plugins/slider/css/slider.css">
 	<link rel="stylesheet" href="plugins/json-tree/json-tree.css">
 	<link rel="stylesheet" href="iomodule.css">
+	<link rel="stylesheet" href="menus/menus.css">
 	
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-	<script src="plugins/slider/js/bootstrap-slider.js"></script>
-	<script src="plugins/json-tree/json-tree.js"></script>
-	<script src="iomodule.js"></script>
 </head>
 <body>
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+	    <div class="container">
+	    	<ul class="nav navbar-nav">
+		        <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+		          	<span class="glyphicon glyphicon-eye-open"></span> Show Module<span class="caret"></span>
+		          </a>
+		          <ul class="dropdown-menu" role="menu" id="hidden-modules-dropdown">
+		            <li><a href="#">Action</a></li>
+		          </ul>
+		        </li>
+      		</ul>
+	    </div>
+	</nav>
+
 	<div id="analog"></div>
 	<div id="digital"></div>
 	<div id="mode"></div>
 	<div id="solenoid"></div>
 	<div id="joysticks"></div>
 	<div id="data-tree"></div>
+
+
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<script src="plugins/slider/js/bootstrap-slider.js"></script>
+	<script src="plugins/json-tree/json-tree.js"></script>
+	<script src="iomodule.js"></script>
+	<script src="menus/menus.js"></script>
 
 	<script>
 		$(document).ready(function(){		
@@ -32,6 +52,7 @@
 			$.loadIOModule('solenoid');
 			$.loadIOModule('joysticks');
 			$.loadIOModule('data-tree');
+			$.contextMenu();
 			$.startSimulator();
 		});
 		

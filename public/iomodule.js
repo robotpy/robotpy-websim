@@ -58,6 +58,12 @@ function IOModule(id, element)	{
 	
 	//function that is called after IOModule is created
 	this.init = function() {};
+	
+	//does not send data to the server if false
+	this.updateServer = true;
+	
+	//does not send data to IOModule if false
+	this.updateClient = true;
 }
 
 
@@ -84,7 +90,7 @@ $.fn.ioModule = function(id, options) {
 	
 	//add iomodule class and iomodule title to element
 	$(this).addClass('iomodule');
-	$(this).prepend('<h4>' + ioModule.title + '</h4>');
+	$(this).prepend('<h4 class="title">' + ioModule.title + '</h4>');
 	
 	return ioModule;
 };
@@ -127,7 +133,7 @@ $.loadIOModule = function(id) {
 				   jsContent += '<script>' + js + '</script>';
 				   $('body').append(jsContent);
 				   //if module was successfully added return the module
-				   response = $.fn.getIOModule(id);
+				   response = $.getIOModule(id);
 			   }
 			});
 	   }
@@ -141,12 +147,21 @@ $.loadIOModule = function(id) {
 /*
  * JQuery function that gets an existing ioModule by id
  */
-$.fn.getIOModule = function(id) {
+$.getIOModule = function(id) {
 	if(ioModules.hasOwnProperty(id) === false) {
 		return false;
 	}
 	return ioModules[id];
 };
+
+/*
+ * Gets all IOModules
+ */
+
+$.getIOModules = function() {
+	return ioModules;
+}
+
 
 /*
  * Initializes the robot model
@@ -249,7 +264,9 @@ function onData(newData) {
 	if(data !== null) {
 		for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 			id = moduleIDsByPriorityAsc[i];
-			ioModules[id].setData($.extend(true, {}, newData), $.extend(true, {}, data));
+			if(ioModules[id].updateClient) {
+				ioModules[id].setData($.extend(true, {}, newData), $.extend(true, {}, data));
+			}
 		}
 	}
 	
@@ -258,7 +275,9 @@ function onData(newData) {
 	
 	for(var i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 		id = moduleIDsByPriorityAsc[i];
-		ioModules[id].getData(dataToServer);
+		if(ioModules[id].updateServer) {
+			ioModules[id].getData(dataToServer);
+		}
 	}
 
 	// actually send the data back!
