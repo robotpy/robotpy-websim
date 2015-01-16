@@ -9,12 +9,12 @@ var dataTreeModule = $('#data-tree').ioModule('data-tree', {
 		
 		
 	},
-	getData : function(dataToServer) {
+	getData : function(data) {
 
 	},
-	setData : function(newData, oldData) {
+	setData : function(data) {
 		if(this.update) {
-			$('.tree').jsonTree(newData);
+			$('.tree').jsonTree(data);
 			this.update = false;
 		}
 	}

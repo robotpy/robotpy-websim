@@ -11,8 +11,8 @@ var modeModule = $('#mode').ioModule('mode', {
 			module.stateChanged = true;
 		});
 	},
-	getData : function(dataToServer) {
-		var control = dataToServer.control;
+	getData : function(data) {
+		var control = data.control;
 		// process the data.. 
 		//console.log(this.stateChanged);
 		if (this.stateChanged && !control.has_source) {
@@ -39,9 +39,9 @@ var modeModule = $('#mode').ioModule('mode', {
 		}
 		this.stateChanged = false;
 	},
-	setData : function(newData, oldData) {
+	setData : function(data) {
 		// do something with the data here...
-		var control = newData.control;
+		var control = data.control;
 
 		if (control.has_source) {
 			$('#control_source').text("Mode externally controlled!")

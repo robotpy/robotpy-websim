@@ -42,36 +42,44 @@ var digitalModule = $('#digital').ioModule('digital', {
 		
 		
 	},
-	getData : function(dataToServer) {
-		var pwm = dataToServer.pwm;
-		for(var i = 0; i < pwm.length; i++) {
-			pwm[i].value = this.getSliderValue(i + 1);
-		}
+	getData : function(data) {
 		
-		var dio = dataToServer.dio;
-		for(var i = 0; i < dio.length; i++) {
-			var id = '#digital-io-' + (i + 1);
-			dio[i].value = $(id).hasClass('btn-success');
-		}
-		
-		var relay = dataToServer.relay;
-		for(var i = 0; i < relay.length; i++) {
-			var id = '#relay-' + (i + 1);
-			relay[i].value = $(id).hasClass('btn-success');
+		if(this.updateServer) {
+			var pwm = data.pwm;
+			for(var i = 0; i < pwm.length; i++) {
+				pwm[i].value = this.getSliderValue(i + 1);
+			}
+			
+			var dio = data.dio;
+			for(var i = 0; i < dio.length; i++) {
+				var id = '#digital-io-' + (i + 1);
+				dio[i].value = $(id).hasClass('btn-success');
+			}
+			
+			var relay = data.relay;
+			for(var i = 0; i < relay.length; i++) {
+				var id = '#relay-' + (i + 1);
+				relay[i].value = $(id).hasClass('btn-success');
+			}
 		}
 	},
-	setData : function(newData, oldData) {
-		var pwm = newData.pwm;
+	setData : function(data) {
+		var pwm = data.pwm;
 		for(var i = 0; i < pwm.length; i++) {
 			var id = '#pwm-slider-' + (i + 1);
 			if(!pwm[i].initialized) {
 				$(id).addClass('hide');
+				continue;
 			} else {
 				$(id).removeClass('hide');
 			}
+			
+			if(this.updateClient) {
+				this.setSliderValue(i + 1, pwm[i].value);
+			}
 		}
 		
-		var dio = newData.dio;
+		var dio = data.dio;
 		for(var i = 0; i < dio.length; i++) {
 			var id = '#digital-io-' + (i + 1);
 			if(!dio[i].initialized) {
@@ -81,7 +89,7 @@ var digitalModule = $('#digital').ioModule('digital', {
 			}
 		}
 		
-		var relay = newData.relay;
+		var relay = data.relay;
 		for(var i = 0; i < relay.length; i++) {
 			var id = '#relay-' + (i + 1);
 			if(!relay[i].initialized) {
@@ -103,6 +111,7 @@ var digitalModule = $('#digital').ioModule('digital', {
 		return this.sliderValues[slideNumber - 1];
 	},
 	onSlide: function(element, value) {
+		value = parseFloat(value);
 		var negColor = '#FCC';
 		var posColor = '#CFC';
 		

@@ -7,15 +7,15 @@ var solenoidModule = $('#solenoid').ioModule('solenoid', {
 			$(this).toggleClass('btn-danger');
 		});
 	},
-	getData : function(dataToServer) {
-		var solenoid = dataToServer.solenoid;
+	getData : function(data) {
+		var solenoid = data.solenoid;
 		for(var i = 0; i < solenoid.length; i++) {
 			var id = '#solenoid-' + (i + 1);
 			//solenoid[i].value = $(id).hasClass('btn-success');
 		}
 	},
-	setData : function(newData, oldData) {
-		var solenoid = newData.solenoid;
+	setData : function(data) {
+		var solenoid = data.solenoid;
 		for(var i = 0; i < solenoid.length; i++) {
 			var id = '#solenoid-' + (i + 1);
 			/*if(!solenoid[i].initialized) {

@@ -25,47 +25,6 @@ var timeOfLastUpdate = null;
 
 //date object
 var date = new Date();
-	
-
-/*
- * IOModule class
- */
-
-function IOModule(id, element)	{
-	this.id = id;
-	this.element = element;
-	
-	//title is displayed above
-	this.title = id;
-	
-	//the higher the priority, the more likely the data
-	//returned in the getData function will be the data 
-	//sent to the server
-	this.priority = 0;
-	
-	//Sets the data sent to the server. The most recent
-	//data (newData) from the server will be passed by reference. 
-	//The data passed to this function will reflect modifications 
-	//made by the getData functions of other IOModules with lower 
-	//priorities. 
-	this.getData = function(newData) {};
-	
-	//Modifies the content displayed using a copy of the most 
-	//recent data from the server. A copy of an older data object (oldData)
-	//is passed which should be used to check if any changes
-	//were made in the most recent data.
-	this.setData = function(newData, oldData) {};
-	
-	//function that is called after IOModule is created
-	this.init = function() {};
-	
-	//does not send data to the server if false
-	this.updateServer = true;
-	
-	//does not send data to IOModule if false
-	this.updateClient = true;
-}
-
 
 /*
  * JQuery function that creates an IOModule and then returns it.
@@ -77,13 +36,63 @@ $.fn.ioModule = function(id, options) {
 		return null;
 	}
 	
+	var element = this;
+	
 	
 	//create IOModule and add the options to its properties
-	var ioModule = new IOModule(id, this);
-	for(property in options) {
-		ioModule[property] = options[property];
-	}
+	var ioModule = $.extend({
+		id: id,
+		element: element,
+		//title is displayed above
+		title: id,
+		//the higher the priority, the more likely the data
+		//returned in the getData function will be the data 
+		//sent to the server
+		priority: 0,
+		//Sets the data sent to the server. The most recent
+		//data from the server will be passed by reference. 
+		//The data passed to this function will reflect modifications 
+		//made by the getData functions of other IOModules with lower 
+		//priorities. 
+		getData: function(data) {},
+		//Modifies the content displayed using a copy of the most 
+		//recent data from the server.
+		setData: function(data) {},
+		//function that is called after IOModule is created
+		init: function() {},
+		//does not send data to the server if false
+		updateServer: true,
+		//does not send data to IOModule if false
+		updateClient: false,
+		
+		contextMenu: {
+			update: {
+				type: 'radio',
+				buttons: [
+	               {label: 'Update Client', value: 'client'},
+	               {label: 'Update Server', value: 'server'}
+	            ],
+	            get: function(module) {
+	            	if(module.updateServer) {
+	            		return 'server';
+	            	} else if(module.updateClient) {
+	            		return 'client';
+	            	}
+	            },
+	            set: function(module, value) {
+	            	if(value === 'server') {
+	            		module.updateServer = true;
+	            		module.updateClient = false;
+	            	} else if(value === 'client') {
+	            		module.updateServer = false;
+	            		module.updateClient = true;
+	            	}
+	            }
+			}
+		}
+	}, options);
 	
+		
 	ioModules[id] = ioModule;
 	moduleIDsByPriorityAsc.push(id);
 	ioModule.init();
@@ -264,9 +273,7 @@ function onData(newData) {
 	if(data !== null) {
 		for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 			id = moduleIDsByPriorityAsc[i];
-			if(ioModules[id].updateClient) {
-				ioModules[id].setData($.extend(true, {}, newData), $.extend(true, {}, data));
-			}
+			ioModules[id].setData($.extend(true, {}, newData));
 		}
 	}
 	
@@ -275,9 +282,7 @@ function onData(newData) {
 	
 	for(var i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 		id = moduleIDsByPriorityAsc[i];
-		if(ioModules[id].updateServer) {
-			ioModules[id].getData(dataToServer);
-		}
+		ioModules[id].getData(dataToServer);
 	}
 
 	// actually send the data back!

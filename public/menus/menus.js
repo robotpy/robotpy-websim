@@ -2,70 +2,65 @@
  * context-menu js
  */
 
-(function($) {
+$(function() {
 	
-var contextMenu = null;
+//create context menu
+$.ajax({
+   async: false,
+   type: 'GET',
+   url: 'menus/context-menu.html',
+   dataType: 'html',
+   success: function( html ) {
+	   $('body').append(html);
+   }
+});
+	
+//events to open/close context menu
+$("body").on("contextmenu", openContextMenu);
+$("body").click(closeContextMenu);
 
 
-$.contextMenu = function() {
-	//do not create the context menu twice
-	if(contextMenu !== null) {
+//event to hide module
+$('body').on('click', '#hide-module', function(e) {
+	var module = getCurrentModule();
+	if(module) {
+		module.element.addClass('hidden');
+	}
+});
+
+//event to handle module specific inputs
+$('body').on('click', '#context-menu .module-specific-input, #context-menu .module-specific-input input', function(e) {
+	var input = null;
+	if($(this).prop('tagName') === 'INPUT') {	
+		input = $(this);
+	} else {
+		input = $(this).find('input');
+	}
+	
+	if(!input) {
 		return;
 	}
 	
+	e.stopPropagation();
 	
-	$("body").on("contextmenu", openContextMenu);
-	$("body").click(hideContextMenu);
-	$('body').on('click', '#context-menu .menu-checkbox', function(e) {
-		e.stopPropagation();
-		var checkbox = $(this).find('input[type=checkbox]');
-		var newValue = !checkbox.prop('checked')
-		checkbox.prop('checked', newValue);
+	var module = getCurrentModule();
+	var type = input.attr('type');
+	var name = input.attr('name');
+	
+	if (type === 'checkbox') {
+		var value = !input.prop('checked');
+		input.prop('checked', value);
+		module.contextMenu[name].set(module, value);
 		
-		var id = checkbox.attr('id');
-		var module = getCurrentModule();
-		
-		if(module) {
-			if(id === 'update-server') {
-				module.updateServer = newValue;
-			} else if(id === 'update-client') {
-				module.updateClient = newValue;
-			}
-		}
-		
-	    
-	});
-	
-	$('body').on('click', '#context-menu input[type=checkbox]', function(e) {
-		e.stopPropagation();
-	});
-	
-	$('body').on('click', '#hide-module', function(e) {
-		var module = getCurrentModule();
-		if(module) {
-			module.element.addClass('hidden');
-		}
-	});
-	
-	
-	$.ajax({
-	   async: false,
-	   type: 'GET',
-	   url: 'menus/context-menu.html',
-	   dataType: 'html',
-	   success: function( html ) {
-		   //add the context menu
-		   $('body').append(html);
-	   }
-	});
+	} else if (type === 'radio') {		
+		input.prop('checked', true);
+		module.contextMenu[name].set(module, input.val());
+	}
+});
 
-	
-	contextMenu = $('#context-menu');
-	return contextMenu;
-}
 
 function getCurrentModule() {
-	var moduleID = contextMenu.attr('module-id');
+	var moduleID = $('#context-menu').attr('module-id');
 	var module = $.getIOModule(moduleID);
 	return module;
 }
@@ -73,33 +68,15 @@ function getCurrentModule() {
 
 
 function openContextMenu(e) {
-	if(contextMenu === null) {
-		return;
-	}
-	
-	var modules = $.getIOModules();
-	//check to see which module was clicked
-	var moduleClicked = null;
-	//console.log('_______________________');
-	//console.log('mouse: (' + e.pageX + ', ' + e.pageY + ')');
-	for(key in modules) {
-		var x = modules[key].element.position().left;
-		var y = modules[key].element.position().top;
-		var width = modules[key].element.outerWidth();
-		var height = modules[key].element.outerHeight();
-		
-		//console.log(key + ': (' + x + ', ' + y + '), (' + (x + width) + ', ' + (y + height) + ')');
-		if(x < e.pageX && e.pageX < (x + width) && y < e.pageY && e.pageY < (y + height)) {
-			moduleClicked = modules[key];
-			break;
-		}
-	}
+	var contextMenu = $('#context-menu');
+	var moduleClicked = getModuleClicked(e);
 	
 	//if no module was clicked do not show context menu
 	if(moduleClicked === null) {
-		hideContextMenu();
+		closeContextMenu();
 		return;
 	}
+
 	
 	e.preventDefault();
 		
@@ -110,16 +87,11 @@ function openContextMenu(e) {
 		top: e.pageY
 	});
 	
-	contextMenu.attr('module-id', moduleClicked.id);
-	contextMenu.find('#update-server').prop('checked', moduleClicked.updateServer);
-	contextMenu.find('#update-client').prop('checked', moduleClicked.updateClient);
+	contextMenu.attr('module-id', moduleClicked.id);	
+	createContextMenu(moduleClicked);
 }
 
-function hideContextMenu() {
-	if(contextMenu === null) {
-		return;
-	}
-	
+function closeContextMenu() {
 	$('#context-menu').hide();
 }
 
@@ -134,9 +106,79 @@ function toggleUpdates() {
 	}
 }
 
+function getModuleClicked(e) {
+	var modules = $.getIOModules();
+
+	var moduleClicked = null;
+
+	for(key in modules) {
+		var x = modules[key].element.position().left;
+		var y = modules[key].element.position().top;
+		var width = modules[key].element.outerWidth();
+		var height = modules[key].element.outerHeight();
+		
+		if(x < e.pageX && e.pageX < (x + width) && y < e.pageY && e.pageY < (y + height)) {
+			moduleClicked = modules[key];
+			break;
+		}
+	}
+	
+	return moduleClicked;
+}
+
+function createContextMenu(module) {
+	//remove old module specific inputs
+	$('#context-menu .module-specific-input').remove();
 	
 	
-}(jQuery))
+	var contextMenuData = module.contextMenu;
+	for(name in contextMenuData) {
+		var type = contextMenuData[name].type;
+		
+		//add checkbox input
+		if(type === 'checkbox') {
+			var label = contextMenuData[name].label;
+			
+			//add input
+			var html = '';
+			html += '<li class="menu-checkbox module-specific-input"><a href="#">';
+			html += 	'<input type="checkbox" name="' + name + '">';
+			html += 	'<span class="lbl"> ' + label + '</span>';
+			html += '</a></li>';
+			$('#context-menu #module-specific-divider').before(html);
+			
+			//set value
+			$('#context-menu module-specific-input input[name=' + name + ']').prop('checked', contextMenuData[name].get(module));
+		
+		
+		//add radio inputs
+		} else if(type === 'radio') {
+			
+			
+			var html = '';
+			//add inputs			
+			for(var i = 0; i < contextMenuData[name].buttons.length; i++) {
+				var button = contextMenuData[name].buttons[i];
+				
+				html = '';
+				html += '<li class="menu-radio module-specific-input"><a href="#">';
+				html += 	'<input type="radio" name="' + name + '" value="' + button.value + '">';
+				html += 	'<span class="lbl"> ' + button.label + '</span>';
+				html += '</a></li>';
+				$('#context-menu #module-specific-divider').before(html);
+			}
+			
+			//set value
+			var value = contextMenuData[name].get(module);
+			$('#context-menu .module-specific-input input[name=' + name + '][value=' + value + ']').prop('checked', true);
+			
+		}
+	}
+}
+
+	
+	
+});
 
 /**
  * navbar js

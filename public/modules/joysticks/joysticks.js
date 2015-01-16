@@ -31,8 +31,8 @@ var joysticksModule = $('#joysticks').ioModule('joysticks', {
 		});
 		
 	},
-	getData : function(dataToServer) {
-		var joysticks = dataToServer.joysticks;
+	getData : function(data) {
+		var joysticks = data.joysticks;
 		var axis = ['x', 'y', 'z', 't']
 		for(var i = 0; i < 6; i++) {			
 			for(var j = 0; j < joysticks[i].axes.length && j < axis.length; j++) {
@@ -44,8 +44,8 @@ var joysticksModule = $('#joysticks').ioModule('joysticks', {
 			}
 		}
 	},
-	setData : function(newData, oldData) {
-		var joysticks = newData.joysticks;
+	setData : function(data) {
+		var joysticks = data.joysticks;
 		for(var i = 0; i < joysticks.length; i++) {
 			var id = '#joystick-' + (i + 1);
 			/*if(!joysticks[i].initialized) {

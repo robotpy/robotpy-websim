@@ -29,15 +29,16 @@ var analogModule = $('#analog').ioModule('analog', {
 		});
 		
 	},
-	getData : function(dataToServer) {
-		var analogs = dataToServer.analog_in;
-		for(var i = 0; i < analogs.length; i++) {
-			analogs[i].value = this.getSliderValue(i + 1);
+	getData : function(data) {
+		if(this.updateServer) {
+			var analogs = data.analog_in;
+			for(var i = 0; i < analogs.length; i++) {
+				analogs[i].value = this.getSliderValue(i + 1);
+			}
 		}
 	},
-	setData : function(newData, oldData) {
-		var analogs = newData.analog_in;
-		var oldAnalogs = oldData.analog_in;
+	setData : function(data) {
+		var analogs = data.analog_in;
 		for(var i = 0; i < analogs.length; i++) {
 			var id = '#analog-slider-' + (i + 1);
 			if(!analogs[i].initialized) {
@@ -46,14 +47,21 @@ var analogModule = $('#analog').ioModule('analog', {
 			} else {
 				$(id).removeClass('hide');
 			}
+			
+			
+			if(this.updateClient) {
+				this.setSliderValue(i + 1, analogs[i].value);
+			}
 		}
 	},
 	setSliderValue: function(slideNumber, value) {
+		value = parseFloat(value);
 		var module = this;
 		$('#analog-slider-' + slideNumber + ' .analog-slider').slider('setValue', value);
 		$('#analog-slider-' + slideNumber).each(function() {
 			var slider = $(this).find('.slider');
 			module.onSlide($(slider), value);
+			
 		});
 	},
 	getSliderValue: function(slideNumber) {
@@ -81,6 +89,8 @@ var analogModule = $('#analog').ioModule('analog', {
 		} else {
 			element.find('.slider-track .slider-handle').css('background', 'lightgray');
 		}
+		
+		
 		
 		//display value
 		element.siblings('.slider-value').text(value.toFixed(2));
