@@ -11,6 +11,24 @@
 	<link rel="stylesheet" href="iomodule.css">
 	<link rel="stylesheet" href="menus/menus.css">
 	
+	<style>
+		.bar {
+			fill: steelblue;
+		}
+		
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+		}
+		
+		.x.axis path {
+			display: none;
+		}
+
+
+	</style>
+	
 </head>
 <body>
 
@@ -34,11 +52,13 @@
 	<div id="mode"></div>
 	<div id="solenoid"></div>
 	<div id="joysticks"></div>
+	<div id="simple-robot"></div>
 	<div id="data-tree"></div>
 
 
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
 	<script src="plugins/slider/js/bootstrap-slider.js"></script>
 	<script src="plugins/json-tree/json-tree.js"></script>
 	<script src="iomodule.js"></script>
@@ -46,15 +66,18 @@
 
 	<script>
 		$(document).ready(function(){		
+			//add io modules
 			$.loadIOModule('mode');
 			$.loadIOModule('analog');
 			$.loadIOModule('digital');
 			$.loadIOModule('solenoid');
 			$.loadIOModule('joysticks');
+			$.loadIOModule('simple-robot');
 			$.loadIOModule('data-tree');
-			$.startSimulator();
+			
+
+			$.startSimulator();		
 		});
-		
 		
 	</script>
 

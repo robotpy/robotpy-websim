@@ -1,0 +1,10 @@
+.simple-robot {
+	width: 360px;
+	height: 360px;
+}
+
+.simple-robot .robot .base {
+	fill: white;
+	stroke-width:1;
+	stroke:rgb(0,0,0);
+}

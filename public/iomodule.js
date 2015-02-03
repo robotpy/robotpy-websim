@@ -1,6 +1,9 @@
 
 (function($) {
 	
+//constant that controls the time between updates
+var UPDATE_RATE = 100;
+	
 //Object that holds all the ioModules. Property names are the id 
 //names of the IOModules passed to the ioModule jquery functions
 var ioModules = new Object();
@@ -18,7 +21,7 @@ var data = null;
 var robot = null;
 
 //physics modules
-var physicsModules = [];
+var physicsModules = {};
 
 //time of last update
 var timeOfLastUpdate = null;
@@ -138,11 +141,11 @@ $.loadIOModule = function(id) {
 			   url: jsPath,
 			   dataType: 'script',
 			   success: function( js ) {
-				   var jsContent = '<!-- js for ' + id + ' -->';
+				   var jsContent = '<!-- js for IOModule ' + id + ' -->';
 				   jsContent += '<script>' + js + '</script>';
 				   $('body').append(jsContent);
 				   //if module was successfully added return the module
-				   response = $.getIOModule(id);
+				   response = $.getSimulatorValue('ioModule', id);
 			   }
 			});
 	   }
@@ -154,61 +157,94 @@ $.loadIOModule = function(id) {
 
 
 /*
- * JQuery function that gets an existing ioModule by id
- */
-$.getIOModule = function(id) {
-	if(ioModules.hasOwnProperty(id) === false) {
-		return false;
-	}
-	return ioModules[id];
-};
-
-/*
- * Gets all IOModules
+ * Adds a physics module. Physics module must contain
+ * init(robot) and update(data, elapsedTime) methods. A
+ * dictionary with all the necessary robot information
+ * must also be passed (motors, sensors, robot weight and
+ * dimensions, etc)
  */
 
-$.getIOModules = function() {
-	return ioModules;
-}
-
-
-/*
- * Initializes the robot model
- */
-
-$.initRobot = function(r) {
+$.addPhysicsModule = function(id, module, robot) {
 	if(isRunning) {
 		return;
 	}
 	
-	robot = $.extend({
-		//Width and height of robot in feet
-		width: 2,
-		height: 3,
-		//Starting X position of robot on the field, in feet
-		x: 18.5,
-		//Starting Y position of robot on the field, in feet
-		y: 12,
-		//Starting angle of robot in degrees; 0 is east, 90 is south
-		angle: 180		
-	}, r);
-};
-
-/*
- * Adds a physics module. Physics module must contain
- * init(robot) and update(data, robot) methods. Robot
- * must be initialized before physics modules can be
- * added.
- */
-
-$.addPhysics = function(module) {
-	if(isRunning || robot === null) {
-		return;
+	
+	
+	if(physicsModules.hasOwnProperty(id)) {
+		return false;
 	}
 	
-	physicsModules.push(module);
-	module.init(robot);
+	physicsModules[id] = module;
+	
+	if(typeof(robot) !== 'undefined') {
+		module.init(robot);
+	}
+	
+	return true;
 };
+
+
+/*
+ * Loads a physics module from the physics folder.
+ */
+$.loadPhysicsModule = function(id, robot) {
+	var physicsModule = null;
+	$.ajax({
+	   async: false,
+	   type: 'GET',
+	   url: 'physics/' + id + '.js',
+	   dataType: 'script',
+	   success: function( js ) {
+		   var jsContent = '<!-- js for physics module ' + id + ' -->';
+		   jsContent += '<script>' + js + '</script>';
+		   $('body').append(jsContent);
+		   //if module was successfully added return the module
+		   physicsModule = $.getSimulatorValue('physicsModule', id);
+	   },  
+	   error: function(jqXHR, textStatus, errorThrown) {
+	        console.log('Unable to load physics module ' + id + '.js, ' + errorThrown);
+	    }
+	});
+	
+	if(physicsModule) {
+		physicsModule.init(robot);
+		return physicsModule;
+	}
+	
+	return false;
+}
+
+
+$.getSimulatorValue = function(property, key) {
+	switch(property) {
+	
+		case 'UPDATE_RATE':
+			return UPDATE_RATE
+			
+		case 'ioModule':
+			if(ioModules.hasOwnProperty(key) === false) {
+				return false;
+			}
+			return ioModules[key];
+		
+		case 'ioModules':
+			return ioModules;
+			
+		case 'physicsModule':
+			if(physicsModules.hasOwnProperty(key) === false) {
+				return false;
+			}
+			
+			return physicsModules[key];
+			
+		case 'physicsModules':
+			return physicsModules;
+		
+	}
+	
+	return null;
+}
 
 
 /*
@@ -243,7 +279,7 @@ $.startSimulator = function() {
 
 $.fn.stopSimulator = function() {
 	isRunning  = false;
-}
+};
 
 function getDataLoop() {
 	$.getJSON("/api/hal_data", onData);
@@ -251,13 +287,13 @@ function getDataLoop() {
 	//run again with a .1 second pause
 	//if the simulator is still running
 	if(isRunning) {
-		setTimeout(getDataLoop, 100);
+		setTimeout(getDataLoop, UPDATE_RATE);
 	}
 }
 
 function onData(newData) {
 	var elapsedTime = 0;
-	var currentTime = date.getTime();
+	var currentTime =  Date.now();
 	if(timeOfLastUpdate !== null) {
 		elapsedTime = currentTime - timeOfLastUpdate;
 	}
@@ -265,8 +301,8 @@ function onData(newData) {
 	timeOfLastUpdate = currentTime;
 	
 	//physics
-	for(var i = 0; i < physicsModules.length; i++) {
-		physicsModules[i].update(newData, robot, elapsedTime);
+	for(var id in physicsModules) {
+		physicsModules[id].update(newData, elapsedTime / 1000);
 	}
 	
 	//update interface

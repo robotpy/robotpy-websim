@@ -61,7 +61,7 @@ $('body').on('click', '#context-menu .module-specific-input, #context-menu .modu
 
 function getCurrentModule() {
 	var moduleID = $('#context-menu').attr('module-id');
-	var module = $.getIOModule(moduleID);
+	var module = $.getSimulatorValue('ioModule', moduleID);
 	return module;
 }
 	
@@ -107,7 +107,7 @@ function toggleUpdates() {
 }
 
 function getModuleClicked(e) {
-	var modules = $.getIOModules();
+	var modules = $.getSimulatorValue('ioModules');
 
 	var moduleClicked = null;
 
