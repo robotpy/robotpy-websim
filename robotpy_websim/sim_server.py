@@ -5,7 +5,7 @@ import http.server
 import socketserver
 
 import os
-from os.path import abspath
+from os.path import abspath, dirname, join
 import posixpath
 import urllib
 from urllib.parse import parse_qs
@@ -19,7 +19,9 @@ from hal_impl.data import hal_data
 class HTTPHandler(http.server.SimpleHTTPRequestHandler):
     
     # Path where files are served from
-    root_path = os.getcwd()
+    root_path = abspath(join(dirname(__file__), 'html'))
+    
+    # TODO: allow grafting in the user's config files, etc 
     
     
     def do_GET(self):
@@ -94,7 +96,8 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 class Main:
     
     def __init__(self, parser):
-        parser.add_argument('rootdir', help="Webserver root directory to serve", action='store')
+        # TODO: add 
+        #parser.add_argument('rootdir', help="Webserver root directory to serve", action='store')
         self.server = None
     
     def server_fn(self):
@@ -102,7 +105,6 @@ class Main:
         addr = ('127.0.0.1', 8000)
         
         handler = HTTPHandler
-        HTTPHandler.root_path = abspath(self.rootdir)
         
         self.server = socketserver.TCPServer(addr, handler)
         
@@ -116,8 +118,6 @@ class Main:
             time.sleep(0.02)
     
     def run(self, options, robot_class):
-        
-        self.rootdir = options.rootdir
         
         thread = threading.Thread(target=self.server_fn, daemon=True)
         thread.start()
