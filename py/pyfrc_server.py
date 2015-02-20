@@ -113,7 +113,7 @@ class Main:
         
         while True:
             notify_new_ds_data()
-            time.sleep(0.2)
+            time.sleep(0.02)
     
     def run(self, options, robot_class):
         
