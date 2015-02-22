@@ -17,9 +17,16 @@ on contact.
 Installation
 ============
 
-Install this package with pip (requires python 3 to be installed)::
+Install the latest release of this package with pip (requires python 3 to be
+installed)::
 
-	pip3 install
+	pip3 install robotpy-websim
+
+Alternatively, you can install from master from a git clone::
+
+	git clone https://github.com/robotpy/robotpy-websim.git
+	cd robotpy-websim
+	pip3 install .
 
 Usage
 =====

@@ -61,9 +61,6 @@ setup(
     url='https://github.com/robotpy/robotpy-websim',
     keywords='frc first robotics simulation',
     packages=find_packages(),
-    #package_data = {
-    #    'robotpy_websim': package_data
-    #s},
     include_package_data=True,
     zip_safe=False,
     entry_points={'robotpy': [ 'websim = robotpy_websim.sim_server:Main' ]},
