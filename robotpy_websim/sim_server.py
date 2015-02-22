@@ -96,12 +96,9 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             super().log_request(code, size)
         
 
-
 class Main:
     
     def __init__(self, parser):
-        # TODO: add 
-        #parser.add_argument('rootdir', help="Webserver root directory to serve", action='store')
         self.server = None
     
     def server_fn(self):
@@ -118,8 +115,9 @@ class Main:
         print("Listening on http://%s:%s" % addr)
         self.server.serve_forever()
         
-    def terrible_hack(self):
         
+    def terrible_hack(self):
+        # This terrible hack allows the DS thread to receive new joystick data
         while True:
             notify_new_ds_data()
             time.sleep(0.02)
@@ -137,4 +135,3 @@ class Main:
         finally:
             if self.server is not None:
                 self.server.shutdown()
-        
