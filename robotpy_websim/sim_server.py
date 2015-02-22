@@ -90,6 +90,10 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
         if trailing_slash:
             path += '/'
         return path
+    
+    def log_request(self, code='-', size='-'):
+        if '/api' not in self.requestline:
+            super().log_request(code, size)
         
 
 
