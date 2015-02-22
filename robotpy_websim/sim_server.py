@@ -110,7 +110,10 @@ class Main:
         
         handler = HTTPHandler
         
-        self.server = socketserver.TCPServer(addr, handler)
+        self.server = socketserver.TCPServer(addr, handler, bind_and_activate=False)
+        self.server.allow_reuse_address = True
+        self.server.server_bind()
+        self.server.server_activate()
         
         print("Listening on http://%s:%s" % addr)
         self.server.serve_forever()
