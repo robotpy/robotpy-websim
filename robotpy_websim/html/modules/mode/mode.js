@@ -32,6 +32,11 @@ var modeModule = $('#mode').ioModule('mode', {
 				control.autonomous = false;
 				control.test = false;
 				break;
+			case 'test':
+				control.enabled = true;
+				control.autonomous = false;
+				control.test = true;
+				break;
 			}
 
 			// this is required else the robot doesn't go into any modes
