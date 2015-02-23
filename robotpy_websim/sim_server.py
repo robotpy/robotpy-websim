@@ -4,8 +4,9 @@ import threading
 import http.server
 import socketserver
 
+import inspect
 import os
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, exists, join
 import posixpath
 import urllib
 from urllib.parse import parse_qs
@@ -122,7 +123,14 @@ class Main:
             notify_new_ds_data()
             time.sleep(0.02)
     
-    def run(self, options, robot_class):
+    def run(self, options, robot_class, **kwargs):
+        
+        robot_file = abspath(inspect.getfile(robot_class))
+        robot_path = dirname(robot_file)
+        
+        sim_path = join(robot_path, 'sim')
+        if not exists(sim_path):
+            os.mkdir(sim_path)
         
         thread = threading.Thread(target=self.server_fn, daemon=True)
         thread.start()
