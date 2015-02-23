@@ -370,11 +370,9 @@ function onData() {
 	}
 	
 	//update interface
-	if(data !== null) {
-		for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
-			id = moduleIDsByPriorityAsc[i];
-			ioModules[id].setData(dataFromSim);
-		}
+	for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
+		id = moduleIDsByPriorityAsc[i];
+		ioModules[id].setData(dataFromSim);
 	}
 	
 	for(var i = 0; i < moduleIDsByPriorityAsc.length; i++) {
