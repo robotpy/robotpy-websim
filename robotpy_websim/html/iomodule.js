@@ -29,6 +29,15 @@ var timeOfLastUpdate = null;
 //date object
 var date = new Date();
 
+//websocket object
+var socket = null;
+
+// dictionary received from sim
+var dataFromSim = null;
+
+// dictionary that can be transmitted to sim
+var dataToSim = null;
+
 /*
  * JQuery function that creates an IOModule and then returns it.
  * Will return null if the simulator is currently running or if
@@ -274,24 +283,79 @@ $.startSimulator = function() {
 	}
 	
 	isRunning = true;
-	getDataLoop();
+	setupSocket();
 };
 
 $.fn.stopSimulator = function() {
 	isRunning  = false;
+	closeSocket();
 };
 
-function getDataLoop() {
-	$.getJSON("/api/hal_data", onData);
+// only intended for use by the mode module
+// - use this instead of the dictionary
+$.setRobotMode = function(mode, enabled) {
+	if (socket == null)
+		return;
 	
-	//run again with a .1 second pause
-	//if the simulator is still running
-	if(isRunning) {
-		setTimeout(getDataLoop, UPDATE_RATE);
+	var msg = {}
+	msg.msgtype = 'mode';
+	msg.mode = mode;
+	msg.enabled = enabled;
+	
+	socket.send(JSON.stringify(msg));
+}
+
+function setupSocket() {
+	var l = window.location;
+	var url = "ws://" + l.hostname + ":" + l.port + "/api";
+	
+	socket = new WebSocket(url);
+	socket.onopen = function() {
+		
+		// reset vars
+		dataFromSim = null;
+		dataToSim = null;
+	}
+	
+	// called when sim data comes from the server
+	// -> rate is controlled by the server
+	socket.onmessage = function(msg) {
+		var data = JSON.parse(msg.data);
+		
+		// first message is in/out data, all other messages are just out data
+		// -> TODO: support message types
+		if (dataFromSim == null) {
+			dataFromSim = data.out;
+			dataToSim = data.in;
+		} else {
+			dataFromSim = data;
+		}
+		
+		onData();
+		
+		simMsg = {}
+		simMsg.msgtype = 'input';
+		simMsg.data = dataToSim;
+		
+		socket.send(JSON.stringify(simMsg));
+	}
+	
+	socket.onclose = function() {
+		// TODO
 	}
 }
 
-function onData(newData) {
+function closeSocket() {
+	if (socket != null) {
+		socket.close();
+		socket = null;
+	}
+}
+
+
+function onData() {
+	
+	// TODO: should this information be calculated by the sim?
 	var elapsedTime = 0;
 	var currentTime =  Date.now();
 	if(timeOfLastUpdate !== null) {
@@ -302,33 +366,21 @@ function onData(newData) {
 	
 	//physics
 	for(var id in physicsModules) {
-		physicsModules[id].update(newData, elapsedTime / 1000);
+		physicsModules[id].update(dataFromSim, elapsedTime / 1000);
 	}
 	
 	//update interface
 	if(data !== null) {
 		for(i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 			id = moduleIDsByPriorityAsc[i];
-			ioModules[id].setData($.extend(true, {}, newData));
+			ioModules[id].setData(dataFromSim);
 		}
 	}
 	
-	//prepare data to be sent to the server
-	var dataToServer = $.extend(true, {}, newData);
-	
 	for(var i = 0; i < moduleIDsByPriorityAsc.length; i++) {
 		id = moduleIDsByPriorityAsc[i];
-		ioModules[id].getData(dataToServer);
+		ioModules[id].getData(dataToSim);
 	}
-
-	// actually send the data back!
-	// ... there's a race condition here. :(
-
-	$.post('/api/hal_data', {
-		'data' : JSON.stringify(dataToServer)
-	});
-	
-	data = $.extend(true, {}, newData);
 }
 
 }(jQuery))

@@ -65,8 +65,9 @@ setup(
     zip_safe=False,
     entry_points={'robotpy': [ 'websim = robotpy_websim.sim_server:Main' ]},
     install_requires=[
-        'wpilib>=2015.0.12',
-        'robotpy-hal-sim>=2015.0.12'
+        'tornado>=4.0',
+        'wpilib>=2015.0.13',
+        'robotpy-hal-sim>=2015.0.13'
     ],
     license="BSD License",
     classifiers=[

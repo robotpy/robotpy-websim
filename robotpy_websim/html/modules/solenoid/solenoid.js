@@ -8,11 +8,11 @@ var solenoidModule = $('#solenoid').ioModule('solenoid', {
 		});
 	},
 	getData : function(data) {
-		var solenoid = data.solenoid;
+		/*var solenoid = data.solenoid;
 		for(var i = 0; i < solenoid.length; i++) {
 			var id = '#solenoid-' + (i + 1);
 			//solenoid[i].value = $(id).hasClass('btn-success');
-		}
+		}*/
 	},
 	setData : function(data) {
 		var solenoid = data.solenoid;

@@ -45,10 +45,10 @@ var digitalModule = $('#digital').ioModule('digital', {
 	getData : function(data) {
 		
 		if(this.updateServer) {
-			var pwm = data.pwm;
+			/*var pwm = data.pwm;
 			for(var i = 0; i < pwm.length; i++) {
 				pwm[i].value = this.getSliderValue(i + 1);
-			}
+			}*/
 			
 			var dio = data.dio;
 			for(var i = 0; i < dio.length; i++) {
@@ -56,11 +56,11 @@ var digitalModule = $('#digital').ioModule('digital', {
 				dio[i].value = $(id).hasClass('btn-success');
 			}
 			
-			var relay = data.relay;
+			/*var relay = data.relay;
 			for(var i = 0; i < relay.length; i++) {
 				var id = '#relay-' + (i + 1);
 				relay[i].value = $(id).hasClass('btn-success');
-			}
+			}*/
 		}
 	},
 	setData : function(data) {
