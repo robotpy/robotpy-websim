@@ -1,8 +1,8 @@
-.joysticks {
+#joysticks {
 	width: 600px;
 }
 
-.joysticks .slider.slider-horizontal .slider-handle.round {
+#joysticks .slider.slider-horizontal .slider-handle.round {
   background: lightgray;
 }
 

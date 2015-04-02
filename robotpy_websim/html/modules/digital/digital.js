@@ -1,14 +1,15 @@
-var digitalModule = $('#digital').ioModule('digital', {
-	title : 'Digital',
-	init : function() {
-		var module = this;
-		//pwm sliders
-		this.sliderValues = new Array(20);
-		for(var i = 0; i < this.sliderValues.length; i++) {
-			this.sliderValues[i] = 0;
-		}
-		
-		$('.pwm-slider').slider({
+"use strict";
+
+	
+function Digital_IOModule() {
+	
+	var module = this;
+	
+	this.title = 'Digital';
+	
+	this.init = function() {
+
+		this.element.find('.pwm-slider').slider({
 			min: -1,
 			max: 1,
 			value: 0,
@@ -21,97 +22,80 @@ var digitalModule = $('#digital').ioModule('digital', {
 		});
 		
 		setTimeout(function() {
-			for(var i = 1; i <= 20; i++) {
+			for(var i = 0; i < 20; i++) {
 				module.setSliderValue(i, 0);
 			}
 		}, 100);
 		
 
-		$('.pwm-slider').slider().on('slide', function(ev){
+		this.element.find('.pwm-slider').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
 			module.onSlide(element, ev.value);
 		});
 		
 		//digital i/o, relay
-		$('.digital-io, .relay').click(function(e) {
+		this.element.find('.digital-io, .relay').click(function(e) {
 			e.preventDefault();
 			$(this).toggleClass('btn-success');
 			$(this).toggleClass('btn-danger');
 		});
 		
+	};
+	
+	this.modify_data_to_server = function(data_to_server) {
 		
+		var dio = data_to_server.dio;
 		
-	},
-	getData : function(data) {
-		
-		if(this.updateServer) {
-			/*var pwm = data.pwm;
-			for(var i = 0; i < pwm.length; i++) {
-				pwm[i].value = this.getSliderValue(i + 1);
-			}*/
-			
-			var dio = data.dio;
-			for(var i = 0; i < dio.length; i++) {
-				var id = '#digital-io-' + (i + 1);
-				dio[i].value = $(id).hasClass('btn-success');
-			}
-			
-			/*var relay = data.relay;
-			for(var i = 0; i < relay.length; i++) {
-				var id = '#relay-' + (i + 1);
-				relay[i].value = $(id).hasClass('btn-success');
-			}*/
+		for(var i = 0; i < dio.length; i++) {
+			dio[i].value = this.element.find('.digital-io-' + i).hasClass('btn-success');
 		}
-	},
-	setData : function(data) {
-		var pwm = data.pwm;
+		
+
+	};
+	
+	this.update_interface = function(data_from_server) {
+
+		var pwm = data_from_server.pwm;
 		for(var i = 0; i < pwm.length; i++) {
-			var id = '#pwm-slider-' + (i + 1);
+			var selector = '.pwm-slider-' + i;
 			if(!pwm[i].initialized) {
-				$(id).addClass('hide');
+				this.element.find(selector).addClass('hide');
 				continue;
 			} else {
-				$(id).removeClass('hide');
+				this.element.find(selector).removeClass('hide');
 			}
 			
-			if(this.updateClient) {
-				this.setSliderValue(i + 1, pwm[i].value);
-			}
+			this.setSliderValue(i, pwm[i].value);
 		}
 		
-		var dio = data.dio;
-		for(var i = 0; i < dio.length; i++) {
-			var id = '#digital-io-' + (i + 1);
-			if(!dio[i].initialized) {
-				$(id).closest('.col-xs-6').addClass('hide');
-			} else {
-				$(id).closest('.col-xs-6').removeClass('hide');
-			}
-		}
-		
-		var relay = data.relay;
+		var relay = data_from_server.relay;
 		for(var i = 0; i < relay.length; i++) {
-			var id = '#relay-' + (i + 1);
+			var selector = '.relay-' + i;
 			if(!relay[i].initialized) {
-				$(id).closest('.row').addClass('hide');
+				this.element.find(selector).closest('.row').addClass('hide');
 			} else {
-				$(id).closest('.row').removeClass('hide');
+				this.element.find(selector).closest('.row').removeClass('hide');
 			}
 		}
-	},
-	setSliderValue: function(slideNumber, value) {
-		var module = this;
-		$('#pwm-slider-' + slideNumber + ' .pwm-slider').slider('setValue', value);
-		$('#pwm-slider-' + slideNumber).each(function() {
-			var slider = $(this).find('.slider');
-			module.onSlide($(slider), value);
-		});
-	},
-	getSliderValue: function(slideNumber) {
-		return this.sliderValues[slideNumber - 1];
-	},
-	onSlide: function(element, value) {
+	};
+	
+	
+	this.setSliderValue = function(slideNumber, value) {
+		
 		value = parseFloat(value);
+		
+		var slide_holder = this.element.find('p:nth-child(' + (slideNumber + 1) + ')');
+		slide_holder.find('.pwm-slider').slider('setValue', value);
+		var slider = slide_holder.find('.slider');
+		module.onSlide(slider, value);
+	};
+	
+	this.getSliderValue = function(slideNumber) {
+		var slide_holder = this.element.find('p:nth-child(' + (slideNumber + 1) + ')');
+		return slide_holder.find('.slider-value').text();
+	};
+	
+	this.onSlide = function(element, value) {
 		var negColor = '#FCC';
 		var posColor = '#CFC';
 		
@@ -134,12 +118,16 @@ var digitalModule = $('#digital').ioModule('digital', {
 			element.find('.slider-track .slider-handle').css('background', 'lightgray');
 		}
 		
+		
+		
 		//display value
 		element.siblings('.slider-value').text(value.toFixed(2));
-		
-		
-		//get analog number
-		var pwmNumber = parseInt(element.siblings('b').text());
-		this.sliderValues[pwmNumber - 1] = value.toFixed(2);
-	}
-});
+	};
+
+}
+
+Digital_IOModule.prototype = new IOModule();
+
+sim.add_iomodule('digital', new Digital_IOModule());
+	
+

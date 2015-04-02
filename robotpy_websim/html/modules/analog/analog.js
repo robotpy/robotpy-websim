@@ -1,10 +1,16 @@
-var analogModule = $('#analog').ioModule('analog', {
-	title : 'Analog',
-	init : function() {
-		this.values = [0, 0, 0, 0, 0, 0, 0, 0];
-		var module = this;
+"use strict";
+
+	
+function Analog_IOModule() {
+	
+	var module = this;
+	
+	this.title = 'Analog';
+	
+	this.init = function() {
+
 		
-		$('.analog-slider').slider({
+		this.element.find('.analog-slider').slider({
 			min: -10,
 			max: 10,
 			value: 0,
@@ -17,57 +23,45 @@ var analogModule = $('#analog').ioModule('analog', {
 		});
 		
 		setTimeout(function() {
-			for(i = 1; i <= 8; i++) {
+			for(var i = 1; i <= 8; i++) {
 				module.setSliderValue(i, 0);
 			}
 		}, 100);
 		
 
-		$('.analog-slider').slider().on('slide', function(ev){
+		this.element.find('.analog-slider').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
 			module.onSlide(element, ev.value);
 		});
 		
-	},
-	getData : function(data) {
-		if(this.updateServer) {
-			var analogs = data.analog_in;
-			for(var i = 0; i < analogs.length; i++) {
-				analogs[i].value = this.getSliderValue(i + 1);
-			}
-		}
-	},
-	setData : function(data) {
-		var analogs = data.analog_in;
+	};
+	
+	this.modify_data_to_server = function(data_to_server) {
+		
+		var analogs = data_to_server.analog_in;
+		
 		for(var i = 0; i < analogs.length; i++) {
-			var id = '#analog-slider-' + (i + 1);
-			if(!analogs[i].initialized) {
-				$(id).addClass('hide');
-				continue;
-			} else {
-				$(id).removeClass('hide');
-			}
-			
-			
-			if(this.updateClient) {
-				this.setSliderValue(i + 1, analogs[i].value);
-			}
+			analogs[i].value = module.getSliderValue(i);
 		}
-	},
-	setSliderValue: function(slideNumber, value) {
+	};
+
+	
+	this.setSliderValue = function(slideNumber, value) {
+		
 		value = parseFloat(value);
-		var module = this;
-		$('#analog-slider-' + slideNumber + ' .analog-slider').slider('setValue', value);
-		$('#analog-slider-' + slideNumber).each(function() {
-			var slider = $(this).find('.slider');
-			module.onSlide($(slider), value);
-			
-		});
-	},
-	getSliderValue: function(slideNumber) {
-		return this.values[slideNumber - 1];
-	},
-	onSlide: function(element, value) {
+		
+		var slide_holder = this.element.find('p:nth-child(' + slideNumber + ')');
+		slide_holder.find('.analog-slider').slider('setValue', value);
+		var slider = slide_holder.find('.slider');
+		module.onSlide(slider, value);
+	};
+	
+	this.getSliderValue = function(slideNumber) {
+		var slide_holder = this.element.find('p:nth-child(' + slideNumber + ')');
+		return slide_holder.find('.slider-value').text();
+	};
+	
+	this.onSlide = function(element, value) {
 		var negColor = '#FCC';
 		var posColor = '#CFC';
 		
@@ -98,6 +92,10 @@ var analogModule = $('#analog').ioModule('analog', {
 		
 		//get analog number
 		var analogNumber = parseInt(element.siblings('b').text());
-		this.values[analogNumber - 1] = value.toFixed(2);
-	}
-});
+	};
+}
+
+Analog_IOModule.prototype = new IOModule();
+
+sim.add_iomodule('analog', new Analog_IOModule());
+	

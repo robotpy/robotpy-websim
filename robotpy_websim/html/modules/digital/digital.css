@@ -1,15 +1,15 @@
-.digital {
+#digital {
 	width: 460px;
 }
 
-.digital .slider.slider-horizontal .slider-handle.round {
+#digital .slider.slider-horizontal .slider-handle.round {
   background: lightgray;
 }
 
 
 
 
-.digital-io-holder, .relay-holder {
+#digital .digital-io-holder, .relay-holder {
 	padding-left: 0px;
 	margin-bottom: 5px;
 }

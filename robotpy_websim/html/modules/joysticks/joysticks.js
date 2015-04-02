@@ -1,9 +1,15 @@
-var joysticksModule = $('#joysticks').ioModule('joysticks', {
-	title : 'Joysticks',
-	init : function() {
-		var module = this;
+"use strict";
+
+function Joysticks_IOModule() {
+	
+	this.title = 'Joysticks';
+	
+	var module = this;
+	
+	this.init = function() {
+
 		
-		$('.joystick-slider').slider({
+		this.element.find('.joystick-slider').slider({
 			min: -1,
 			max: 1,
 			value: 0,
@@ -17,64 +23,57 @@ var joysticksModule = $('#joysticks').ioModule('joysticks', {
 		
 		setTimeout(function() {
 			var axis = ['x', 'y', 'z', 't']
-			for(var i = 1; i <= 6; i++) {			
-				for(var j = 0; j <= axis.length; j++) {
+			for(var i = 0; i < 6; i++) {			
+				for(var j = 0; j < axis.length; j++) {
 					module.setSliderValue(i, axis[j], 0);
 				}
 			}
 		}, 100);
 		
 
-		$('.joystick-slider').slider().on('slide', function(ev){
+		this.element.find('.joystick-slider').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
 			module.onSlide(element, ev.value);
 		});
 		
-	},
-	getData : function(data) {
-		var joysticks = data.joysticks;
+	};
+	
+	this.modify_data_to_server = function(data_to_server) {
+		
+		var joysticks = data_to_server.joysticks;
 		var axis = ['x', 'y', 'z', 't']
-		for(var i = 0; i < 6; i++) {			
-			for(var j = 0; j < joysticks[i].axes.length && j < axis.length; j++) {
+		for(var i = 0; i < 6; i++) {
+			joysticks[i] = {};
+			for(var j = 0; j < axes.length; j++) {
+				joysticks[i].axes = {};
 				joysticks[i].axes[j] = this.getSliderValue(i + 1, axis[j]);
 			}
 			
-			for(var b = 0; b < joysticks[i].buttons.length; b++) {
-				joysticks[i].buttons[b] = $('#joystick-' + (i + 1) + ' .joystick-btn-' + (b + 1)).is(":checked");
+			for(var b = 0; b < 12; b++) {
+				joysticks[i].buttons = {};
+				joysticks[i].buttons[b] = this.element.find('.joystick-' + i + ' .joystick-btn-' + (b + 1)).is(":checked");
 			}
 		}
-	},
-	setData : function(data) {
-		var joysticks = data.joysticks;
-		for(var i = 0; i < joysticks.length; i++) {
-			var id = '#joystick-' + (i + 1);
-			/*if(!joysticks[i].initialized) {
-				$(id).parent().addClass('hide');
-				continue;
-			} else {
-				$(id).parent().removeClass('hide');
-			}*/
-		}
-	},
-	setSliderValue: function(joystick, axis, value) {
+	};
+	
+	this.setSliderValue = function(joystick, axis, value) {
 		var module = this;
-		var joystickSelector = '#joystick-' + joystick;
+		var joystickSelector = '.joystick-' + joystick;
 		var axisSelector = '.' + axis + '-axis';
 		var selector = joystickSelector + ' ' + axisSelector + ' .joystick-slider';
-		$(selector).slider('setValue', value);
-		$(joystickSelector + ' ' + axisSelector).each(function() {
+		this.element.find(selector).slider('setValue', value);
+		this.element.find(joystickSelector + ' ' + axisSelector).each(function() {
 			var slider = $(this).find('.slider');
-			module.onSlide($(slider), value);
+			module.onSlide(slider, value);
 		});
-	},
-	getSliderValue: function(joystick, axis) {
-		var joystickSelector = '#joystick-' + joystick;
-		var axisSelector = '.' + axis + '-axis';
-		var selector = joystickSelector + ' ' + axisSelector + ' .slider-value';
-		var val = $(selector).text();
-		return parseFloat(val);
-	},
-	onSlide: function(element, value) {
+	}
+	
+	this.getSliderValue = function(slideNumber) {
+		var slide_holder = this.element.find('p:nth-child(' + slideNumber + ')');
+		return slide_holder.find('.slider-value').text();
+	};
+	
+	this.onSlide = function(element, value) {
 		var negColor = '#FCC';
 		var posColor = '#CFC';
 		
@@ -97,7 +96,14 @@ var joysticksModule = $('#joysticks').ioModule('joysticks', {
 			element.find('.slider-track .slider-handle').css('background', 'lightgray');
 		}
 		
+		
+		
 		//display value
 		element.siblings('.slider-value').text(value.toFixed(2));
-	}
-});
+	};
+}
+
+Joysticks_IOModule.prototype = new IOModule();
+
+sim.add_iomodule('joysticks', new Joysticks_IOModule());
+	

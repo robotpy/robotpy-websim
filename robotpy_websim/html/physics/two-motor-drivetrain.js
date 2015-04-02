@@ -23,52 +23,51 @@
  *      @returns speed of robot (ft/s), counter-clockwise rotation of robot (radians/s)
  */
 
-$.addPhysicsModule('two_motor_drivetrain', {
 	
-	init: function(robot) {
-	    this.robot = $.extend({
-	    	l_motorChannel: 1,
-	    	r_motorChannel: 2,
-	    	wheelbase: 2,
-	    	speed: 5,
-	    	x: 0,
-	    	y: 0,
-	    	angle: Math.PI / 2,
-	    	fwd: 0.0,
-	    	rccw: 0.0
-	    }, robot);
-	},
+function Two_Motor_Drivetrain() {
 	
-	update: function(data, elapsedTime) {
+	this.robot = {
+    	l_motor_channel: 1,
+    	r_motor_channel: 2,
+    	wheelbase: 2,
+    	speed: 5,
+    	x: 0,
+    	y: 0,
+    	angle: Math.PI / 2,
+    	fwd: 0.0,
+    	rccw: 0.0
+    };
+	
+	this.update = function(data, time_elapsed) {
 		
 		//motors
-		var l_motor = data.pwm[this.robot.l_motorChannel];
-		var r_motor = data.pwm[this.robot.r_motorChannel];	
+		var l_motor = data.pwm[sim.robot.l_motor_channel];
+		var r_motor = data.pwm[sim.robot.r_motor_channel];	
 		
 		/*
 		 * update position angle of robot using an equation
 		 * that I derived and I have no idea if it is right
 		 */
 		
-		if(Math.abs(this.robot.rccw) < .00000001) {
-			this.robot.rccw = .00000001;
+		if(Math.abs(sim.robot.rccw) < .00000001) {
+			sim.robot.rccw = .00000001;
 		}
 		
 		//the change in angle
-		var deltaA = elapsedTime * this.robot.rccw;
+		var da = time_elapsed * this.robot.rccw;
 		
 	
 		
 		
 		//the distance traveled
-		var distance = 2 * (this.robot.fwd / this.robot.rccw) * Math.sin(deltaA / 2);
+		var distance = 2 * (this.robot.fwd / this.robot.rccw) * Math.sin(da / 2);
 		//update x and y positions. If speed if right wheels > speed of left wheels, invert it
-		this.robot.y += distance * Math.sin((Math.PI - deltaA) / 2 + this.robot.angle - Math.PI / 2);
-		var dx = distance * Math.cos((Math.PI - deltaA) / 2 + this.robot.angle - Math.PI / 2);
-		this.robot.x += dx;
+		this.robot.y += distance * Math.sin((Math.PI - da) / 2 + this.robot.angle - Math.PI / 2);
+		var dx = distance * Math.cos((Math.PI - da) / 2 + this.robot.angle - Math.PI / 2);
+		sim.robot.x += dx;
 		//update angle
 		
-		this.robot.angle += deltaA;
+		sim.robot.angle += da;
 		
 		
 		/*
@@ -80,9 +79,11 @@ $.addPhysicsModule('two_motor_drivetrain', {
 	    
 
 	    //Motion equations
-	    this.robot.fwd = (l + r) * 0.5;
-	    this.robot.rccw = (r - l) / this.robot.wheelbase;	    
+	    sim.robot.fwd = (l + r) * 0.5;
+	    sim.robot.rccw = (r - l) / this.robot.wheelbase;	    
 	}
-}); 
+}
 
-		
+Two_Motor_Drivetrain.prototype = new Physics_Module();
+
+sim.add_physics_module('two-motor-drivetrain', new Two_Motor_Drivetrain());	

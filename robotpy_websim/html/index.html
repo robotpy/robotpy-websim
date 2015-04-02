@@ -1,85 +1,44 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<title>FRC HTML Simulator Interface</title>
-	
-	<link rel="stylesheet" href="resources/css/bootstrap-3.3.2.min.css">
-	<link rel="stylesheet" href="resources/css/bootstrap-theme-3.3.2.min.css">
-	<link rel="stylesheet" href="plugins/slider/css/slider.css">
-	<link rel="stylesheet" href="plugins/json-tree/json-tree.css">
-	<link rel="stylesheet" href="iomodule.css">
-	<link rel="stylesheet" href="menus/menus.css">
-	
-	<style>
-		.bar {
-			fill: steelblue;
-		}
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>FRC HTML Simulator Interface</title>
 		
-		.axis path,
-		.axis line {
-			fill: none;
-			stroke: black;
-		}
-		
-		.x.axis path {
-			display: none;
-		}
-
-
-	</style>
-	
-</head>
-<body>
-
-	<nav class="navbar navbar-default navbar-fixed-top">
-	    <div class="container">
-	    	<ul class="nav navbar-nav">
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-		          	<span class="glyphicon glyphicon-eye-open"></span> Show Module<span class="caret"></span>
-		          </a>
-		          <ul class="dropdown-menu" role="menu" id="hidden-modules-dropdown">
-		            <li><a href="#">Action</a></li>
-		          </ul>
-		        </li>
-      		</ul>
-	    </div>
-	</nav>
-
-	<div id="analog"></div>
-	<div id="digital"></div>
-	<div id="mode"></div>
-	<div id="solenoid"></div>
-	<div id="joysticks"></div>
-	<div id="simple-robot"></div>
-	<div id="data-tree"></div>
-
-
-	<script src="resources/jquery-2.1.3.min.js"></script>
-	<script src="resources/bootstrap-3.3.2.min.js"></script>
-	<script src="resources/d3.v3.min.js"></script>
-	<script src="plugins/slider/js/bootstrap-slider.js"></script>
-	<script src="plugins/json-tree/json-tree.js"></script>
-	<script src="iomodule.js"></script>
-	<script src="menus/menus.js"></script>
-
-	<script>
-		$(document).ready(function(){		
-			//add io modules
-			$.loadIOModule('mode');
-			$.loadIOModule('analog');
-			$.loadIOModule('digital');
-			$.loadIOModule('solenoid');
-			$.loadIOModule('joysticks');
-			$.loadIOModule('simple-robot');
-			$.loadIOModule('data-tree');
+		<link rel="stylesheet" href="resources/css/bootstrap-3.3.2.min.css">
+		<link rel="stylesheet" href="resources/css/bootstrap-theme-3.3.2.min.css">
+		<link rel="stylesheet" href="plugins/slider/css/slider.css">
+		<link rel="stylesheet" href="plugins/json-tree/json-tree.css">
 			
-
-			$.startSimulator();		
-		});
+		<link rel="stylesheet" href="iomodule.css">
+		<link rel="stylesheet" href="websim.css">
 		
-	</script>
-
-</body>
+	</head>
+	<body>
+	
+		<div id="iomodules"></div>
+	
+	
+		<script src="resources/jquery-2.1.3.min.js"></script>
+		<script src="resources/bootstrap-3.3.2.min.js"></script>
+		<script src="resources/d3.v3.min.js"></script>
+		<script src="plugins/slider/js/bootstrap-slider.js"></script>
+		<script src="plugins/json-tree/json-tree.js"></script>
+		<script src="physics-module.js"></script>
+		<script src="iomodule.js"></script>
+		<script src="websim.js"></script>
+	
+		<script>
+			$(document).ready(function(){		
+				sim.load_iomodule('mode');
+				sim.load_iomodule('analog');
+				sim.load_iomodule('digital');
+				sim.load_iomodule('solenoid');
+				sim.load_iomodule('joysticks');
+				sim.load_iomodule('simple-robot');
+				sim.load_iomodule('data-tree');
+				sim.start();	
+			});	
+		</script>
+	
+	</body>
 </html>

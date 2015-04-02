@@ -1,36 +1,43 @@
-var modeModule = $('#mode').ioModule('mode', {
-	title : 'Mode',
-	init : function() {
+"use strict";
+
+function Mode_IOModule() {
+	
+	this.title = 'Mode';
+	
+	this.init = function() {
 		//update state when form input changes
-		$("input[name='mode']").change(function() {
+		this.element.find("input[name='mode']").change(function() {
 			var mode = $(this).val();
 			var enabled = mode != 'disabled';
 			if (mode == 'disabled')
 				mode = 'teleop';
-			$.setRobotMode(mode, enabled);
+			sim.set_robot_mode(mode, enabled);
 		});
-	},
-	getData : function(data) {
-		// empty
-	},
-	setData : function(data) {
+	};
+	
+	this.update_interface = function(data_from_server) {
 		// do something with the data here...
-		var control = data.control;
+		var control = data_from_server.control;
 
 		if (control.has_source) {
-			$('#control_source').text("Mode externally controlled!")
-			$("input[name='mode']").prop("checked", false)
+			this.element.find('#control_source').text("Mode externally controlled!")
+			this.element.find("input[name='mode']").prop("checked", false)
 		}
 
 		if (control.enabled) {
 			if (control.autonomous)
-				$('#robot_state').text('Autonomous')
+				this.element.find('#robot_state').text('Autonomous')
 			else if (control.test)
-				$('#robot_state').text('Test')
+				this.element.find('#robot_state').text('Test')
 			else
-				$('#robot_state').text('Teleoperated')
+				this.element.find('#robot_state').text('Teleoperated')
 		} else {
-			$('#robot_state').text('Disabled')
+			this.element.find('#robot_state').text('Disabled')
 		}
-	}
-});
+	};
+}
+
+
+Mode_IOModule.prototype = new IOModule();
+sim.add_iomodule('mode', new Mode_IOModule());
+

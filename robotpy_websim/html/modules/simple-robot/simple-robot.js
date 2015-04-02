@@ -1,99 +1,104 @@
-var simpleRobotModule = $('#simple-robot').ioModule('simple-robot', {
-	title : 'Simple Robot',
-	fieldWidth: 27,
-	fieldLength: 27,
-	robotWidth: 2,
-	robotLength: 3,
-	wheelbase: 2,
-	wheelWidth: .3,
-	wheelLength: .7,
-	pixelsPerFoot: 13,
-	init : function() {
-		var module = this;
-		this.physics = $.loadPhysicsModule('two_motor_drivetrain', {
-			wheelbase: 2,
-			x: module.fieldWidth / 2,
-			y: 3
-		});
+"use strict";
+
+	
+function Simple_Robot_IOModule() {
+	var module = this;
+	
+	this.title = 'Simple Robot';
+	
+	this.properties = {
+		field_width: 27,
+		field_length: 27,
+		robot_width: 2,
+		robot_length: 3,
+		wheelbase: 2,
+		wheel_width: .3,
+		wheel_length: .7,
+		pixels_per_foot: 13,
+	};
+	
+	this.init = function() {
+
+		var properties = this.properties;
+
+		sim.robot.wheelbase = 2;
+		sim.robot.x = properties.field_width / 2;
+		sim.robot.y = 3;
+		this.physics = sim.load_physics_module('two-motor-drivetrain');
 		
 
 		//create field for robot to move around in
-		var field = d3.select('#simple-robot .field')
-			.attr('width', module.fieldWidth * module.pixelsPerFoot)
-			.attr('height', module.fieldLength * module.pixelsPerFoot);
-		
+		var field = d3.select('#' + this.element.attr('id') + ' .field')
+			.attr('width', properties.field_width * properties.pixels_per_foot)
+			.attr('height', properties.field_length * properties.pixels_per_foot);
 		
 		//create robot
-		var data = [this.physics.robot];
+		var data = [sim.robot];
 		var robot = field.selectAll('.robot').data(data);
 		robot.enter().append('g')
 			.attr('class', 'robot')
 			.attr('transform', function(d) {
-				var x = d.x * module.pixelsPerFoot;
-				var y = (module.fieldLength - d.y) * module.pixelsPerFoot;
+				var x = d.x * properties.pixels_per_foot;
+				var y = (properties.field_length - d.y) * properties.pixels_per_foot;
 				var transformation = 'translate(' + x + ',' + y + ')';
 				
 				//rotate robot based on starting angle
-				var dA = 90 - d.angle * (180 / Math.PI);
-				transformation += ' rotate(' + dA + ')';
+				var da = 90 - d.angle * (180 / Math.PI);
+				transformation += ' rotate(' + da + ')';
 				return transformation;
 			});
 			
 		//add robot base centered on the origin
 		robot.append('rect')
 			.attr('class', 'base')
-			.attr('width', module.robotWidth * module.pixelsPerFoot)
-			.attr('height', module.robotLength * module.pixelsPerFoot)
-			.attr('x', -1 * (module.robotWidth * module.pixelsPerFoot) / 2)
-			.attr('y', -1 * (module.robotLength * module.pixelsPerFoot) / 2);
+			.attr('width', properties.robot_width * properties.pixels_per_foot)
+			.attr('height', properties.robot_length * properties.pixels_per_foot)
+			.attr('x', -1 * (properties.robot_width * properties.pixels_per_foot) / 2)
+			.attr('y', -1 * (properties.robot_length * properties.pixels_per_foot) / 2);
 		
 		robot.append('rect')
 			.attr('class', 'base')
-			.attr('width', module.robotWidth * module.pixelsPerFoot)
+			.attr('width', properties.robot_width * properties.pixels_per_foot)
 			.attr('height', 3)
-			.attr('x', -1 * (module.robotWidth * module.pixelsPerFoot) / 2)
-			.attr('y', -1 * (module.robotLength * module.pixelsPerFoot) / 2)
+			.attr('x', -1 * (properties.robot_width * properties.pixels_per_foot) / 2)
+			.attr('y', -1 * (properties.robot_length * properties.pixels_per_foot) / 2)
 			.style('fill', 'green');
 		
 		
 		//add wheels
 		var wheels = {
-			top_left: {x: -module.wheelbase / 2, y: -module.wheelbase / 2},
-			top_right: {x: module.wheelbase / 2, y: -module.wheelbase / 2},
-			bottom_left: {x: -module.wheelbase / 2, y: module.wheelbase / 2},
-			bottom_right: {x: module.wheelbase / 2, y: module.wheelbase / 2}
+			top_left: {x: -properties.wheelbase / 2, y: -properties.wheelbase / 2},
+			top_right: {x: properties.wheelbase / 2, y: -properties.wheelbase / 2},
+			bottom_left: {x: -properties.wheelbase / 2, y: properties.wheelbase / 2},
+			bottom_right: {x: properties.wheelbase / 2, y: properties.wheelbase / 2}
 		};
 		
-		for(pos in wheels) {
+		for(var pos in wheels) {
 			var wheel = wheels[pos];
 			robot.append('rect')
 				.attr('class', 'wheel')
-				.attr('x', (wheel.x - module.wheelWidth / 2) * module.pixelsPerFoot)
-				.attr('y', (wheel.y - module.wheelLength / 2) * module.pixelsPerFoot)
-				.attr('width', module.wheelWidth * module.pixelsPerFoot)
-				.attr('height', module.wheelLength * module.pixelsPerFoot);
+				.attr('x', (wheel.x - properties.wheel_width / 2) * properties.pixels_per_foot)
+				.attr('y', (wheel.y - properties.wheel_length / 2) * properties.pixels_per_foot)
+				.attr('width', properties.wheel_width * properties.pixels_per_foot)
+				.attr('height', properties.wheel_length * properties.pixels_per_foot);
 		}
 		
 		
-	},
+	};
 	
-	getData : function(data) {
-
-	},
-	
-	setData : function(data) {
-		var module = this;
+	this.set_data = function(data) {
+		
 		var data = [this.physics.robot];
 		//update robot angle and position by creating a transition
-		var field = d3.select('#simple-robot .field');
+		var field = d3.select('#' + this.element.attr('id') + ' .field');
 		var robot = field.selectAll('.robot').data(data);
-		var duration = $.getSimulatorValue('UPDATE_RATE');
+		var duration = sim.UPDATE_RATE;
 		robot.transition()
 			.duration(duration)
 			.ease('linear')
 			.attr('transform', function(d) {
-				var x = d.x * module.pixelsPerFoot;
-				var y = (module.fieldLength - d.y) * module.pixelsPerFoot;
+				var x = d.x * properties.pixels_per_foot;
+				var y = (properties.field_length - d.y) * properties.pixels_per_foot;
 				var transformation = 'translate(' + x + ',' + y + ')';
 				
 				//rotate robot based on starting angle
@@ -102,5 +107,7 @@ var simpleRobotModule = $('#simple-robot').ioModule('simple-robot', {
 				return transformation;
 			});
 	}
-	
-});
+}
+
+Simple_Robot_IOModule.prototype = new IOModule();
+sim.add_iomodule('simple-robot', new Simple_Robot_IOModule());
