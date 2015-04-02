@@ -9,11 +9,17 @@
 var btnEventAdded = false;
 	
 	
-$.fn.jsonTree = function(data) {
-	this.html(getNode(data));
+$.fn.jsonTree = function(options) {
+		
+	var settings = $.extend({
+		data: {},
+		on_btn_click: function() {}
+	}, options);
+	
+	this.html(getNode(settings.data));
 	this.addClass('json-tree');
 	//add buttons for expanding menu, hide menu
-	$('.json-tree ul').each(function() {
+	this.find('ul').each(function() {
 		var parent = $(this).parent();
 		if(parent.is('li')) {
 			parent.prepend('<button class="btn btn-default">+</button>');
@@ -29,6 +35,7 @@ $.fn.jsonTree = function(data) {
 				$(this).text('+');
 			}
 			$(this).parent().find('> ul').toggle();
+			settings.on_btn_click();
 		});
 		btnEventAdded = true;
 	}

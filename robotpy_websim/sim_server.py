@@ -5,12 +5,14 @@ import os
 from os.path import abspath, dirname, exists, join
 import threading
 import time
+import re
 
 try:
     import ujson as json
 except ImportError:
     import json
 
+import tornado.gen
 import tornado.web
 from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.websocket import WebSocketHandler
@@ -20,6 +22,9 @@ from hal_impl.data import hal_data, hal_in_data, update_hal_data
 
 import logging
 logger = logging.getLogger('websim')
+
+def pretty_json(d):
+    return json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
 
 
 class SimulationWebSocket(WebSocketHandler):
@@ -111,6 +116,49 @@ class SimulationWebSocket(WebSocketHandler):
             hal_data['control']['ds_attached'] = False
             hal_in_data['control']['ds_attached'] = False
 
+class ApiHandler(tornado.web.RequestHandler):
+
+    def initialize(self, root_path, sim_path):
+        
+        # Root directory of HTML content that is packaged with this simulator
+        self.root_path = root_path
+        
+        # Root directory of HTML content that is provided by the user
+        self.sim_path = sim_path
+
+    def get(self, param):
+        '''
+            GET handler
+            
+            Don't call this often, as it may block the tornado ioloop, which
+            would be bad.. 
+            
+            :param param: The matching parameter for /api/(.*)
+        '''
+                
+        if param == 'hal_data':
+ 
+            
+            print(param, '!!!!!!!!!!')
+            
+            self.write({'out' : hal_data, 'in' : hal_in_data})
+        
+        else:
+            raise tornado.web.HTTPError(404)
+    
+    def post(self, param):
+        '''
+            POST handler
+            
+            Don't call this often, as it may block the tornado ioloop, which
+            would be bad..
+            
+            :param param: The matching parameter for /api/(.*)
+        '''
+        
+
+        raise tornado.web.HTTPError(404)
+
 
 class MyStaticFileHandler(tornado.web.StaticFileHandler):
     '''This serves static files, and disables caching'''
@@ -137,6 +185,7 @@ class Main:
     def server_thread(self):
         
         app = tornado.web.Application([
+            (r'/api/(.*)', ApiHandler, {'root_path': self.root_path, 'sim_path': self.sim_path}),
             (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period}),
             (r'/user/(.*)', MyStaticFileHandler, {'path': self.sim_path }),
             (r"/()", MyStaticFileHandler, {"path": join(self.root_path, 'index.html')}),

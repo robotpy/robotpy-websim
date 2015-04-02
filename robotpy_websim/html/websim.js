@@ -141,7 +141,7 @@ var sim = new function() {
 			return;
 		}
 		
-		isRunning = true;
+		is_running = true;
 		
 		setup_socket();
 	};
@@ -157,7 +157,7 @@ var sim = new function() {
 		if (socket == null)
 			return;
 		
-		var msg = {}
+		var msg = {};
 		msg.msgtype = 'mode';
 		msg.mode = mode;
 		msg.enabled = enabled;
@@ -180,6 +180,7 @@ var sim = new function() {
 		// called when sim data comes from the server
 		// -> rate is controlled by the server
 		socket.onmessage = function(msg) {
+			
 			var data = JSON.parse(msg.data);
 			
 			// first message is in/out data, all other messages are just out data
@@ -191,6 +192,7 @@ var sim = new function() {
 				data_from_server = data;
 			}
 			
+			
 			on_data();
 			
 			sim_msg = {}
@@ -200,12 +202,14 @@ var sim = new function() {
 			socket.send(JSON.stringify(sim_msg));
 		}
 		
-		socket.onclose = function() {
+		socket.onclose = function(a) {
+			console.log(a);
 			// TODO
 		}
 	}
 	
 	function close_socket() {
+
 		if (socket != null) {
 			socket.close();
 			socket = null;
@@ -230,12 +234,12 @@ var sim = new function() {
 		}
 		
 		//update interface
-		for(var id in this.iomodules) {
-			//this.iomodules[id].update_interface(data_from_server);
+		for(var id in sim.iomodules) {
+			sim.iomodules[id].update_interface(data_from_server);
 		}
 		
-		for(var id in this.iomodules) {
-			//this.iomodules[id].modify_data_to_server(data_to_server);
+		for(var id in sim.iomodules) {
+			sim.iomodules[id].modify_data_to_server(data_to_server);
 		}
 	}
 

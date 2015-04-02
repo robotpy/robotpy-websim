@@ -7,19 +7,18 @@ function Data_Tree_IOModule() {
 	this.title = 'Data Tree';
 	
 	this.init = function() {
-		this.update = true;
-		this.element.on('click', '.update-btn', function() {
-			module.update = true;
-		});	
+		
+		update_trees();
+		
+		this.element.on('click', '.update-btn', update_trees);	
 	};
 	
-	this.update_interface = function(data_from_server) {
-		if(this.update) {
-			this.element.find('.tree').jsonTree(data_from_server);
-			this.update = false;
-		}
-	};
-	
+	function update_trees() {
+		$.getJSON('/api/hal_data', function(data) {
+			module.element.find('.out-tree').jsonTree({ 'data' : data.out });
+			module.element.find('.in-tree').jsonTree({ 'data' : data.in });
+		});
+	}
 }
 
 Data_Tree_IOModule.prototype = new IOModule();

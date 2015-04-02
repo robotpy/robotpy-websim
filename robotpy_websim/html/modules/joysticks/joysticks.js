@@ -41,12 +41,12 @@ function Joysticks_IOModule() {
 	this.modify_data_to_server = function(data_to_server) {
 		
 		var joysticks = data_to_server.joysticks;
-		var axis = ['x', 'y', 'z', 't']
+		var axes = ['x', 'y', 'z', 't'];
 		for(var i = 0; i < 6; i++) {
 			joysticks[i] = {};
 			for(var j = 0; j < axes.length; j++) {
 				joysticks[i].axes = {};
-				joysticks[i].axes[j] = this.getSliderValue(i + 1, axis[j]);
+				joysticks[i].axes[j] = this.getSliderValue(i + 1, axes[j]);
 			}
 			
 			for(var b = 0; b < 12; b++) {

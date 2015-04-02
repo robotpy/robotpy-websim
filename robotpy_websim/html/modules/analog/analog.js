@@ -44,6 +44,20 @@ function Analog_IOModule() {
 			analogs[i].value = module.getSliderValue(i);
 		}
 	};
+	
+	this.update_interface = function(data_from_server) {
+		
+		var analogs = data_from_server.analog_in;
+		
+		// Hide analogs if not initialized
+		for(var i = 0; i < analogs.length; i++) {
+			if(!analogs[i].initialized) {
+				this.element.find('form p:nth-child(' + (i + 1) + ')').addClass('hidden');
+			} else {
+				this.element.find('form p:nth-child(' + (i + 1) + ')').removeClass('hidden');
+			}
+		}
+	};
 
 	
 	this.setSliderValue = function(slideNumber, value) {
