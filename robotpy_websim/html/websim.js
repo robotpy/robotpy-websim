@@ -198,7 +198,7 @@ var sim = new function() {
 			sim_msg = {}
 			sim_msg.msgtype = 'input';
 			sim_msg.data = data_to_server;
-			
+			//console.log(data_to_server.analog_in[1]);
 			socket.send(JSON.stringify(sim_msg));
 		}
 		

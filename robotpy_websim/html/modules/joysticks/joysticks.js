@@ -21,19 +21,16 @@ function Joysticks_IOModule() {
 			}
 		});
 		
-		setTimeout(function() {
-			var axis = ['x', 'y', 'z', 't']
-			for(var i = 0; i < 6; i++) {			
-				for(var j = 0; j < axis.length; j++) {
-					module.setSliderValue(i, axis[j], 0);
-				}
+		for(var j = 0; j < 6; j++) {			
+			for(var a = 0; a < 4; a++) {
+				module.set_axis_value(j, a, 0);
 			}
-		}, 100);
+		}
 		
 
 		this.element.find('.joystick-slider').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
-			module.onSlide(element, ev.value);
+			module.on_slide(element, ev.value);
 		});
 		
 	};
@@ -41,41 +38,56 @@ function Joysticks_IOModule() {
 	this.modify_data_to_server = function(data_to_server) {
 		
 		var joysticks = data_to_server.joysticks;
-		var axes = ['x', 'y', 'z', 't'];
-		for(var i = 0; i < 6; i++) {
-			joysticks[i] = {};
-			for(var j = 0; j < axes.length; j++) {
-				joysticks[i].axes = {};
-				joysticks[i].axes[j] = this.getSliderValue(i + 1, axes[j]);
+
+		for(var j = 0; j < 6; j++) {
+			for(var a = 0; a < 4; a++) {
+				joysticks[j].axes[a] = this.get_axis_value(j, a);
 			}
 			
 			for(var b = 0; b < 12; b++) {
-				joysticks[i].buttons = {};
-				joysticks[i].buttons[b] = this.element.find('.joystick-' + i + ' .joystick-btn-' + (b + 1)).is(":checked");
+				joysticks[j].buttons[b] = this.get_button_value(j, b);
 			}
 		}
 	};
 	
-	this.setSliderValue = function(joystick, axis, value) {
-		var module = this;
-		var joystickSelector = '.joystick-' + joystick;
-		var axisSelector = '.' + axis + '-axis';
-		var selector = joystickSelector + ' ' + axisSelector + ' .joystick-slider';
-		this.element.find(selector).slider('setValue', value);
-		this.element.find(joystickSelector + ' ' + axisSelector).each(function() {
-			var slider = $(this).find('.slider');
-			module.onSlide(slider, value);
-		});
-	}
-	
-	this.getSliderValue = function(slideNumber) {
-		var slide_holder = this.element.find('p:nth-child(' + slideNumber + ')');
-		return slide_holder.find('.slider-value').text();
+	this.get_joystick = function(index) {
+		return this.element.find('.joystick:nth-of-type(' + (index + 1) + ')');
 	};
 	
-	this.onSlide = function(element, value) {
-		var negColor = '#FCC';
-		var posColor = '#CFC';
+	this.get_axis = function(joystick, axis) {
+		var joystick = this.get_joystick(joystick);
+		return joystick.find('.slide-holder:nth-of-type(' + (axis + 1) + ')');
+	};
+	
+	this.get_button = function(joystick, button) {
+		var joystick = this.get_joystick(joystick);
+		return joystick.find('.joystick-btn-' + (button + 1));
+	};
+	
+	this.set_axis_value = function(joystick, axis, value) {
+		
+		value = parseFloat(value);
+		
+		var axis = this.get_axis(joystick, axis);
+		axis.find('input').slider('setValue', value);
+		var slider = axis.find('.slider');
+		this.on_slide(slider, value);
+	}
+	
+	this.get_axis_value = function(joystick, axis) {
+		var axis = this.get_axis(joystick, axis);
+		return parseFloat(axis.find('.slider-value').text());
+	};
+	
+	this.get_button_value = function(joystick, button) {
+		var button = this.get_button(joystick, button);
+		return button.is(":checked");
+	}
+	
+	this.on_slide = function(element, value) {
+		var negative_color = '#FCC';
+		var positive_color = '#CFC';
+		var neutral_color = 'lightgray';
 		
 		//get size and position
 		var width = (Math.abs(value / 1.0) * 50).toFixed(0);
@@ -87,17 +99,15 @@ function Joysticks_IOModule() {
 		element.find('.slider-track .slider-selection').css('left', left + '%');
 		element.find('.slider-track .slider-selection').css('width', width + '%');
 		if(value < 0) {
-			element.find('.slider-track .slider-selection').css('background', negColor);
-			element.find('.slider-track .slider-handle').css('background', negColor);
+			element.find('.slider-track .slider-selection').css('background', negative_color);
+			element.find('.slider-track .slider-handle').css('background', negative_color);
 		} else if(value > 0) {
-			element.find('.slider-track .slider-selection').css('background', posColor);
-			element.find('.slider-track .slider-handle').css('background', posColor);
+			element.find('.slider-track .slider-selection').css('background', positive_color);
+			element.find('.slider-track .slider-handle').css('background', positive_color);
 		} else {
-			element.find('.slider-track .slider-handle').css('background', 'lightgray');
+			element.find('.slider-track .slider-handle').css('background', neutral_color);
 		}
-		
-		
-		
+			
 		//display value
 		element.siblings('.slider-value').text(value.toFixed(2));
 	};

@@ -21,20 +21,8 @@ function Digital_IOModule() {
 			}
 		});
 		
-		setTimeout(function() {
-			for(var i = 0; i < 20; i++) {
-				module.setSliderValue(i, 0);
-			}
-		}, 100);
-		
-
-		this.element.find('.pwm-slider').slider().on('slide', function(ev){
-			var element = $(ev.target).parent();
-			module.onSlide(element, ev.value);
-		});
-		
 		//digital i/o, relay
-		this.element.find('.digital-io, .relay').click(function(e) {
+		this.element.find('.digital-io').click(function(e) {
 			e.preventDefault();
 			$(this).toggleClass('btn-success');
 			$(this).toggleClass('btn-danger');
@@ -44,60 +32,107 @@ function Digital_IOModule() {
 	
 	this.modify_data_to_server = function(data_to_server) {
 		
-		var dio = data_to_server.dio;
-		
+		// Send dio value to server
+		var dio = data_to_server.dio;	
 		for(var i = 0; i < dio.length; i++) {
-			dio[i].value = this.element.find('.digital-io-' + i).hasClass('btn-success');
+			dio[i].value = this.get_dio(i).find('.digital-io').hasClass('btn-success');
 		}
-		
 
 	};
 	
 	this.update_interface = function(data_from_server) {
 
+		// Hide the pwms if they aren't initialized. Update their values otherwise
 		var pwm = data_from_server.pwm;
 		for(var i = 0; i < pwm.length; i++) {
-			var selector = '.pwm-slider-' + i;
+			var selector = this.get_pwm(i);
 			if(!pwm[i].initialized) {
-				this.element.find(selector).addClass('hide');
+				selector.addClass('hide');
 				continue;
-			} else {
-				this.element.find(selector).removeClass('hide');
 			}
+				
+			selector.removeClass('hide');			
+			this.set_slider_value(i, pwm[i].value);
+		}
 			
-			this.setSliderValue(i, pwm[i].value);
+		// Hide DIOs if they aren't initialized
+		var dio = data_from_server.dio;
+		for(var i = 0; i < dio.length; i++) {
+			var selector = this.get_dio(i);
+			if(!dio[i].initialized) {
+				selector.addClass('hide');
+				continue;
+			}
+				
+			selector.removeClass('hide');
 		}
 		
+		// Hide the relays if they aren't initialized
 		var relay = data_from_server.relay;
 		for(var i = 0; i < relay.length; i++) {
-			var selector = '.relay-' + i;
+			var selector = this.get_relay(i);
 			if(!relay[i].initialized) {
-				this.element.find(selector).closest('.row').addClass('hide');
-			} else {
-				this.element.find(selector).closest('.row').removeClass('hide');
+				selector.addClass('hide');
+				continue;
 			}
+			
+			selector.removeClass('hide');
+			this.set_relay_value(i, relay[i].fwd, relay[i].rev);
+
+		}
+	};
+	
+	this.get_pwm = function(index) {
+		return this.element.find('.slide-holder:nth-of-type(' + (index + 1) + ')');
+	};
+	
+	this.get_dio = function(index) {
+		return this.element.find('.dio-holder:nth-of-type(' + (index + 1) + ')');
+	};
+	
+	this.get_relay = function(index) {
+		return this.element.find('.relay-holder:nth-of-type(' + (index + 1) + ')');
+	}
+	
+	this.set_relay_value = function(index, fwd, rev) {
+		var relay = this.get_relay(index);
+		
+		if(fwd) {
+			relay.find('.relay').addClass('btn-success');
+			relay.find('.relay').removeClass('btn-danger');
+			relay.find('.relay').removeClass('btn-default');
+		} else if(rev) {
+			relay.find('.relay').removeClass('btn-success');
+			relay.find('.relay').addClass('btn-danger');
+			relay.find('.relay').removeClass('btn-default');
+		} else {
+			relay.find('.relay').removeClass('btn-success');
+			relay.find('.relay').removeClass('btn-danger');
+			relay.find('.relay').addClass('btn-default');
 		}
 	};
 	
 	
-	this.setSliderValue = function(slideNumber, value) {
+	this.set_slider_value = function(index, value) {
 		
 		value = parseFloat(value);
 		
-		var slide_holder = this.element.find('p:nth-child(' + (slideNumber + 1) + ')');
-		slide_holder.find('.pwm-slider').slider('setValue', value);
+		var slide_holder = this.get_pwm(index);
+		slide_holder.find('input').slider('setValue', value);
 		var slider = slide_holder.find('.slider');
-		module.onSlide(slider, value);
+		module.on_slide(slider, value);
 	};
 	
-	this.getSliderValue = function(slideNumber) {
-		var slide_holder = this.element.find('p:nth-child(' + (slideNumber + 1) + ')');
-		return slide_holder.find('.slider-value').text();
+	
+	this.get_slider_value = function(index) {
+		var slide_holder = this.get_pwm(index);
+		return parseFloat(slide_holder.find('.slider-value').text());
 	};
 	
-	this.onSlide = function(element, value) {
-		var negColor = '#FCC';
-		var posColor = '#CFC';
+	this.on_slide = function(element, value) {
+		var negative_color = '#FCC';
+		var positive_color = '#CFC';
+		var neutral_color = 'lightgray';
 		
 		//get size and position
 		var width = (Math.abs(value / 1.0) * 50).toFixed(0);
@@ -109,21 +144,18 @@ function Digital_IOModule() {
 		element.find('.slider-track .slider-selection').css('left', left + '%');
 		element.find('.slider-track .slider-selection').css('width', width + '%');
 		if(value < 0) {
-			element.find('.slider-track .slider-selection').css('background', negColor);
-			element.find('.slider-track .slider-handle').css('background', negColor);
+			element.find('.slider-track .slider-selection').css('background', negative_color);
+			element.find('.slider-track .slider-handle').css('background', negative_color);
 		} else if(value > 0) {
-			element.find('.slider-track .slider-selection').css('background', posColor);
-			element.find('.slider-track .slider-handle').css('background', posColor);
+			element.find('.slider-track .slider-selection').css('background', positive_color);
+			element.find('.slider-track .slider-handle').css('background', positive_color);
 		} else {
-			element.find('.slider-track .slider-handle').css('background', 'lightgray');
+			element.find('.slider-track .slider-handle').css('background', neutral_color);
 		}
-		
-		
-		
+			
 		//display value
 		element.siblings('.slider-value').text(value.toFixed(2));
 	};
-
 }
 
 Digital_IOModule.prototype = new IOModule();

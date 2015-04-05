@@ -22,16 +22,14 @@ function Analog_IOModule() {
 			}
 		});
 		
-		setTimeout(function() {
-			for(var i = 1; i <= 8; i++) {
-				module.setSliderValue(i, 0);
-			}
-		}, 100);
+		for(var i = 1; i <= 8; i++) {
+			module.set_slider_value(i, 0);
+		}
 		
 
 		this.element.find('.analog-slider').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
-			module.onSlide(element, ev.value);
+			module.on_slide(element, ev.value);
 		});
 		
 	};
@@ -41,7 +39,7 @@ function Analog_IOModule() {
 		var analogs = data_to_server.analog_in;
 		
 		for(var i = 0; i < analogs.length; i++) {
-			analogs[i].value = module.getSliderValue(i);
+			analogs[i].value = this.get_slider_value(i);
 		}
 	};
 	
@@ -52,32 +50,37 @@ function Analog_IOModule() {
 		// Hide analogs if not initialized
 		for(var i = 0; i < analogs.length; i++) {
 			if(!analogs[i].initialized) {
-				this.element.find('form p:nth-child(' + (i + 1) + ')').addClass('hidden');
+				this.get_slider(i).addClass('hidden');
 			} else {
-				this.element.find('form p:nth-child(' + (i + 1) + ')').removeClass('hidden');
+				this.get_slider(i).removeClass('hidden');
 			}
 		}
 	};
+	
+	this.get_slider = function(index) {
+		return this.element.find('.slide-holder:nth-of-type(' + (index + 1) + ')');
+	};
 
 	
-	this.setSliderValue = function(slideNumber, value) {
+	this.set_slider_value = function(index, value) {
 		
 		value = parseFloat(value);
 		
-		var slide_holder = this.element.find('p:nth-child(' + slideNumber + ')');
-		slide_holder.find('.analog-slider').slider('setValue', value);
+		var slide_holder = this.get_slider(index);
+		slide_holder.find('input').slider('setValue', value);
 		var slider = slide_holder.find('.slider');
-		module.onSlide(slider, value);
+		module.on_slide(slider, value);
 	};
 	
-	this.getSliderValue = function(slideNumber) {
-		var slide_holder = this.element.find('p:nth-child(' + slideNumber + ')');
-		return slide_holder.find('.slider-value').text();
+	this.get_slider_value = function(index) {
+		var slide_holder = this.get_slider(index);
+		return parseFloat(slide_holder.find('.slider-value').text());
 	};
 	
-	this.onSlide = function(element, value) {
-		var negColor = '#FCC';
-		var posColor = '#CFC';
+	this.on_slide = function(element, value) {
+		var negative_color = '#FCC';
+		var positive_color = '#CFC';
+		var neutral_color = 'lightgray';
 		
 		//get size and position
 		var width = (Math.abs(value / 10.0) * 50).toFixed(0);
@@ -89,23 +92,17 @@ function Analog_IOModule() {
 		element.find('.slider-track .slider-selection').css('left', left + '%');
 		element.find('.slider-track .slider-selection').css('width', width + '%');
 		if(value < 0) {
-			element.find('.slider-track .slider-selection').css('background', negColor);
-			element.find('.slider-track .slider-handle').css('background', negColor);
+			element.find('.slider-track .slider-selection').css('background', negative_color);
+			element.find('.slider-track .slider-handle').css('background', negative_color);
 		} else if(value > 0) {
-			element.find('.slider-track .slider-selection').css('background', posColor);
-			element.find('.slider-track .slider-handle').css('background', posColor);
+			element.find('.slider-track .slider-selection').css('background', positive_color);
+			element.find('.slider-track .slider-handle').css('background', positive_color);
 		} else {
-			element.find('.slider-track .slider-handle').css('background', 'lightgray');
+			element.find('.slider-track .slider-handle').css('background', neutral_color);
 		}
-		
-		
-		
+			
 		//display value
 		element.siblings('.slider-value').text(value.toFixed(2));
-		
-		
-		//get analog number
-		var analogNumber = parseInt(element.siblings('b').text());
 	};
 }
 

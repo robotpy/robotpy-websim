@@ -136,15 +136,7 @@ class ApiHandler(tornado.web.RequestHandler):
             :param param: The matching parameter for /api/(.*)
         '''
                 
-        if param == 'hal_data':
- 
-            
-            print(param, '!!!!!!!!!!')
-            
-            self.write({'out' : hal_data, 'in' : hal_in_data})
-        
-        else:
-            raise tornado.web.HTTPError(404)
+        raise tornado.web.HTTPError(404)
     
     def post(self, param):
         '''
