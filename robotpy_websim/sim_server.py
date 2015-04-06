@@ -148,8 +148,22 @@ class ApiHandler(tornado.web.RequestHandler):
             :param param: The matching parameter for /api/(.*)
         '''
         
-
-        raise tornado.web.HTTPError(404)
+        if param == 'config/save':
+            
+            # We ensure that the data being written is valid JSON 
+            data = json.loads(self.request.body.decode('utf-8'))
+            
+            # TODO: validate the format of the config file
+            
+            # TODO: Allow writing portions of the config file? or maybe module specific config files?
+            # -> BUT don't allow arbitrary writes to the filesystem when we do that!
+            
+            # TODO: This blocks, which we shouldn't do.. 
+            with open(join(self.sim_path, 'config.js'), 'w') as fp:
+                fp.write(pretty_json(data))
+            
+        else:
+            raise tornado.web.HTTPError(404)
 
 
 class MyStaticFileHandler(tornado.web.StaticFileHandler):

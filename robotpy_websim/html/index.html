@@ -14,6 +14,65 @@
 		
 	</head>
 	<body>
+		
+
+		<div id="top-menu" style="margin-bottom: 12px;">
+			<button class="btn btn-default btn-xs" data-toggle="modal" data-target="#config-modal">
+				<strong>Config</strong>
+			</button>
+		</div>
+		
+			<!-- Properties Dialog -->
+	<div class="modal fade" id="config-modal">
+		<div class="modal-dialog">
+		   	<div class="modal-content">
+			    <div class="modal-header">
+				    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				    <h4 class="modal-title">Configure Websim</h4>
+			    </div>
+			   
+				    <div class="modal-body">
+					    <!-- Module specific content goes here -->
+					    <div class="row" style="height: 100%">
+					    	<div class="col-xs-3" style="height: 100%; padding-right: 5px;">
+							    <ul id="config-category" class="nav nav-pills nav-stacked">
+								  <li role="presentation" class="active"><a href="#">Robot</a></li>
+								  <li role="presentation"><a href="#">Analog</a></li>
+								  <li role="presentation"><a href="#">Data Tree</a></li>
+								  <li role="presentation"><a href="#">Digital</a></li>
+								  <li role="presentation"><a href="#">Joysticks</a></li>
+								  <li role="presentation"><a href="#">Mode</a></li>
+								  <li role="presentation"><a href="#">Simple Robot</a></li>
+								  <li role="presentation"><a href="#">Solenoid</a></li>
+								</ul>
+							</div>
+							<div class="col-xs-9" style="height: 100%; padding-left: 5px; overflow: auto">
+								<!-- <h4 id="config-active-category-title">Robot</h4> -->
+								<form id="config-active-category-form" class="form-horizontal">
+								  <div class="form-group">
+								    <label for="width" class="col-sm-2 control-label">Width:</label>
+								    <div class="col-sm-10">
+								      <input type="text" class="form-control" id="width" placeholder="robot width in feet">
+								    </div>
+								  </div>
+								  <div class="form-group">
+								    <label for="height" class="col-sm-2 control-label">Height:</label>
+								    <div class="col-sm-10">
+								      <input type="text" class="form-control" id="height" placeholder="robot height in feet">
+								    </div>
+								  </div>
+								</form>
+							</div>
+						</div>
+				   	</div>
+				    <div class="modal-footer">
+					    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+					    <button id="properties-dialog-ok-btn" type="submit" class="btn btn-primary btn-sm">OK</button>
+				    </div>
+			    
+		   	</div>
+	  	</div>
+	</div>
 	
 		<div id="iomodules"></div>
 	
@@ -21,6 +80,8 @@
 		<script src="resources/jquery-2.1.3.min.js"></script>
 		<script src="resources/bootstrap-3.3.2.min.js"></script>
 		<script src="resources/d3.v3.min.js"></script>
+		<script src="resources/underscore-min.js"></script>
+		<script src="resources/underscore.string.min.js"></script>
 		<script src="plugins/slider/js/bootstrap-slider.js"></script>
 		<script src="plugins/json-tree/json-tree.js"></script>
 		<script src="physics-module.js"></script>
@@ -28,15 +89,17 @@
 		<script src="websim.js"></script>
 	
 		<script>
-			$(document).ready(function(){		
-				sim.load_iomodule('mode');
-				sim.load_iomodule('analog');
-				sim.load_iomodule('digital');
-				sim.load_iomodule('solenoid');
-				sim.load_iomodule('joysticks');
-				sim.load_iomodule('simple-robot');
-				sim.load_iomodule('data-tree');
-				sim.start();	
+			$(document).ready(function(){
+				sim.load_config(function() {
+					sim.load_iomodule('mode');
+					sim.load_iomodule('analog');
+					sim.load_iomodule('digital');
+					sim.load_iomodule('solenoid');
+					sim.load_iomodule('joysticks');
+					sim.load_iomodule('simple-robot');
+					sim.load_iomodule('data-tree');
+					sim.start();	
+				});
 			});	
 		</script>
 	

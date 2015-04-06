@@ -1,6 +1,8 @@
 
 var sim = new function() {
 	
+	this.config = {};
+	
 	// constant that controls the time between updates
 	this.UPDATE_RATE = 100;
 		
@@ -31,6 +33,46 @@ var sim = new function() {
 	
 	// dictionary that can be transmitted to sim
 	var data_to_server = null;
+	
+	this.load_config = function(callback) {
+		
+			
+		$.ajax({
+		   type: 'GET',
+		   url: '/user/config.js',
+		   dataType: 'json',
+		   success: function(config) {
+			   sim.config = config;
+		   },
+		   error: function() {
+			   
+		   },
+		   complete: function() {
+			   if(_.isFunction(callback)) {
+				   callback();
+			   }
+		   }
+		});
+	};
+	
+	this.save_config = function(callback) {
+		$.ajax({
+			type: 'POST',
+			url: '/api/config/save',
+			data: sim.config,
+			success: function() {
+				
+			},
+			error: function() {
+				
+			},
+			complete: function() {
+				if(_.isFunction(callback)) {
+					callback();
+			    }
+			}
+		});
+	};
 	
 	/*
 	 * Creates an IOModule and then returns it.
