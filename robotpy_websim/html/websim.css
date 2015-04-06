@@ -11,30 +11,3 @@ body {
 }
 
 
-#config-modal .modal-body {
-	height: 350px;
-}
-
-#config-modal #config-category {
-	height: 100%;
-	padding-right: 10px;
-	padding-top: 5px;
-	border-right: 1px solid lightgray;
-	overflow: auto;
-}
-
-#config-modal #config-category li a {
-	padding: 3px 5px;
-}
-
-#config-modal #config-active-category-form {
-
-}
-
-#config-modal #config-active-category-title {
-	margin: 0px 0px 15px 0px;
-	padding: 5px 10px;
-	font-weight: bold;
-	border-bottom: 1px solid lightgray;
-}
-

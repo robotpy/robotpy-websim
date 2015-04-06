@@ -100,6 +100,9 @@ var sim = new function() {
 		this.iomodules[id] = iomodule;
 		iomodule.init();
 		
+		// Add to config modal
+		config_modal.add_category(id, iomodule.title, '<p>' + iomodule.title + '</p>');
+		
 		return true;
 	};
 	
