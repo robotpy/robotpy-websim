@@ -2,7 +2,7 @@
 	"width" : {
 		"type" : "text",
 		"label" : "width:",
-		"value" : 2,
+		"data" : 2,
 		"attr" : {
 			"placeholder" : "Width of robot in feet"
 		},
@@ -19,7 +19,7 @@
 	"height" : {
 		"type" : "text",
 		"label" : "height:",
-		"value" : 3,
+		"data" : 3,
 		"attr" : {
 			"placeholder" : "Height of robot in feet"
 		},

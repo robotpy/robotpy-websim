@@ -8,15 +8,25 @@ var config_modal = new function() {
 	// Object that stores category data by id
 	this.categories = {};
 	
+	this.show = function() {
+		var current_category_id = this.get_active_category_id();
+		this.set_active_category(current_category_id);
+		this.element.modal('show');
+	};
+	
+	this.hide = function() {
+		this.element.modal('hide');
+	};
+	
 	// Adds a category to the modal
-	this.add_category = function(id, title, config) {
+	this.add_category = function(id, title, form) {
 		
 		if(this.categories[id] !== undefined) 
 			return;
 		
 		this.categories[id] = {
 			'title' : title,
-			'config' : config
+			'form' : form
 		};
 		
 		// Add to the list of categories
@@ -40,7 +50,7 @@ var config_modal = new function() {
 		
 		// Sets the content of the config modal
 		//this.category_form_element.html(category.content);
-		this.set_form_content(category.config);
+		this.set_form_content(id);
 	};
 	
 	
@@ -64,44 +74,76 @@ var config_modal = new function() {
 		return active_category_id;
 	};
 	
-	this.set_form_content = function(config) {
+	this.set_form_content = function(category_id) {
 		
+		var category = this.categories[category_id];
+		
+		if(category === undefined)
+			return;
+		
+		var form = category.form;	
 		this.category_form_element.html('');
 		
-		config = $.extend({
-			type : 'text',
-			label : 'Input',
-			value : '',
-			attr : {},
-			rules : {},
-			messages : {}
-		}, config);
 		
-		for(var name in config) {
+		for(var name in form) {
 			
-			if(_.contains(['text', 'email', 'password', 'range', 'color', 'number', 'date'], config[name].type)) {
+			var input = $.extend({
+				type : 'text',
+				label : 'Input',
+				data : '',
+				attr : {},
+				rules : {},
+				messages : {}
+			}, form[name]);
+			
+			var data = input.data;
+			
+			if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
+				data = sim.config[category_id][name];
+			}
+			
+			if(_.contains(['text', 'email', 'password', 'range', 'color', 'number', 'date'], form[name].type)) {
 				
-				var $input_group = $( get_input_field(config[name].label, name) ).appendTo(this.category_form_element);
+				var $input_group = $( get_input_field(form[name].label, name) ).appendTo(this.category_form_element);
 				var $input = $input_group.find('input');
 				
 				$input
-					.attr('type', config[name].type)
-					.attr('value', config[name].value);
+					.attr('type', form[name].type)
+					.attr('value', data);
 				
-				for(var attr in config[name].attr) {
-					$input.attr(attr, config[name].attr[attr]);
+				for(var attr in form[name].attr) {
+					$input.attr(attr, form[name].attr[attr]);
 				}
 				
 				this.category_form_element.validate();
 				$input.rules("remove");
 				
-				var rules = config[name].rules;
-				rules.messages = config[name].messages;
+				var rules = form[name].rules;
+				rules.messages = form[name].messages;
 				$input.rules("add", rules);
 				
 			}
 		}
 		
+	};
+	
+	this.update_config = function() {
+		
+		var category_id = this.get_active_category_id();
+		var category = this.categories[category_id];
+		
+		if(category === undefined) 
+			return;
+		
+		var config = {};
+		
+		for(var name in category.form) {
+			if( _.contains(['text', 'email', 'password', 'range', 'color', 'number', 'date'], category.form[name].type)) {
+				config[name] = this.category_form_element.find('#' + name).val();
+			}
+		}
+		
+		sim.config[category_id] = config;
 	};
 	
 	function get_input_field(label, name) {
@@ -121,6 +163,22 @@ $(function() {
 		var category_id = $(this).attr('category-id');
 		config_modal.set_active_category(category_id);
 	});
+	
+	// Open the config modal
+	$('#open-config-modal-btn').click(function() {
+		config_modal.show();
+	});
+	
+	// Hide the config modal
+	$('#config-modal-ok-btn').click(function() {
+		if(!config_modal.category_form_element.valid()) {
+			config_modal.category_form_element.submit();
+		} else {
+			config_modal.update_config();
+			config_modal.hide();
+		}
+	});
+	
 });
 
 $.validator.setDefaults({ 

@@ -18,7 +18,7 @@
 		
 
 		<div id="top-menu" style="margin-bottom: 12px;">
-			<button class="btn btn-default btn-xs" data-toggle="modal" data-target="#config-modal">
+			<button id="open-config-modal-btn" class="btn btn-default btn-xs" >
 				<strong>Config</strong>
 			</button>
 		</div>
@@ -41,14 +41,14 @@
 							</div>
 							<div class="col-xs-9" style="height: 100%; padding-left: 5px; overflow: auto">
 								
-								<form id="config-active-category-form" class="form-horizontal">
+								<form action="#" id="config-active-category-form" class="form-horizontal">
 								</form>
 							</div>
 						</div>
 				   	</div>
 				    <div class="modal-footer">
 					    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
-					    <button id="properties-dialog-ok-btn" type="submit" class="btn btn-primary btn-sm">OK</button>
+					    <button id="config-modal-ok-btn" class="btn btn-primary btn-sm">OK</button>
 				    </div>
 			    
 		   	</div>
