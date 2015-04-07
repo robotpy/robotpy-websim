@@ -152,7 +152,7 @@ class ApiHandler(tornado.web.RequestHandler):
             
             # We ensure that the data being written is valid JSON
             #data = json.loads(self.request.body.decode('utf-8'))
-            data = json.loads(self.get_argument('config', {}))
+            data = json.loads(self.get_argument('config'))
             
             # TODO: validate the format of the config file
             

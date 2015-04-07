@@ -9,7 +9,7 @@ function IOModule() {
 	this.title = 'Just Another IOModule';
 	
 	// Called when the config object is modified
-	this.on_config_change = function(config) {};
+	this.on_config_update = function(config) {};
 	
 	// Modifies the data sent to the server. The most recent
 	// data from the server will be passed by reference. 

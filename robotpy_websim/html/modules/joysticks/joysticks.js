@@ -6,6 +6,26 @@ function Joysticks_IOModule() {
 	
 	var module = this;
 	
+	this.on_config_update = function(config) {
+		
+		var show_joysticks = config['show-joysticks'];
+		console.log(show_joysticks);
+		
+		if(_.isArray(show_joysticks) === false) {
+			return;
+		}
+		
+		for(var i = 0; i < 6 && i < show_joysticks.length; i++) {
+			
+			if(show_joysticks[i]) {
+				this.get_joystick(i).removeClass('hidden');
+			} else {
+				this.get_joystick(i).addClass('hidden');
+			}
+		}
+		
+	};
+	
 	this.init = function() {
 
 		

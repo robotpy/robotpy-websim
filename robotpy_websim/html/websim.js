@@ -105,6 +105,9 @@ var sim = new function() {
 		// Add to config modal
 		$.getJSON('modules/' + id + '/config.js', function(form) {
 			config_modal.add_category(id, iomodule.title, form);
+			config_modal.add_update_listener(id, true, function(config) {
+				iomodule.on_config_update(config);
+			});
 		});
 		
 		return true;

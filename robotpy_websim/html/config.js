@@ -4,6 +4,9 @@ var config_modal = new function() {
 	this.categories_element = this.element.find('#config-categories');
 	this.category_form_element = this.element.find('#config-active-category-form');
 	
+	// Each category has a list of functions that are called when they are updated
+	var on_update_listeners = {};
+	
 	// Object that stores category data by id
 	this.categories = {};
 	
@@ -31,6 +34,24 @@ var config_modal = new function() {
 		// Add to the list of categories
 		$('<li role="presentation"><a href="#" category-id="' + id + '">' + title + '</a></li>')
 				.appendTo(this.categories_element);
+		
+		// Makes it so you can add listeners
+		on_update_listeners[id] = [];
+	};
+	
+	// Adds a listener that is notified when a specific category is updated
+	this.add_update_listener = function(id, update_immediately, listener) {
+		
+		if(_.isFunction(listener) === false || on_update_listeners[id] === undefined) {
+			return;
+		}
+		
+		on_update_listeners[id].push(listener);
+		
+		if(update_immediately) {
+			listener(sim.config[id]);
+		}
+		
 	};
 	
 	// Sets the current active category
@@ -143,6 +164,7 @@ var config_modal = new function() {
 		
 	};
 	
+	// Sets the config object in the websim based on the input values in the config modal
 	this.update_config = function() {
 		
 		var category_id = this.get_active_category_id();
@@ -181,8 +203,23 @@ var config_modal = new function() {
 		}
 		
 		sim.config[category_id] = config;
+		
+		// Notify update listeners
+		this.notify_listeners(category_id);
 	};
 	
+	// Notifies a category's on update listeners that updates have been made
+	this.notify_listeners = function(category_id) {
+		
+		var listeners = on_update_listeners[category_id];
+		
+		for(var i = 0; i < listeners.length; i++) {
+			listeners[i](sim.config[category_id]);
+		}
+	};
+	
+	
+	// Returns the html for a single input
 	function get_input_field(label, name) {
 		var html = '<div class="form-group">';
 		html += '<label for="' + name + '" class="col-sm-2 control-label">' + label + '</label>';
@@ -193,6 +230,7 @@ var config_modal = new function() {
 		return html;
 	}
 	
+	// Returns the html for a group of checkbox inputs
 	function get_checkbox_group(label, name, inline, checkboxes) {
 
 		var html = '<label for="' + name + '">' + label + '</label><br />';
