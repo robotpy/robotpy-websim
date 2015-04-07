@@ -2,7 +2,6 @@ var config_modal = new function() {
 	
 	this.element = $('#config-modal');
 	this.categories_element = this.element.find('#config-categories');
-	this.category_title_element = this.element.find('#config-active-category-form');
 	this.category_form_element = this.element.find('#config-active-category-form');
 	
 	// Object that stores category data by id
@@ -76,52 +75,69 @@ var config_modal = new function() {
 	
 	this.set_form_content = function(category_id) {
 		
+		// Make sure the category exists
 		var category = this.categories[category_id];
 		
 		if(category === undefined)
 			return;
 		
-		var form = category.form;	
+		// Reset the content in form
 		this.category_form_element.html('');
 		
+		// Add each form item
+		var form = category.form;	
+		this.category_form_element.validate();
 		
 		for(var name in form) {
 			
-			var input = $.extend({
-				type : 'text',
-				label : 'Input',
-				data : '',
-				attr : {},
-				rules : {},
-				messages : {}
-			}, form[name]);
+			var input = form[name];
 			
-			var data = input.data;
+			switch(input.type) {
 			
-			if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
-				data = sim.config[category_id][name];
-			}
-			
-			if(_.contains(['text', 'email', 'password', 'range', 'color', 'number', 'date'], form[name].type)) {
-				
-				var $input_group = $( get_input_field(form[name].label, name) ).appendTo(this.category_form_element);
-				var $input = $input_group.find('input');
-				
-				$input
-					.attr('type', form[name].type)
-					.attr('value', data);
-				
-				for(var attr in form[name].attr) {
-					$input.attr(attr, form[name].attr[attr]);
-				}
-				
-				this.category_form_element.validate();
-				$input.rules("remove");
-				
-				var rules = form[name].rules;
-				rules.messages = form[name].messages;
-				$input.rules("add", rules);
-				
+				case 'input':
+							
+					if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
+						input.attr.value = sim.config[category_id][name];
+					}
+					
+					var $input_group = $( get_input_field(input.label, name) ).appendTo(this.category_form_element);
+					var $input = $input_group.find('input');
+					
+					for(var attr in input.attr) {
+						$input.attr(attr, input.attr[attr]);
+					}
+					
+					$input.rules("remove");
+					
+					var rules = input.rules;
+					rules.messages = input.messages;
+					$input.rules("add", rules);
+					
+					
+					break;
+					
+				case 'checkbox-group':
+					
+					if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
+						
+						var values = sim.config[category_id][name];
+						
+						for(var i = 0; i < input.checkboxes.length && i < values.length; i++) {
+							input.checkboxes[i].checked = values[i];
+						}
+						
+					}
+					
+					var $inputs = $( get_checkbox_group(input.label, name, input.inline, input.checkboxes) )
+							.appendTo(this.category_form_element);
+					
+					this.category_form_element.find('input[name=' + name + ']').rules("remove");
+					
+					var rules = input.rules;
+					rules.messages = input.messages;
+					this.category_form_element.find('input[name=' + name + ']').rules("add", rules);
+					
+					break;
 			}
 		}
 		
@@ -138,9 +154,30 @@ var config_modal = new function() {
 		var config = {};
 		
 		for(var name in category.form) {
-			if( _.contains(['text', 'email', 'password', 'range', 'color', 'number', 'date'], category.form[name].type)) {
-				config[name] = this.category_form_element.find('#' + name).val();
+			
+			var input = category.form[name];
+			
+			switch(input.type) {
+			
+				case 'input':
+					config[name] = this.category_form_element.find('#' + name).val();
+					break;
+					
+					
+				case 'checkbox-group':
+					
+					var values = [];
+					
+					this.category_form_element.find('input[name=' + name + ']').each(function() {
+						values.push($(this).prop('checked'));
+					});
+					
+					config[name] = values;
+					
+					break;
+			
 			}
+
 		}
 		
 		sim.config[category_id] = config;
@@ -155,6 +192,33 @@ var config_modal = new function() {
 		html += '</div>';
 		return html;
 	}
+	
+	function get_checkbox_group(label, name, inline, checkboxes) {
+
+		var html = '<label for="' + name + '">' + label + '</label><br />';
+		
+		if(!inline) {
+			for(var i = 0; i < checkboxes.length; i++) {
+				var checked = checkboxes[i].checked ? 'checked="checked"' : '';
+				html += '<div class="checkbox">';
+				html +=		'<label>';
+				html +=			'<input type="checkbox" name="' + name + '" value="' + checkboxes[i].value + '" ' + checked + '>';
+				html +=			checkboxes[i].label;
+				html +=		'</label>';
+				html +=	'</div>';
+			}
+		} else {
+			for(var i = 0; i < checkboxes.length; i++) {
+				var checked = checkboxes[i].checked ? 'checked="checked"' : '';
+				html += '<label class="checkbox-inline">';
+				html +=		'<input type="checkbox" name="' + name + '" value="' + checkboxes[i].value + '" ' + checked + '>';
+				html +=		checkboxes[i].label;
+				html +=	'</label>';
+			}
+		}
+		
+		return html;
+	};
 };
 
 $(function() {
@@ -175,6 +239,7 @@ $(function() {
 			config_modal.category_form_element.submit();
 		} else {
 			config_modal.update_config();
+			sim.save_config();
 			config_modal.hide();
 		}
 	});

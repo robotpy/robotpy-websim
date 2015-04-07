@@ -1,9 +1,10 @@
 {
 	"width" : {
-		"type" : "text",
+		"type" : "input",
 		"label" : "width:",
-		"data" : 2,
 		"attr" : {
+			"type" : "text",
+			"value" : 2,
 			"placeholder" : "Width of robot in feet"
 		},
 		"rules" : {
@@ -17,10 +18,11 @@
 	},
 	
 	"height" : {
-		"type" : "text",
+		"type" : "input",
 		"label" : "height:",
-		"data" : 3,
 		"attr" : {
+			"type" : "text",
+			"value" : 3,
 			"placeholder" : "Height of robot in feet"
 		},
 		"rules" : {
@@ -33,7 +35,4 @@
 		}
 		
 	}
-
-
-
 }

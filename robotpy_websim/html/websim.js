@@ -59,7 +59,9 @@ var sim = new function() {
 		$.ajax({
 			type: 'POST',
 			url: '/api/config/save',
-			data: sim.config,
+			data: {
+				'config' : JSON.stringify(sim.config)
+			},
 			success: function() {
 				
 			},
@@ -101,7 +103,9 @@ var sim = new function() {
 		iomodule.init();
 		
 		// Add to config modal
-		config_modal.add_category(id, iomodule.title, '<p>' + iomodule.title + '</p>');
+		$.getJSON('modules/' + id + '/config.js', function(form) {
+			config_modal.add_category(id, iomodule.title, form);
+		});
 		
 		return true;
 	};
