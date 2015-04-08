@@ -9,14 +9,8 @@ function Joysticks_IOModule() {
 	this.on_config_update = function(config) {
 		
 		var show_joysticks = config['show-joysticks'];
-		console.log(show_joysticks);
 		
-		if(_.isArray(show_joysticks) === false) {
-			return;
-		}
-		
-		for(var i = 0; i < 6 && i < show_joysticks.length; i++) {
-			
+		for(var i = 0; i < 6; i++) {
 			if(show_joysticks[i]) {
 				this.get_joystick(i).removeClass('hidden');
 			} else {

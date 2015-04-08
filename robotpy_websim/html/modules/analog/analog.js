@@ -7,10 +7,40 @@ function Analog_IOModule() {
 	
 	this.title = 'Analog';
 	
+	this.on_config_update = function(config) {
+		
+		var show_analogs = config['show-analogs'];
+		
+		if(show_analogs['inputs']) {
+			this.element.find('#analog-inputs').removeClass('hidden');
+		} else {
+			this.element.find('#analog-inputs').addClass('hidden');
+		}
+		
+		if(show_analogs['outputs']) {
+			this.element.find('#analog-outputs').removeClass('hidden');
+		} else {
+			this.element.find('#analog-outputs').addClass('hidden');
+		}
+		
+		if(show_analogs['triggers']) {
+			this.element.find('#analog-triggers').removeClass('hidden');
+		} else {
+			this.element.find('#analog-triggers').addClass('hidden');
+		}
+		
+		if(!show_analogs['inputs'] && !show_analogs['outputs'] && !show_analogs['triggers']) {
+			this.element.addClass('hidden');
+		} else {
+			this.element.removeClass('hidden');
+		}
+		
+	};
+	
 	this.init = function() {
 
 		
-		this.element.find('.analog-slider').slider({
+		this.element.find('#analog-inputs, #analog-outputs, #analog-triggers').find('input').slider({
 			min: -10,
 			max: 10,
 			value: 0,
@@ -22,58 +52,130 @@ function Analog_IOModule() {
 			}
 		});
 		
-		for(var i = 1; i <= 8; i++) {
-			module.set_slider_value(i, 0);
+		for(var i = 0; i < 8; i++) {
+			this.set_analog_input_value(i, 0);
+			this.set_analog_output_value(i, 0);
+			this.set_analog_trigger_value(i, 0);
 		}
 		
 
-		this.element.find('.analog-slider').slider().on('slide', function(ev){
+		this.element.find('#analog-inputs, #analog-outputs').find('input').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
 			module.on_slide(element, ev.value);
-		});
-		
+		});		
 	};
 	
 	this.modify_data_to_server = function(data_to_server) {
 		
+		// Send analog input values to server
 		var analogs = data_to_server.analog_in;
 		
 		for(var i = 0; i < analogs.length; i++) {
-			analogs[i].value = this.get_slider_value(i);
+			analogs[i].value = this.get_analog_input_value(i);
 		}
 	};
 	
 	this.update_interface = function(data_from_server) {
 		
-		var analogs = data_from_server.analog_in;
+		// Hide analog inputs if not initialized
+		var analog_in = data_from_server.analog_in;
 		
-		// Hide analogs if not initialized
-		for(var i = 0; i < analogs.length; i++) {
-			if(!analogs[i].initialized) {
-				this.get_slider(i).addClass('hidden');
+		for(var i = 0; i < analog_in.length; i++) {
+			if(!analog_in[i].initialized) {
+				this.get_analog_input(i).addClass('hidden');
 			} else {
-				this.get_slider(i).removeClass('hidden');
+				this.get_analog_input(i).removeClass('hidden');
 			}
+		}
+		
+		// Hide analog outputs if not initialized and set the value
+		var analog_out = data_from_server.analog_out;
+		
+		for(var i = 0; i < analog_out.length; i++) {
+			if(!analog_out[i].initialized) {
+				this.get_analog_output(i).addClass('hidden');
+				continue;
+			}
+
+			this.get_analog_output(i).removeClass('hidden');
+			this.set_analog_output_value(i, analog_out[i].value);
+		}
+		
+		// Hide analog inputs if not initialized
+		var analog_trigger = data_from_server.analog_trigger;
+		
+		for(var i = 0; i < analog_trigger.length; i++) {
+			
+			var slide_holder = this.get_analog_trigger(i);
+			
+			if(!analog_trigger[i].initialized) {
+				slide_holder.addClass('hidden');
+				continue;
+			} 
+			
+			slide_holder.removeClass('hidden');
+			var slider = slide_holder.find('input');
+			
+			
+			this.set_analog_trigger_value(i, 0);
 		}
 	};
 	
-	this.get_slider = function(index) {
-		return this.element.find('.slide-holder:nth-of-type(' + (index + 1) + ')');
+	this.get_analog_input = function(index) {
+		return this.element.find('#analog-inputs .slide-holder:nth-of-type(' + (index + 1) + ')');
+	};
+	
+	this.get_analog_output = function(index) {
+		return this.element.find('#analog-outputs .slide-holder:nth-of-type(' + (index + 1) + ')');
+	};
+	
+	this.get_analog_trigger = function(index) {
+		return this.element.find('#analog-triggers .slide-holder:nth-of-type(' + (index + 1) + ')');
 	};
 
 	
-	this.set_slider_value = function(index, value) {
+	this.set_analog_input_value = function(index, value) {
 		
 		value = parseFloat(value);
 		
-		var slide_holder = this.get_slider(index);
+		var slide_holder = this.get_analog_input(index);
 		slide_holder.find('input').slider('setValue', value);
 		var slider = slide_holder.find('.slider');
 		module.on_slide(slider, value);
 	};
 	
-	this.get_slider_value = function(index) {
-		var slide_holder = this.get_slider(index);
+	this.set_analog_output_value = function(index, value) {
+		
+		value = parseFloat(value);
+		
+		var slide_holder = this.get_analog_output(index);
+		slide_holder.find('input').slider('setValue', value);
+		var slider = slide_holder.find('.slider');
+		module.on_slide(slider, value);
+	};
+	
+	this.set_analog_trigger_value = function(index, value) {
+		
+		value = parseFloat(value);
+		
+		var slide_holder = this.get_analog_trigger(index);
+		slide_holder.find('input').slider('setValue', value);
+		var slider = slide_holder.find('.slider');
+		slider.siblings('.slider-value').text(value.toFixed(2));
+	};
+	
+	this.get_analog_input_value = function(index) {
+		var slide_holder = this.get_analog_input(index);
+		return parseFloat(slide_holder.find('.slider-value').text());
+	};
+	
+	this.get_analog_output_value = function(index) {
+		var slide_holder = this.get_analog_output(index);
+		return parseFloat(slide_holder.find('.slider-value').text());
+	};
+	
+	this.get_analog_trigger_value = function(index) {
+		var slide_holder = this.get_analog_trigger(index);
 		return parseFloat(slide_holder.find('.slider-value').text());
 	};
 	

@@ -143,8 +143,14 @@ var config_modal = new function() {
 						
 						var values = sim.config[category_id][name];
 						
-						for(var i = 0; i < input.checkboxes.length && i < values.length; i++) {
-							input.checkboxes[i].checked = values[i];
+						for(var i = 0; i < input.checkboxes.length; i++) {
+							
+							var value = values[input.checkboxes[i].value];
+							
+							if(value === undefined)
+								continue;
+							
+							input.checkboxes[i].checked = value;
 						}
 						
 					}
@@ -188,10 +194,10 @@ var config_modal = new function() {
 					
 				case 'checkbox-group':
 					
-					var values = [];
+					var values = {};
 					
 					this.category_form_element.find('input[name=' + name + ']').each(function() {
-						values.push($(this).prop('checked'));
+						values[$(this).val()] = ($(this).prop('checked'));
 					});
 					
 					config[name] = values;
