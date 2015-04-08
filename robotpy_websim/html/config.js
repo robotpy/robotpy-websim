@@ -165,6 +165,24 @@ var config_modal = new function() {
 					this.category_form_element.find('input[name=' + name + ']').rules("add", rules);
 					
 					break;
+					
+				case 'radio-group':
+					
+					if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
+						
+						input.value = sim.config[category_id][name];
+					}
+					
+					var $inputs = $( get_radio_group(input.label, name, input.value, input.inline, input.radios) )
+							.appendTo(this.category_form_element);
+					
+					this.category_form_element.find('input[name=' + name + ']').rules("remove");
+					
+					var rules = input.rules;
+					rules.messages = input.messages;
+					this.category_form_element.find('input[name=' + name + ']').rules("add", rules);
+					
+					break;
 			}
 		}
 		
@@ -202,6 +220,11 @@ var config_modal = new function() {
 					
 					config[name] = values;
 					
+					break;
+					
+				case 'radio-group':
+					
+					config[name] = this.category_form_element.find('input[name=' + name + ']:checked').val();
 					break;
 			
 			}
@@ -257,6 +280,34 @@ var config_modal = new function() {
 				html += '<label class="checkbox-inline">';
 				html +=		'<input type="checkbox" name="' + name + '" value="' + checkboxes[i].value + '" ' + checked + '>';
 				html +=		checkboxes[i].label;
+				html +=	'</label>';
+			}
+		}
+		
+		return html;
+	};
+	
+	// Returns the html for a group of radio button inputs
+	function get_radio_group(label, name, value, inline, radios) {
+
+		var html = '<label for="' + name + '">' + label + '</label><br />';
+		
+		if(!inline) {
+			for(var i = 0; i < radios.length; i++) {
+				var checked = radios[i].value === value ? 'checked="checked"' : '';
+				html += '<div class="radio">';
+				html +=		'<label>';
+				html +=			'<input type="radio" name="' + name + '" value="' + radios[i].value + '" ' + checked + '>';
+				html +=			radios[i].label;
+				html +=		'</label>';
+				html +=	'</div>';
+			}
+		} else {
+			for(var i = 0; i < radios.length; i++) {
+				var checked = radios[i].value === value ? 'checked="checked"' : '';
+				html += '<label class="radio-inline">';
+				html +=		'<input type="radio" name="' + name + '" value="' + radios[i].value + '" ' + checked + '>';
+				html +=		radios[i].label;
 				html +=	'</label>';
 			}
 		}

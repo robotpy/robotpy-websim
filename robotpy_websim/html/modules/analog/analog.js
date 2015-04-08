@@ -106,18 +106,16 @@ function Analog_IOModule() {
 		
 		for(var i = 0; i < analog_trigger.length; i++) {
 			
-			var slide_holder = this.get_analog_trigger(i);
+			var analog_holder = this.get_analog_trigger(i);
 			
 			if(!analog_trigger[i].initialized) {
-				slide_holder.addClass('hidden');
+				analog_holder.addClass('hidden');
 				continue;
 			} 
 			
-			slide_holder.removeClass('hidden');
-			var slider = slide_holder.find('input');
+			analog_holder.removeClass('hidden');
 			
-			
-			this.set_analog_trigger_value(i, 0);
+			this.set_analog_trigger_value(i, analog_trigger[i].trig_state);
 		}
 	};
 	
@@ -130,7 +128,7 @@ function Analog_IOModule() {
 	};
 	
 	this.get_analog_trigger = function(index) {
-		return this.element.find('#analog-triggers .slide-holder:nth-of-type(' + (index + 1) + ')');
+		return this.element.find('#analog-triggers .analog-trigger-holder:nth-of-type(' + (index + 1) + ')');
 	};
 
 	
@@ -156,12 +154,16 @@ function Analog_IOModule() {
 	
 	this.set_analog_trigger_value = function(index, value) {
 		
-		value = parseFloat(value);
+		var analog_trigger_holder = this.get_analog_trigger(index);
+		var analog_trigger = analog_trigger_holder.find('.btn-circle');
 		
-		var slide_holder = this.get_analog_trigger(index);
-		slide_holder.find('input').slider('setValue', value);
-		var slider = slide_holder.find('.slider');
-		slider.siblings('.slider-value').text(value.toFixed(2));
+		if(!value) {
+			analog_trigger.addClass('btn-danger');
+			analog_trigger.removeClass('btn-success');
+		} else {
+			analog_trigger.removeClass('btn-danger');
+			analog_trigger.addClass('btn-success');
+		}
 	};
 	
 	this.get_analog_input_value = function(index) {
@@ -175,8 +177,8 @@ function Analog_IOModule() {
 	};
 	
 	this.get_analog_trigger_value = function(index) {
-		var slide_holder = this.get_analog_trigger(index);
-		return parseFloat(slide_holder.find('.slider-value').text());
+		var analog_trigger_holder = this.get_analog_trigger(index);
+		return analog_trigger.find('btn-circle').hasClass('btn-success');
 	};
 	
 	this.on_slide = function(element, value) {
