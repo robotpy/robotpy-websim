@@ -1,18 +1,68 @@
 {
-	"show-joysticks" : {
-		"type" : "checkbox-group",
-		"label" : "Visible Joysticks:",
-		"inline" : false,
-		"checkboxes" : [
-            { "label" : "0", "value" : 0, "checked" : true },
-            { "label" : "1", "value" : 1, "checked" : true },
-            { "label" : "2", "value" : 2, "checked" : true },
-            { "label" : "3", "value" : 3, "checked" : true },
-            { "label" : "4", "value" : 4, "checked" : true },
-            { "label" : "5", "value" : 5, "checked" : true }
-        ],
-        "rules" : {},
-        "messages" : {}
+	
+	"joysticks" : {
+		"elements" : 6,
+		"title" : "Joystick",
+		"form" : {
+			
+			"visible" : {
+				"type" : "radio-group",
+				"label" : "Visible:",
+				"inline" : true,
+				"value" : "y",
+				"radios" : [
+		            { "label" : "Yes", "value" : "y" },
+		            { "label" : "No", "value" : "n" }
+				],
+				"rules" : {},
+				"messages" : {}
+			},
+			
+			"x-axis-tooltip" : {
+				"type" : "input",
+				"label" : "x-Axis Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"y-axis-tooltip" : {
+				"type" : "input",
+				"label" : "y-Axis Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"z-axis-tooltip" : {
+				"type" : "input",
+				"label" : "z-Axis Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"t-axis-tooltip" : {
+				"type" : "input",
+				"label" : "t-Axis Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			}
+			
+		}
 	}
-
+		
 }

@@ -7,10 +7,13 @@ var config_modal = new function() {
 	// Each category has a list of functions that are called when they are updated
 	var on_update_listeners = {};
 	
+	var temp_config = {};
+	
 	// Object that stores category data by id
 	this.categories = {};
 	
 	this.show = function() {
+		temp_config = $.extend(true, {}, sim.config);
 		var current_category_id = this.get_active_category_id();
 		this.set_active_category(current_category_id);
 		this.element.modal('show');
@@ -20,15 +23,27 @@ var config_modal = new function() {
 		this.element.modal('hide');
 	};
 	
+	this.save_config = function() {
+		console.log('moo');
+		update_config();
+		sim.config = temp_config;
+		sim.save_config();
+		
+		for(var category in this.categories) {
+			this.notify_listeners(category);
+		}
+	};
+	
 	// Adds a category to the modal
-	this.add_category = function(id, title, form) {
+	this.add_category = function(id, title, form, elements) {
 		
 		if(this.categories[id] !== undefined) 
 			return;
 		
 		this.categories[id] = {
 			'title' : title,
-			'form' : form
+			'form' : form,
+			'elements' : (elements !== undefined) ? elements : 1
 		};
 		
 		// Add to the list of categories
@@ -37,6 +52,9 @@ var config_modal = new function() {
 		
 		// Makes it so you can add listeners
 		on_update_listeners[id] = [];
+		
+		// Make sure config is in the right format
+		format_config(id);
 	};
 	
 	// Adds a listener that is notified when a specific category is updated
@@ -49,7 +67,7 @@ var config_modal = new function() {
 		on_update_listeners[id].push(listener);
 		
 		if(update_immediately) {
-			listener(sim.config[id]);
+			listener(sim.config[id], id);
 		}
 		
 	};
@@ -70,7 +88,10 @@ var config_modal = new function() {
 		
 		// Sets the content of the config modal
 		//this.category_form_element.html(category.content);
-		this.set_form_content(id);
+		create_form(id);
+		
+		// Populates the form fields
+		populate_form_fields();
 	};
 	
 	
@@ -94,20 +115,58 @@ var config_modal = new function() {
 		return active_category_id;
 	};
 	
-	this.set_form_content = function(category_id) {
+	// Notifies a category's on update listeners that updates have been made
+	this.notify_listeners = function(category_id) {
+		
+		var listeners = on_update_listeners[category_id];
+		for(var i = 0; i < listeners.length; i++) {
+			listeners[i](sim.config[category_id], category_id);
+		}
+	};
+	
+	// Gets the current element number from the category
+	this.get_current_category_element = function() {
+		var active_category_id = this.get_active_category_id();
+		
+		if(active_category_id === null)
+			return null;
+		
+		var category = this.categories[active_category_id];
+		
+		// Get element 0 if there is only 1
+		if(category.elements <= 1) {
+			return 0;
+		}
+		
+		// Otherwise get the element from the current select option
+		var $select = this.category_form_element.find('#category-elements');
+		
+		if($select) {
+			return $select.val();
+		}
+		
+		return 0;
+	}
+	
+	function create_form(category_id) {
 		
 		// Make sure the category exists
-		var category = this.categories[category_id];
+		var category = config_modal.categories[category_id];
 		
 		if(category === undefined)
 			return;
 		
 		// Reset the content in form
-		this.category_form_element.html('');
+		config_modal.category_form_element.html('');
 		
 		// Add each form item
 		var form = category.form;	
-		this.category_form_element.validate();
+		config_modal.category_form_element.validate();
+		
+		// Add select if there are multiple elements
+		if(category.elements > 1) {
+			var $select = $(get_select(category.title, category.elements)).appendTo(config_modal.category_form_element);
+		}
 		
 		for(var name in form) {
 			
@@ -117,15 +176,11 @@ var config_modal = new function() {
 			
 				case 'input':
 							
-					if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
-						input.attr.value = sim.config[category_id][name];
-					}
-					
-					var $input_group = $( get_input_field(input.label, name) ).appendTo(this.category_form_element);
+					var $input_group = $( get_input_field(input.label, name) ).appendTo(config_modal.category_form_element);
 					var $input = $input_group.find('input');
 					
 					for(var attr in input.attr) {
-						$input.attr(attr, input.attr[attr]);
+						//$input.attr(attr, input.attr[attr]);
 					}
 					
 					$input.rules("remove");
@@ -139,48 +194,27 @@ var config_modal = new function() {
 					
 				case 'checkbox-group':
 					
-					if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
-						
-						var values = sim.config[category_id][name];
-						
-						for(var i = 0; i < input.checkboxes.length; i++) {
-							
-							var value = values[input.checkboxes[i].value];
-							
-							if(value === undefined)
-								continue;
-							
-							input.checkboxes[i].checked = value;
-						}
-						
-					}
-					
 					var $inputs = $( get_checkbox_group(input.label, name, input.inline, input.checkboxes) )
-							.appendTo(this.category_form_element);
+							.appendTo(config_modal.category_form_element);
 					
-					this.category_form_element.find('input[name=' + name + ']').rules("remove");
+					config_modal.category_form_element.find('input[name=' + name + ']').rules("remove");
 					
 					var rules = input.rules;
 					rules.messages = input.messages;
-					this.category_form_element.find('input[name=' + name + ']').rules("add", rules);
+					config_modal.category_form_element.find('input[name=' + name + ']').rules("add", rules);
 					
 					break;
 					
 				case 'radio-group':
 					
-					if(sim.config[category_id] !== undefined && sim.config[category_id][name] !== undefined) {
-						
-						input.value = sim.config[category_id][name];
-					}
-					
 					var $inputs = $( get_radio_group(input.label, name, input.value, input.inline, input.radios) )
-							.appendTo(this.category_form_element);
+							.appendTo(config_modal.category_form_element);
 					
-					this.category_form_element.find('input[name=' + name + ']').rules("remove");
+					config_modal.category_form_element.find('input[name=' + name + ']').rules("remove");
 					
 					var rules = input.rules;
 					rules.messages = input.messages;
-					this.category_form_element.find('input[name=' + name + ']').rules("add", rules);
+					config_modal.category_form_element.find('input[name=' + name + ']').rules("add", rules);
 					
 					break;
 			}
@@ -189,10 +223,10 @@ var config_modal = new function() {
 	};
 	
 	// Sets the config object in the websim based on the input values in the config modal
-	this.update_config = function() {
+	function update_config() {
 		
-		var category_id = this.get_active_category_id();
-		var category = this.categories[category_id];
+		var category_id = config_modal.get_active_category_id();
+		var category = config_modal.categories[category_id];
 		
 		if(category === undefined) 
 			return;
@@ -206,7 +240,7 @@ var config_modal = new function() {
 			switch(input.type) {
 			
 				case 'input':
-					config[name] = this.category_form_element.find('#' + name).val();
+					config[name] = config_modal.category_form_element.find('#' + name).val();
 					break;
 					
 					
@@ -214,7 +248,7 @@ var config_modal = new function() {
 					
 					var values = {};
 					
-					this.category_form_element.find('input[name=' + name + ']').each(function() {
+					config_modal.category_form_element.find('input[name=' + name + ']').each(function() {
 						values[$(this).val()] = ($(this).prop('checked'));
 					});
 					
@@ -224,44 +258,54 @@ var config_modal = new function() {
 					
 				case 'radio-group':
 					
-					config[name] = this.category_form_element.find('input[name=' + name + ']:checked').val();
+					config[name] = config_modal.category_form_element.find('input[name=' + name + ']:checked').val();
 					break;
 			
 			}
 
 		}
 		
-		sim.config[category_id] = config;
+		// Get the current element number
+		var element = config_modal.get_current_category_element();
 		
-		// Notify update listeners
-		this.notify_listeners(category_id);
+		if(element === null)
+			return;
+		
+		temp_config[category_id][element] = config;
+		console.log(temp_config);
 	};
 	
-	// Notifies a category's on update listeners that updates have been made
-	this.notify_listeners = function(category_id) {
-		
-		var listeners = on_update_listeners[category_id];
-		
-		for(var i = 0; i < listeners.length; i++) {
-			listeners[i](sim.config[category_id]);
+	function get_select(title, elements) {
+		var html = '';
+		html += '<div class="row" style="padding-bottom: 15px;">';
+		html += '<div class="col-sm-5">';
+		html += '<select id="category-elements" class="form-control">';
+		for(var i = 0; i < elements; i++) {
+			html += '<option value="' + i + '" style="font-weight: bold">' + title + ' ' + i + '</option>';
 		}
-	};
+		html += '</select>';
+		html += '</div>';
+		html += '</div>';
+
+		return html;
+	}
 	
 	
 	// Returns the html for a single input
 	function get_input_field(label, name) {
-		var html = '<div class="form-group">';
-		html += '<label for="' + name + '" class="col-sm-2 control-label">' + label + '</label>';
-		html += '<div class="col-sm-10">';
+		
+		var html = '<div class="single-line-input">';
+		html += '<label for="' + name + '">' + label + '</label>';
+		html += '<span>';
 		html += '<input class="form-control" id="' + name + '" name="' + name + '">';
-		html += '</div>';
-		html += '</div>';
+		html += '</span>';
+		//html += '</div>';
 		return html;
 	}
 	
 	// Returns the html for a group of checkbox inputs
 	function get_checkbox_group(label, name, inline, checkboxes) {
-
+		
 		var html = '<label for="' + name + '">' + label + '</label><br />';
 		
 		if(!inline) {
@@ -290,9 +334,10 @@ var config_modal = new function() {
 	// Returns the html for a group of radio button inputs
 	function get_radio_group(label, name, value, inline, radios) {
 
-		var html = '<label for="' + name + '">' + label + '</label><br />';
+		var html = '<label for="' + name + '" style="margin-right: 10px;">' + label + '</label>';
 		
 		if(!inline) {
+			html += '<br />';
 			for(var i = 0; i < radios.length; i++) {
 				var checked = radios[i].value === value ? 'checked="checked"' : '';
 				html += '<div class="radio">';
@@ -305,7 +350,7 @@ var config_modal = new function() {
 		} else {
 			for(var i = 0; i < radios.length; i++) {
 				var checked = radios[i].value === value ? 'checked="checked"' : '';
-				html += '<label class="radio-inline">';
+				html += '<label class="radio-inline" style="padding-top: 0px;">';
 				html +=		'<input type="radio" name="' + name + '" value="' + radios[i].value + '" ' + checked + '>';
 				html +=		radios[i].label;
 				html +=	'</label>';
@@ -314,11 +359,142 @@ var config_modal = new function() {
 		
 		return html;
 	};
-};
+	
+	// Populates the form fields with the correct values
+	function populate_form_fields() {
+		
+		var category_id = config_modal.get_active_category_id();
+		var category = config_modal.categories[category_id];
+		
+		if(category === undefined) {
+			return;
+		}
+		
+		//Set the data
+		var data = temp_config[category_id][config_modal.get_current_category_element()];
+		
+		if(data === undefined)
+			return;
+		
+		for(var name in data) {
+			
+			switch(config_modal.categories[category_id].form[name].type) {
+			
+				case 'input':
+					
+					var $input = config_modal.category_form_element.find('input[name=' + name + ']')
+							.val(data[name]);
+					
+					break;
+					
+				case 'checkbox-group':
+					
+					var $checkboxes = config_modal.category_form_element.find('input[name=' + name + ']');
+					
+					for(var i = 0; i < data[name].length; i++) {
+						if(data[name][i]) {
+							var $checkbox = $( $checkboxes[i] );
+							$checkbox.prop('checked', true);
+						}
+					}
+					
+					break;
+					
+				case 'radio-group':
+					
+					config_modal.category_form_element.find('input[name=' + name + '][value=' + data[name] + ']')
+							.prop('checked', true);
+					
+					break;
+			}
+		}
+		
+	}
+	
+	// Make sure the config object is in the right format
+	function format_config(category_id) {
+		
+		// Get the category. If the category doesn't exist in the form return null
+		var category = config_modal.categories[category_id];
+		
+		if(category === undefined)
+			return;
+		
+		// Initialize the config if it doesn't exist
+		if(sim.config[category_id] === undefined) {
+			sim.config[category_id] = [];
+		}
+		
+		// Set each element in the config
+		for(var i = 0; i < category.elements; i++) {
+			
+			// Initialize the element if it doesn't exist
+			if(sim.config[category_id][i] === undefined) {
+				sim.config[category_id][i] = {};
+			}
+			
+			// Set each form item in the element
+			for(var name in category.form) {
+				
+				switch(category.form[name].type) {
+				
+					case 'input':
+						
+						// If it already has a value just continue
+						if(sim.config[category_id][i][name] !== undefined)
+							continue;
+						
+						// Otherwise set a value
+						var value = category.form[name].attr.value;
+						sim.config[category_id][i][name] = value;
+						
+						break;
+						
+					case 'checkbox-group':
+						
+						// If it isn't an array initialize
+						if( _.isObject(sim.config[category_id][i][name]) === false)
+							sim.config[category_id][i][name] = {};
+						
+						// go through each checkbox
+						for(var j = 0; j < category.form[name].checkboxes.length; j++) {
+							
+							// Initialize the element exists just continue
+							var checkbox_value = category.form[name].checkboxes[j].value;
+							
+							if(sim.config[category_id][i][name][checkbox_value] !== undefined)
+								continue;
+							
+							// Otherwise set a value
+							var checked = category.form[name].checkboxes[j].checked;
+							sim.config[category_id][i][name][checkbox_value] = checked;
+						}
+							
+						break;
+						
+					case 'radio-group':
+						
+						var values = [];
+						
+						for(var j = 0; j < category.form[name].radios.length; j++) {
+							values.push(category.form[name].radios[j].value);
+						}
+						
+						// If the selected radio isn't one of the possible options then set it to the default
+						if( _.contains(values, sim.config[category_id][i][name]) === false )
+							sim.config[category_id][i][name] = category.form[name].value;
+							
+						break;
+				}
+				
+			}
+		}
+	};
+	
 
-$(function() {
 	// When a category is selected make it the active category
-	config_modal.categories_element.on('click', 'a', function() {
+	this.categories_element.on('click', 'a', function() {
+		update_config();
 		var category_id = $(this).attr('category-id');
 		config_modal.set_active_category(category_id);
 	});
@@ -333,13 +509,23 @@ $(function() {
 		if(!config_modal.category_form_element.valid()) {
 			config_modal.category_form_element.submit();
 		} else {
-			config_modal.update_config();
-			sim.save_config();
+			config_modal.save_config();
 			config_modal.hide();
 		}
 	});
 	
-});
+	// Sets the category element
+	var previous_category_element = null;
+	
+	this.category_form_element.on('focus', '#category-elements', function(e) {
+		update_config();
+	});
+	
+	this.category_form_element.on('change', '#category-elements', function(e) {
+		populate_form_fields();
+	})
+	
+}
 
 $.validator.setDefaults({ 
 	errorPlacement: function(error, element) {

@@ -24,3 +24,27 @@
 	font-weight: bold;
 	border-bottom: 1px solid lightgray;
 }
+
+
+#config-modal #config-active-category-form .single-line-input {
+	display: table; 
+	width: 100%; 
+	margin: 10px 3px;
+}
+
+#config-modal #config-active-category-form .single-line-input label {
+	white-space:nowrap;
+}
+
+#config-modal #config-active-category-form .single-line-input span {
+	display: table-cell; 
+	width: 100%; 
+	padding: 0px 10px;
+}
+
+#config-modal #config-active-category-form .single-line-input input {
+	width: 100%;
+	height: inherit;
+	display: inline-block;
+	padding: 0px 0px 0px 5px;
+}

@@ -6,12 +6,11 @@ function Joysticks_IOModule() {
 	
 	var module = this;
 	
-	this.on_config_update = function(config) {
-		
-		var show_joysticks = config['show-joysticks'];
+	this.on_config_update = function(joysticks, id) {
 		
 		for(var i = 0; i < 6; i++) {
-			if(show_joysticks[i]) {
+			
+			if(joysticks[i].visible === 'y') {
 				this.get_joystick(i).removeClass('hidden');
 			} else {
 				this.get_joystick(i).addClass('hidden');

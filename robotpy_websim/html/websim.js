@@ -103,11 +103,19 @@ var sim = new function() {
 		iomodule.init();
 		
 		// Add to config modal
-		$.getJSON('modules/' + id + '/config.js', function(form) {
-			config_modal.add_category(id, iomodule.title, form);
-			config_modal.add_update_listener(id, true, function(config) {
-				iomodule.on_config_update(config);
-			});
+		$.getJSON('modules/' + id + '/config.js', function(config) {
+			for(var category in config) {
+				var id = category;
+				var title = config[category].title;
+				var form = config[category].form;
+				var elements = config[category].elements;
+				
+				config_modal.add_category(id, title, form, elements);
+				config_modal.add_update_listener(id, true, function(config, id) {
+					iomodule.on_config_update(config, id);
+				});
+			}
+			
 		});
 		
 		return true;
