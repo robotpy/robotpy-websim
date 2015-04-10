@@ -39,7 +39,7 @@ var sim = new function() {
 			
 		$.ajax({
 		   type: 'GET',
-		   url: '/user/config.js',
+		   url: '/user/config.json',
 		   dataType: 'json',
 		   success: function(config) {
 			   sim.config = config;

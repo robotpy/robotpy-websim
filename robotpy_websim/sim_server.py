@@ -160,7 +160,7 @@ class ApiHandler(tornado.web.RequestHandler):
             # -> BUT don't allow arbitrary writes to the filesystem when we do that!
             
             # TODO: This blocks, which we shouldn't do.. 
-            with open(join(self.sim_path, 'config.js'), 'w') as fp:
+            with open(join(self.sim_path, 'config.json'), 'w') as fp:
                 fp.write(pretty_json(data))
             
         else:
