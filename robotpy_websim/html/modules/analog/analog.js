@@ -7,34 +7,15 @@ function Analog_IOModule() {
 	
 	this.title = 'Analog';
 	
-	this.on_config_update = function(config) {
+	this.on_config_update = function(analog) {
 		
-		var show_analogs = config['show-analogs'];
+		var visible = analog[0].visible;
 		
-		if(show_analogs['inputs']) {
-			this.element.find('#analog-inputs').removeClass('hidden');
-		} else {
-			this.element.find('#analog-inputs').addClass('hidden');
-		}
-		
-		if(show_analogs['outputs']) {
-			this.element.find('#analog-outputs').removeClass('hidden');
-		} else {
-			this.element.find('#analog-outputs').addClass('hidden');
-		}
-		
-		if(show_analogs['triggers']) {
-			this.element.find('#analog-triggers').removeClass('hidden');
-		} else {
-			this.element.find('#analog-triggers').addClass('hidden');
-		}
-		
-		if(!show_analogs['inputs'] && !show_analogs['outputs'] && !show_analogs['triggers']) {
-			this.element.addClass('hidden');
-		} else {
+		if(visible === 'y') {
 			this.element.removeClass('hidden');
+		} else {
+			this.element.addClass('hidden');
 		}
-		
 	};
 	
 	this.init = function() {

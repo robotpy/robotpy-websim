@@ -25,11 +25,22 @@
 	border-bottom: 1px solid lightgray;
 }
 
+#config-modal #config-active-category-form label {
+	font-size: 12px;
+	display: inline;
+}
+
+#config-modal #config-active-category-form .checkbox,
+#config-modal #config-active-category-form .radio {
+	padding-top: 0px;
+	min-height: 20px;
+}
+
 
 #config-modal #config-active-category-form .single-line-input {
 	display: table; 
 	width: 100%; 
-	margin: 10px 3px;
+	margin: 5px 3px;
 }
 
 #config-modal #config-active-category-form .single-line-input label {

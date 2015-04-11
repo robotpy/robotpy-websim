@@ -60,8 +60,139 @@
 				},
 				"rules" : { },
 				"messages" : { }
-			}
+			},
+
+			"btn-1-tooltip" : {
+				"type" : "input",
+				"label" : "Button 1 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+
+			"btn-2-tooltip" : {
+				"type" : "input",
+				"label" : "Button 2 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+
+			"btn-3-tooltip" : {
+				"type" : "input",
+				"label" : "Button 3 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+
+			"btn-4-tooltip" : {
+				"type" : "input",
+				"label" : "Button 4 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+
+			"btn-5-tooltip" : {
+				"type" : "input",
+				"label" : "Button 5 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
 			
+			"btn-6-tooltip" : {
+				"type" : "input",
+				"label" : "Button 6 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"btn-7-tooltip" : {
+				"type" : "input",
+				"label" : "Button 7 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"btn-8-tooltip" : {
+				"type" : "input",
+				"label" : "Button 8 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"btn-9-tooltip" : {
+				"type" : "input",
+				"label" : "Button 9 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"btn-10-tooltip" : {
+				"type" : "input",
+				"label" : "Button 10 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"btn-11-tooltip" : {
+				"type" : "input",
+				"label" : "Button 11 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			},
+			
+			"btn-12-tooltip" : {
+				"type" : "input",
+				"label" : "Button 12 Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			}
 		}
 	}
 		

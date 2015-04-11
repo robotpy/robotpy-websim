@@ -6,6 +6,17 @@ function Data_Tree_IOModule() {
 	
 	this.title = 'Data Tree';
 	
+	this.on_config_update = function(data_tree) {
+		
+		var visible = data_tree[0].visible;
+		
+		if(visible === 'y') {
+			this.element.removeClass('hidden');
+		} else {
+			this.element.addClass('hidden');
+		}
+	};
+	
 	this.init = function() {
 		
 		this.update = true;

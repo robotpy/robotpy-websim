@@ -1,3 +1,5 @@
+//"use strict";
+
 var config_modal = new function() {
 	
 	this.element = $('#config-modal');
@@ -7,7 +9,7 @@ var config_modal = new function() {
 	// Each category has a list of functions that are called when they are updated
 	var on_update_listeners = {};
 	
-	var temp_config = {};
+	var temp_config = null;
 	
 	// Object that stores category data by id
 	this.categories = {};
@@ -36,6 +38,10 @@ var config_modal = new function() {
 	
 	// Adds a category to the modal
 	this.add_category = function(id, title, form, elements) {
+		
+		if(temp_config === null) {
+			temp_config = $.extend(true, {}, sim.config);
+		}
 		
 		if(this.categories[id] !== undefined) 
 			return;
@@ -272,7 +278,6 @@ var config_modal = new function() {
 			return;
 		
 		temp_config[category_id][element] = config;
-		console.log(temp_config);
 	};
 	
 	function get_select(title, elements) {
