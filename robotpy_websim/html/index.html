@@ -9,7 +9,6 @@
 		<link rel="stylesheet" href="plugins/slider/css/slider.css">
 		<link rel="stylesheet" href="plugins/json-tree/json-tree.css">
 			
-		<link rel="stylesheet" href="iomodule.css">
 		<link rel="stylesheet" href="websim.css">
 		<link rel="stylesheet" href="config.css">
 		
@@ -68,7 +67,6 @@
 		<script src="plugins/slider/js/bootstrap-slider.js"></script>
 		<script src="plugins/json-tree/json-tree.js"></script>
 		<script src="physics-module.js"></script>
-		<script src="iomodule.js"></script>
 		<script src="websim.js"></script>
 		<script src="config.js"></script>
 	
@@ -76,19 +74,53 @@
 			$(document).ready(function(){
 				sim.load_config(function() {
 					
-					$.getJSON('robot-config.js', function(config) {
-						config_modal.add_category('robot', 'Robot', config);
-						config_modal.set_active_category('robot');
-					});
+					// Add robot to config
+					var robot_form = {};
 					
-										
-					sim.load_iomodule('mode');
-					sim.load_iomodule('analog');
-					sim.load_iomodule('digital');
-					sim.load_iomodule('solenoid');
-					sim.load_iomodule('joysticks');
-					sim.load_iomodule('simple-robot');
-					sim.load_iomodule('data-tree');
+					robot_form.width = {
+						"type" : "input",
+						"label" : "width:",
+						"attr" : {
+							"type" : "text",
+							"value" : 2,
+							"placeholder" : "Width of robot in feet"
+						},
+						"rules" : {
+							"required" : true,
+							"number": true,
+							"min": 0
+						},
+						"messages" : { }
+					};
+					
+					robot_form.height = {
+						"type" : "input",
+						"label" : "height:",
+						"attr" : {
+							"type" : "text",
+							"value" : 3,
+							"placeholder" : "Height of robot in feet"
+						},
+						"rules" : {
+							"required" : true,
+							"number": true,
+							"min": 0
+						},
+						"messages" : {}				
+					};
+					
+					config_modal.add_category('robot', 'Robot', robot_form);
+					config_modal.set_active_category('robot');
+					
+					sim.add_js('modules/analog/analog.js');
+					sim.add_js('modules/digital/digital.js');
+					sim.add_js('modules/solenoid/solenoid.js');
+					sim.add_js('modules/joysticks/joysticks.js');
+					sim.add_js('modules/mode/mode.js');
+					sim.add_js('modules/data-tree/data-tree.js');
+					sim.add_js('modules/simple-robot/simple-robot.js');
+					
+					
 					sim.start();	
 				});
 			});	

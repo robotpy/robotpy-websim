@@ -44,9 +44,6 @@ var sim = new function() {
 		   success: function(config) {
 			   sim.config = config;
 		   },
-		   error: function() {
-			   
-		   },
 		   complete: function() {
 			   if(_.isFunction(callback)) {
 				   callback();
@@ -61,12 +58,6 @@ var sim = new function() {
 			url: '/api/config/save',
 			data: {
 				'config' : JSON.stringify(sim.config)
-			},
-			success: function() {
-				
-			},
-			error: function() {
-				
 			},
 			complete: function() {
 				if(_.isFunction(callback)) {
@@ -89,69 +80,31 @@ var sim = new function() {
 			return false;
 		}
 		
-		
-		
-		if(!(iomodule instanceof IOModule)) {
-			return false;
-		}
+		iomodule = $.extend({
+			
+			// The title displayed for the module
+			title : 'Just Another IOModule',
+			
+			// Modifies the data sent to the server. The most recent
+			// data from the server will be passed by reference. 
+			// The data passed to this function will reflect modifications 
+			// made by IOModules' modify_data_to_server functions
+			modify_data_to_server : function(data_to_server) {},
+			
+			// Modifies the content displayed using a copy of the most 
+			// recent data from the server.
+			update_interface : function(data_from_server) {}
+			
+		}, iomodule);
 		
 		iomodule.element = $('#' + id)
 		iomodule.element.addClass('iomodule');
 		iomodule.element.prepend('<h4 class="title">' + iomodule.title + '</h4>');
 		
 		this.iomodules[id] = iomodule;
-		iomodule.init();
 		
-		// Add to config modal
-		$.getJSON('modules/' + id + '/config.js', function(config) {
-			for(var category in config) {
-				var id = category;
-				var title = config[category].title;
-				var form = config[category].form;
-				var elements = config[category].elements;
-				
-				config_modal.add_category(id, title, form, elements);
-				config_modal.add_update_listener(id, true, function(config, id) {
-					iomodule.on_config_update(config, id);
-				});
-			}
-			
-		});
-		
-		return true;
+		return iomodule;
 	};
-	
-	/*
-	 * Adds an IOModule from the modules folder. The id must
-	 * be the name of the folder, and the three files it should
-	 * contain are [id].html, [id].js, and [id].css (optional)
-	 */
-	this.load_iomodule = function(id) {
-
-		var html_path = 'modules/' + id + '/' + id + '.html';
-		var js_path = 'modules/' + id + '/' + id + '.js';
-		var css_path = 'modules/' + id + '/' + id + '.css';
-	
-		var element = $('<div id="' + id + '"></div>').appendTo('#iomodules');
-		
-		// html and js files are required. css is optional
-		var response = false;
-		$.ajax({
-		   type: 'GET',
-		   url: html_path,
-		   dataType: 'html',
-		   success: function( html ) {
-			   //add html to element
-			   element.append(html);	
-			   //add css
-			   $('head').append('<!-- css for ' + id + ' --> <link rel="stylesheet" ' + 'href="' + css_path + '">');
-			   //add js
-			   $('body').append('<!-- js for IOModule ' + id + ' --> <script src="' + js_path + '"></script>');
-		   }
-		});
-	};
-	
-	
 	
 	/*
 	 * Adds a physics module. Physics module must contain
@@ -179,17 +132,23 @@ var sim = new function() {
 		return true;
 	};
 	
-	
-	/*
-	 * Loads a physics module from the physics folder.
-	 */
-	this.load_physics_module = function(id) {
+	// Adds a stylesheet
+	this.add_css = function(href) {
 		
-		var src = 'physics/' + id + '.js';	
-		$('body').append('<!-- js for physics module --> <script src="' + src + '"></script>');
+		if( $('link[href="' + href + '"]').length > 0 ) 
+			return;
 		
+		$('head').append('<link rel="stylesheet" href="' + href + '" />');
 	};
-
+	
+	// Adds javascript
+	this.add_js = function(src) {
+		
+		if( $('script[src="' + src + '"]').length > 0 ) 
+			return;
+		
+		$('head').append('<script src="' + src + '"></script>');
+	};
 	
 	
 	/*

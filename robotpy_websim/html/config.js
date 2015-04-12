@@ -26,7 +26,6 @@ var config_modal = new function() {
 	};
 	
 	this.save_config = function() {
-		console.log('moo');
 		update_config();
 		sim.config = temp_config;
 		sim.save_config();

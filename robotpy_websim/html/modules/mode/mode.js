@@ -1,22 +1,30 @@
 "use strict";
 
-function Mode_IOModule() {
+$(function() {
 	
-	this.title = 'Mode';
-	
-	this.init = function() {
-		//update state when form input changes
-		this.element.find("input[name='mode']").change(function() {
+	// Load content
+	$.get('modules/mode/mode.html', function(content) {
+		
+		// Add the content
+		$('<div id="mode">' + content + '</div>').appendTo('body');
+		
+		// Create module
+		var iomodule = sim.add_iomodule('mode', { 'title' : 'Mode' });
+		
+		if(!iomodule)
+			return;
+		
+		// Add css
+		sim.add_css('modules/mode/mode.css');
+		
+		// Initialize the module
+		iomodule.element.find("input[name='mode']").change(function() {
 			var mode = $(this).val();
 			var enabled = mode != 'disabled';
 			if (mode == 'disabled')
 				mode = 'teleop';
 			sim.set_robot_mode(mode, enabled);
 		});
-	};
-}
-
-
-Mode_IOModule.prototype = new IOModule();
-sim.add_iomodule('mode', new Mode_IOModule());
-
+	});
+	
+});

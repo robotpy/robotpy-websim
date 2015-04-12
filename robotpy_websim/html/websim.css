@@ -10,4 +10,31 @@ body {
   border-radius: 9px;
 }
 
+.iomodule {
+	padding: 15px;
+	padding-top: 20px;
+	margin: 6px;
+	background-color: #fff;
+	border: 2px solid #ccc;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	display:inline-block;
+	vertical-align: top;
+	position: relative;
+}
 
+.iomodule > h4 {
+	top: -20px;
+	left: 5%;
+	text-align: center;
+	color: #558;
+	font-weight: bold;
+	position: absolute;
+	background: #666;
+	color: white;
+	padding: 3px 7px 3px 7px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
