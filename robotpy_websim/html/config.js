@@ -375,6 +375,10 @@ var config_modal = new function() {
 		}
 		
 		//Set the data
+		var cat_data = temp_config[category_id];
+		if (cat_data === undefined)
+			return;
+		
 		var data = temp_config[category_id][config_modal.get_current_category_element()];
 		
 		if(data === undefined)
