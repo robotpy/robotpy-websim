@@ -1,12 +1,7 @@
 #analog {
-	min-width: 150px;
-	max-width: 600px;
+	width: 250px;
 }
 
 #analog .slider.slider-horizontal .slider-handle.round {
   background: lightgray;
-}
-
-#analog #analog-inputs, #analog #analog-outputs, #analog #analog-triggers {
-	width: 190px;
 }
