@@ -65,6 +65,11 @@ $(function() {
 		// Add the css
 		sim.add_css('modules/solenoid/solenoid.css');
 		
+		// Initialize the tooltip	
+		for(var i = 0; i < 8; i++) {
+			iomodule.get_solenoid(i).tooltip();
+		}
+		
 		// Add to config modal
 		var form = {};
 		
@@ -81,9 +86,29 @@ $(function() {
 			"messages" : {}
 		};
 		
+		for(var i = 0; i < 8; i++) {
+			form['solenoid-' + i + '-tooltip'] = {
+				"type" : "input",
+				"label" : "Solenoid " + i + " Tooltip:",
+				"attr" : {
+					"type" : "text",
+					"value" : ""
+				},
+				"rules" : { },
+				"messages" : { }
+			};
+		}
+		
 		config_modal.add_category('solenoid', 'Solenoid', form, 1);
-		config_modal.add_update_listener('Solenoid', true, function(solenoid) {
+		config_modal.add_update_listener('solenoid', true, function(solenoid) {
 				
+			// set tooltip
+			for(var i = 0; i < 8; i++) {
+				var tooltip = solenoid[0]['solenoid-' + i + '-tooltip'];
+				iomodule.get_solenoid(i).attr('data-original-title', tooltip);
+			}
+			
+			// Set visibility
 			var visible = solenoid[0].visible;
 			
 			if(visible === 'y') {

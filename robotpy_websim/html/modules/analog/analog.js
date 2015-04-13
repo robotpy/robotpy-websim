@@ -208,6 +208,10 @@ $(function() {
 			iomodule.on_slide(element, ev.value);
 		});	
 		
+		
+		// Add tooltips to the sliders
+		iomodule.element.find('.slide-holder').tooltip();
+		
 		// Add to config modal
 		var form = {};
 		
@@ -246,6 +250,11 @@ $(function() {
 				iomodule.element.removeClass('hidden');
 			} else {
 				iomodule.element.addClass('hidden');
+			}
+			
+			for(var i = 0; i < 8; i++) {
+				var tooltip = analog[0]['analog-' + i + '-tooltip'];
+				iomodule.get_analog_input(i).attr('data-original-title', tooltip);
 			}
 			
 		});

@@ -63,16 +63,19 @@ $(function() {
 				}
 			};
 			
-			this.get_pwm = function(index) {
-				return this.element.find('.slide-holder:nth-of-type(' + (index + 1) + ')');
+			this.get_pwm = function(index) {			
+				var $pwms = this.element.find('.slide-holder');
+				return $( $pwms[index] );
 			};
 			
 			this.get_dio = function(index) {
-				return this.element.find('.dio-holder:nth-of-type(' + (index + 1) + ')');
+				var $dios = this.element.find('.dio-holder');
+				return $( $dios[index] );
 			};
 			
 			this.get_relay = function(index) {
-				return this.element.find('.relay-holder:nth-of-type(' + (index + 1) + ')');
+				var $relays = this.element.find('.relay-holder');
+				return $( $relays[index] );
 			}
 			
 			this.set_relay_value = function(index, fwd, rev) {
@@ -178,6 +181,9 @@ $(function() {
 			$(this).toggleClass('btn-danger');
 		});
 		
+		// Initalize the tooltip
+		$('.slide-holder, .dio-holder, .relay-holder').tooltip();
+		
 		// Add pwm to config modal
 		var pwm_form = {};
 		
@@ -209,7 +215,14 @@ $(function() {
 		
 		config_modal.add_category('pwm', 'PWM', pwm_form, 1);
 		config_modal.add_update_listener('pwm', true, function(pwm) {
-				
+			
+			// Set tooltip
+			for(var i = 0; i < 20; i++) {
+				var tooltip = pwm[0]['pwm-' + i + '-tooltip'];
+				iomodule.get_pwm(i).attr('data-original-title', tooltip);
+			}
+			
+			// Set visiblity
 			var visible = pwm[0].visible;
 			
 			if(visible === 'y') {
@@ -261,7 +274,14 @@ $(function() {
 		
 		config_modal.add_category('dio', 'DIO', dio_form, 1);
 		config_modal.add_update_listener('dio', true, function(dio) {
+			
+			// Set tooltip
+			for(var i = 0; i < 26; i++) {
+				var tooltip = dio[0]['dio-' + i + '-tooltip'];
+				iomodule.get_dio(i).attr('data-original-title', tooltip);
+			}
 				
+			// Set visibility
 			var visible = dio[0].visible;
 			
 			if(visible === 'y') {
@@ -314,6 +334,13 @@ $(function() {
 		config_modal.add_category('relay', 'Relay', relay_form, 1);
 		config_modal.add_update_listener('relay', true, function(relay) {
 				
+			// Set tooltip
+			for(var i = 0; i < 20; i++) {
+				var tooltip = relay[0]['relay-' + i + '-tooltip'];
+				iomodule.get_relay(i).attr('data-original-title', tooltip);
+			}
+			
+			// Set visibility
 			var visible = relay[0].visible;
 			
 			if(visible === 'y') {

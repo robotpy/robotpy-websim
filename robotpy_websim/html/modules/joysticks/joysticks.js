@@ -133,6 +133,21 @@ $(function() {
 			iomodule.on_slide(element, ev.value);
 		});
 		
+		// Initialize the tooltips
+		for(var j = 0; j < 6; j++) {
+			
+			// axes
+			for(var a = 0; a < 4; a++) {
+				iomodule.get_axis(j, a).tooltip();
+			}
+			
+			// buttons
+			for(var b = 0; b < 12; b++) {
+				iomodule.get_button(j, b).closest('.checkbox').tooltip();
+			}
+			
+		}
+		
 		// Add to config modal
 		var form = {};
 		
@@ -174,7 +189,29 @@ $(function() {
 		
 		config_modal.add_category('joysticks', 'Joysticks', form, 6);
 		config_modal.add_update_listener('joysticks', true, function(joysticks) {
+			
+			// Set tooltips
+			for(var j = 0; j < 6; j++) {
 				
+				// axes
+				var axes = ['x', 'y', 'z', 't'];
+				
+				for(var a = 0; a < 4; a++) {
+					
+					var tooltip = joysticks[j][axes[a] + '-axis-tooltip'];
+					iomodule.get_axis(j, a).attr('data-original-title', tooltip);
+				}
+				
+				// buttons
+				for(var b = 0; b < 12; b++) {
+					
+					var tooltip = joysticks[j]['btn-' + (b + 1) + '-tooltip'];
+					iomodule.get_button(j, b).closest('.checkbox').attr('data-original-title', tooltip);
+				}
+				
+			}
+			
+			// Set visibility 	
 			for(var i = 0; i < 6; i++) {
 				
 				if(joysticks[i].visible === 'y') {
