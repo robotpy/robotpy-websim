@@ -14,14 +14,6 @@
 		
 	</head>
 	<body>
-	
-	
-
-		<div id="top-menu" style="margin-bottom: 12px;">
-			<button id="open-config-modal-btn" class="btn btn-default btn-xs" >
-				<strong>Config</strong>
-			</button>
-		</div>
 		
 			<!-- Properties Dialog -->
 	<div class="modal fade" id="config-modal">
@@ -113,11 +105,11 @@
 					config_modal.add_category('robot', 'Robot', robot_form);
 					config_modal.set_active_category('robot');
 					
+					sim.add_js('modules/mode/mode.js');
 					sim.add_js('modules/analog/analog.js');
 					sim.add_js('modules/digital/digital.js');
 					sim.add_js('modules/solenoid/solenoid.js');
 					sim.add_js('modules/joysticks/joysticks.js');
-					sim.add_js('modules/mode/mode.js');
 					sim.add_js('modules/data-tree/data-tree.js');
 					sim.add_js('modules/simple-robot/simple-robot.js');
 					

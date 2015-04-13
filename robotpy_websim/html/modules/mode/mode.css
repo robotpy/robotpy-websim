@@ -2,3 +2,7 @@
 	width: 120px;
 	padding-left: 20px;
 }
+
+#connection_notification {
+	color: red;
+}

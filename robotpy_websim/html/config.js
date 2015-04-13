@@ -507,11 +507,6 @@ var config_modal = new function() {
 		config_modal.set_active_category(category_id);
 	});
 	
-	// Open the config modal
-	$('#open-config-modal-btn').click(function() {
-		config_modal.show();
-	});
-	
 	// Hide the config modal
 	$('#config-modal-ok-btn').click(function() {
 		if(!config_modal.category_form_element.valid()) {

@@ -9,7 +9,7 @@ $(function() {
 		$('<div id="mode">' + content + '</div>').appendTo('body');
 		
 		// Create module
-		var iomodule = sim.add_iomodule('mode', { 'title' : 'Mode' });
+		var iomodule = sim.add_iomodule('mode', { 'title' : 'Control' });
 		
 		if(!iomodule)
 			return;
@@ -24,6 +24,11 @@ $(function() {
 			if (mode == 'disabled')
 				mode = 'teleop';
 			sim.set_robot_mode(mode, enabled);
+		});
+		
+		// enable config modal button
+		$('#open-config-modal-btn').click(function() {
+			config_modal.show();
 		});
 	});
 	
