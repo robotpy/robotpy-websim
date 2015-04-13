@@ -6,6 +6,7 @@ from os.path import abspath, dirname, exists, join
 import threading
 import time
 import re
+import webbrowser
 
 try:
     import ujson as json
@@ -188,6 +189,8 @@ class Main:
                             help='Transmit simulation data every N ms')
         parser.add_argument('--port', default=8000, type=int,
                             help='Port for webserver listen on')
+        parser.add_argument('--no-launch', default=False,
+                            help="Don't automatically launch web browser")
     
     def server_thread(self):
         
@@ -200,10 +203,35 @@ class Main:
         ])
         
         print("Listening on http://localhost:%s/" % self.options.port)
-    
         app.listen(self.options.port, address='127.0.0.1')
-        IOLoop.instance().start()
         
+        if self.launch_thread is not None:
+            self.launch_thread.start()
+        
+        IOLoop.instance().start()
+    
+    def launch_browser(self):
+        try:
+            time.sleep(1.0)
+            w = None
+            
+            # Prefer chrome if available
+            for b in ['chrome', 'google-chrome', 'chromium', 'chromium-browser']:
+                if w is not None:
+                    break
+                try:
+                    w = webbrowser.get(using=b)
+                except:
+                    pass
+            
+            if w is None:
+                w = webbrowser.get()
+            
+            w.open('http://localhost:%s/' % self.options.port)
+        except:
+            logger.exception("Unexpected error trying to open browser automatically")
+        
+        return False
         
     def terrible_hack(self):
         # This terrible hack allows the DS thread to receive new joystick data
@@ -225,6 +253,11 @@ class Main:
         self.sim_path = join(robot_path, 'sim')
         if not exists(self.sim_path):
             os.mkdir(self.sim_path)
+            
+        if self.options.no_launch:
+            self.launch_thread = None
+        else:
+            self.launch_thread = threading.Thread(target=self.launch_browser, daemon=True)
         
         server_thread = threading.Thread(target=self.server_thread, daemon=True)
         server_thread.start()
