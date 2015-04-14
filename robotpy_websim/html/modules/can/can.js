@@ -131,7 +131,7 @@ $(function() {
 
 				var $can = $('<div class="row can-device" device-index="' + index + '">' +
 					'<div class="col-xs-1" style="padding-left: 10px">' +
-						'<strong style="font-size: 20px;">' + index + '</strong>' +
+						'<strong class="can-index" style="font-size: 20px;">' + index + '</strong>' +
 					'</div>' +
 					
 					'<div class="col-xs-5" style="padding-left: 0px; padding-right: 0px">' +
