@@ -1,6 +1,8 @@
 
 var sim = new function() {
 	
+	var sim = this;
+	
 	this.config = {};
 	
 	// constant that controls the time between updates
@@ -270,21 +272,7 @@ var sim = new function() {
 	
 	
 	function on_data() {
-		
-		// TODO: should this information be calculated by the sim?
-		var elapsed_time = 0;
-		var current_time =  Date.now();
-		if(time_of_last_update !== null) {
-			elapsed_time = current_time - time_of_last_update;
-		}
-		
-		time_of_last_update = current_time;
-		
-		//physics
-		for(var id in this.physics_modules) {
-			this.physics_modules[id].update(data_from_server, elapsed_time / 1000);
-		}
-		
+			
 		//update interface
 		for(var id in sim.iomodules) {
 			sim.iomodules[id].update_interface(data_from_server);
@@ -294,6 +282,36 @@ var sim = new function() {
 			sim.iomodules[id].modify_data_to_server(data_to_server);
 		}
 	}
+	
+	
+	
+	
+	
+	function update_physics() {
+		
+		if(socket) {
+		
+			// TODO: should this information be calculated by the sim?
+			var elapsed_time = 0;
+			var current_time =  Date.now();
+			if(time_of_last_update !== null) {
+				elapsed_time = current_time - time_of_last_update;
+			}
+			
+			time_of_last_update = current_time;
+			
+			//physics
+			for(var id in sim.physics_modules) {
+				sim.physics_modules[id].update(data_from_server, elapsed_time / 1000);
+			}
+		}
+		
+		setTimeout(update_physics, sim.UPDATE_RATE);
+		
+	}
+	
+	update_physics();
+	
 	
 	// Move the modules
 	// Events to drag toolbox
