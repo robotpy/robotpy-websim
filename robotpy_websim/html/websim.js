@@ -316,8 +316,10 @@ var sim = new function() {
 	
 	function update_physics() {
 		
-		if(socket) {
+		var mode = $('#control input[name=mode]:checked').val();
 		
+		if(socket && mode !== 'disabled') {
+
 			// TODO: should this information be calculated by the sim?
 			var elapsed_time = 0;
 			var current_time =  Date.now();
