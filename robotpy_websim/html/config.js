@@ -72,7 +72,7 @@ var config_modal = new function() {
 		on_update_listeners[id].push(listener);
 		
 		if(update_immediately) {
-			listener(sim.config[id], id);
+			listener(sim.config[id].elements, id);
 		}
 		
 	};
@@ -125,7 +125,7 @@ var config_modal = new function() {
 		
 		var listeners = on_update_listeners[category_id];
 		for(var i = 0; i < listeners.length; i++) {
-			listeners[i](sim.config[category_id], category_id);
+			listeners[i](sim.config[category_id].elements, category_id);
 		}
 	};
 	
@@ -276,7 +276,7 @@ var config_modal = new function() {
 		if(element === null)
 			return;
 		
-		temp_config[category_id][element] = config;
+		temp_config[category_id].elements[element] = config;
 	};
 	
 	function get_select(title, elements) {
@@ -376,10 +376,19 @@ var config_modal = new function() {
 		
 		//Set the data
 		var cat_data = temp_config[category_id];
+		
 		if (cat_data === undefined)
+			
 			return;
 		
-		var data = temp_config[category_id][config_modal.get_current_category_element()];
+		var elements = cat_data.elements;
+		
+		if(elements === undefined) {
+			return;
+		}
+
+		
+		var data = elements[config_modal.get_current_category_element()];
 		
 		if(data === undefined)
 			return;
@@ -430,15 +439,20 @@ var config_modal = new function() {
 		
 		// Initialize the config if it doesn't exist
 		if(sim.config[category_id] === undefined) {
-			sim.config[category_id] = [];
+			sim.config[category_id] = {};
+		}
+		
+		// Initialize elements if they don't exist
+		if(sim.config[category_id].elements === undefined) {
+			sim.config[category_id].elements = {};
 		}
 		
 		// Set each element in the config
 		for(var i = 0; i < category.elements; i++) {
 			
 			// Initialize the element if it doesn't exist
-			if(sim.config[category_id][i] === undefined) {
-				sim.config[category_id][i] = {};
+			if(sim.config[category_id].elements[i] === undefined) {
+				sim.config[category_id].elements[i] = {};
 			}
 			
 			// Set each form item in the element
@@ -449,20 +463,20 @@ var config_modal = new function() {
 					case 'input':
 						
 						// If it already has a value just continue
-						if(sim.config[category_id][i][name] !== undefined)
+						if(sim.config[category_id].elements[i][name] !== undefined)
 							continue;
 						
 						// Otherwise set a value
 						var value = category.form[name].attr.value;
-						sim.config[category_id][i][name] = value;
+						sim.config[category_id].elements[i][name] = value;
 						
 						break;
 						
 					case 'checkbox-group':
 						
 						// If it isn't an array initialize
-						if( _.isObject(sim.config[category_id][i][name]) === false)
-							sim.config[category_id][i][name] = {};
+						if( _.isObject(sim.config[category_id].elements[i][name]) === false)
+							sim.config[category_id].elements[i][name] = {};
 						
 						// go through each checkbox
 						for(var j = 0; j < category.form[name].checkboxes.length; j++) {
@@ -470,12 +484,12 @@ var config_modal = new function() {
 							// Initialize the element exists just continue
 							var checkbox_value = category.form[name].checkboxes[j].value;
 							
-							if(sim.config[category_id][i][name][checkbox_value] !== undefined)
+							if(sim.config[category_id].elements[i][name][checkbox_value] !== undefined)
 								continue;
 							
 							// Otherwise set a value
 							var checked = category.form[name].checkboxes[j].checked;
-							sim.config[category_id][i][name][checkbox_value] = checked;
+							sim.config[category_id].elements[i][name][checkbox_value] = checked;
 						}
 							
 						break;
@@ -489,8 +503,8 @@ var config_modal = new function() {
 						}
 						
 						// If the selected radio isn't one of the possible options then set it to the default
-						if( _.contains(values, sim.config[category_id][i][name]) === false )
-							sim.config[category_id][i][name] = category.form[name].value;
+						if( _.contains(values, sim.config[category_id].elements[i][name]) === false )
+							sim.config[category_id].elements[i][name] = category.form[name].value;
 							
 						break;
 				}

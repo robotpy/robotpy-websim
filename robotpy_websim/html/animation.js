@@ -94,11 +94,12 @@ var animation = new function() {
 	
 	function get_transform_rotate_angle(selector) {
 		
-	    var matrix = $(selector).css("-webkit-transform") ||
-	    obj.css("-moz-transform")    ||
-	    obj.css("-ms-transform")     ||
-	    obj.css("-o-transform")      ||
-	    obj.css("transform");
+		var $obj = $(selector);
+	    var matrix = $obj.css("-webkit-transform") ||
+	    $obj.css("-moz-transform")    ||
+	    $obj.css("-ms-transform")     ||
+	    $obj.css("-o-transform")      ||
+	    $obj.css("transform");
 	    if(matrix !== 'none') {
 	        var values = matrix.split('(')[1].split(')')[0].split(',');
 	        var a = values[0];

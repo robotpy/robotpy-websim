@@ -155,7 +155,7 @@ $(function() {
 			"type" : "radio-group",
 			"label" : "Visible:",
 			"inline" : true,
-			"value" : "y",
+			"value" : "n",
 			"radios" : [
 	            { "label" : "Yes", "value" : "y" },
 	            { "label" : "No", "value" : "n" }
@@ -212,13 +212,22 @@ $(function() {
 			}
 			
 			// Set visibility 	
+			var joystick_visible = false;
+			
 			for(var i = 0; i < 6; i++) {
 				
 				if(joysticks[i].visible === 'y') {
 					iomodule.get_joystick(i).removeClass('hidden');
+					joystick_visible = true;
 				} else {
 					iomodule.get_joystick(i).addClass('hidden');
 				}
+			}
+			
+			if(!joystick_visible) {
+				iomodule.element.addClass('hidden');
+			} else {
+				iomodule.element.removeClass('hidden');
 			}
 			
 		});

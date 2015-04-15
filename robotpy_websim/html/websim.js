@@ -80,6 +80,16 @@ var sim = new function() {
 			return false;
 		}
 		
+		// Add to config
+		if(this.config[id] === undefined) {
+			this.config[id] = {};
+		}
+		
+		if(this.config[id].position === undefined) {
+			this.config[id].position = { 'x' : 0, 'y' : 0 };
+		}
+		
+		// Initialize the iomdoule
 		iomodule = $.extend({
 			
 			// The title displayed for the module
@@ -93,15 +103,38 @@ var sim = new function() {
 			
 			// Modifies the content displayed using a copy of the most 
 			// recent data from the server.
-			update_interface : function(data_from_server) {}
+			update_interface : function(data_from_server) {},
+			
+			set_position : function(x, y) {
+				
+				this.element.css({
+					'left' : x,
+					'top' : y
+				});
+				
+				sim.config[id].position = { 'x' : x, 'y' : y };
+			},
+			
+			get_x : function() {
+				return this.element.position().left;
+			},
+			
+			get_y : function() {
+				return this.element.position().top;
+			}
 			
 		}, iomodule);
 		
 		iomodule.element = $('#' + id)
 		iomodule.element.addClass('iomodule');
-		iomodule.element.prepend('<h4 class="title">' + iomodule.title + '</h4>');
+		iomodule.element.prepend('<h4 class="title noselect cursor-grab">' + iomodule.title + '</h4>');
+		iomodule.element.css({
+			'left' : sim.config[id].position.x,
+			'top' : sim.config[id].position.y
+		});
 		
 		this.iomodules[id] = iomodule;
+		
 		
 		return iomodule;
 	};
@@ -261,5 +294,56 @@ var sim = new function() {
 			sim.iomodules[id].modify_data_to_server(data_to_server);
 		}
 	}
+	
+	// Move the modules
+	// Events to drag toolbox
+	$(function() {
+		
+		var iomodule = null;
+		var click_position = null;
+		var iomodule_start_position = null;
+		
+		$('body').on('mousedown', '.cursor-grab', function(e) {
+			
+			var $iomodule = $(this).closest('.iomodule');
+			
+			if( $iomodule.length === 0) {
+				return;
+			}
+			
+			iomodule = sim.iomodules[$iomodule.attr('id')];
+			
+			if(!iomodule) {
+				return;
+			}
+			
+	    	click_position = { 'x' : e.clientX, 'y' : e.clientY };
+	    	iomodule_start_position = { 'x' : iomodule.get_x(), 'y' : iomodule.get_y() };
+	    	$('body').addClass('noselect');
+	    	
+	    });
+		
+		$(window).mouseup(function(e) {
+		   
+		   if(iomodule) {
+			   sim.save_config();
+			   iomodule = null;
+			   $('body').removeClass('noselect');
+		   }
+	       
+	    }).mousemove(function(e) {
+	    	
+	    	if(!iomodule) {
+	    		return;
+	    	}
+	    	
+	    	var dx = e.clientX - click_position.x;
+	    	var dy = e.clientY - click_position.y;
+	    	
+	    	iomodule.set_position(iomodule_start_position.x + dx, iomodule_start_position.y + dy);
+	    	
+	    });
+		
+	});
 
 }
