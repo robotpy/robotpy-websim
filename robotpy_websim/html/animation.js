@@ -24,7 +24,7 @@ var animation = new function() {
 		
 		d3.select(selector).transition()
 			.duration(duration)
-			.ease('sin')
+			.ease('linear')
 			.style('left', x + 'px')
 			.style('top', y + 'px');
 		
@@ -71,6 +71,50 @@ var animation = new function() {
 			.styleTween('top', function() { return y_axis(center_y, radius, angle, angle + rotate) } );
 		
 	};
+	
+	this.rotate = function(selector, rotate, duration) {
+		
+		var current_angle = get_transform_rotate_angle(selector);
+
+		var new_angle = current_angle - rotate;
+		
+		function rotate_angle(start_angle, end_angle) {
+			return function(t) {
+				var angle = start_angle + t * (end_angle - start_angle);
+				return 'rotate(' + angle + 'deg' + ')';
+			}
+		}
+		
+		d3.select(selector).transition()
+			.duration(duration)
+			.ease('linear')
+			.styleTween('transform', function() { return rotate_angle(current_angle, new_angle) } );
+		
+	};
+	
+	function get_transform_rotate_angle(selector) {
+		
+	    var matrix = $(selector).css("-webkit-transform") ||
+	    obj.css("-moz-transform")    ||
+	    obj.css("-ms-transform")     ||
+	    obj.css("-o-transform")      ||
+	    obj.css("transform");
+	    if(matrix !== 'none') {
+	        var values = matrix.split('(')[1].split(')')[0].split(',');
+	        var a = values[0];
+	        var b = values[1];
+	        var angle = Math.atan2(b, a);
+	    } else { 
+	    	var angle = 0; 
+	    }
+	    
+	    if(angle < 0) {
+	    	angle += Math.PI * 2;
+	    }
+	    
+	    return angle * 180 / Math.PI;
+	}
+
 	
 }
 
