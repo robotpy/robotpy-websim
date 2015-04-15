@@ -3,6 +3,10 @@
 	padding-left: 20px;
 }
 
-#connection_notification {
+#connection_notification.disconnected {
 	color: red;
+}
+
+#connection_notification.connected {
+	color: green;
 }

@@ -30,6 +30,23 @@ $(function() {
 		$('#open-config-modal-btn').click(function() {
 			config_modal.show();
 		});
+		
+		// Add connection listener
+		sim.add_connection_listener(function(connected) {
+			
+			var $connection_indicator = iomodule.element.find('#connection_notification');
+			
+			if(connected) {
+				$connection_indicator.addClass('connected');
+				$connection_indicator.removeClass('disconnected');
+				$connection_indicator.text('Connected!');		
+			} else {
+				$connection_indicator.removeClass('connected');
+				$connection_indicator.addClass('disconnected');
+				$connection_indicator.text('Disconnected!');
+			}
+			
+		});
 	});
 	
 });

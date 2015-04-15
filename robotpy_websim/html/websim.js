@@ -30,6 +30,10 @@ var sim = new function() {
 	//websocket object
 	var socket = null;
 	
+	// Listens to the socket when it connects/disconnects
+	var connection_listeners = [];
+	var connected = false;
+	
 	// dictionary received from server
 	var data_from_server = null;
 	
@@ -219,6 +223,27 @@ var sim = new function() {
 		socket.send(JSON.stringify(msg));
 	}
 	
+	this.add_connection_listener = function(listener, notify_immedately) {
+		
+		if(_.isFunction(listener) === false) {
+			return
+		}
+			
+		connection_listeners.push(listener);
+		
+		if(notify_immedately) {
+			listener(connected);
+		}
+	}
+	
+	function notify_connection_listeners() {
+		
+		for(var i = 0; i < connection_listeners.length; i++) {
+			connection_listeners[i](connected);
+		}
+	}
+	
+	
 	function setup_socket() {
 		var l = window.location;
 		var url = "ws://" + l.hostname + ":" + l.port + "/api";
@@ -229,6 +254,8 @@ var sim = new function() {
 			// reset vars
 			data_from_sever = null;
 			data_to_server = null;
+			connected = true;
+			notify_connection_listeners();
 		}
 		
 		// called when sim data comes from the server
@@ -257,8 +284,8 @@ var sim = new function() {
 		}
 		
 		socket.onclose = function(a) {
-			console.log(a);
-			// TODO
+			connected = false;
+			notify_connection_listeners();
 		}
 	}
 	
