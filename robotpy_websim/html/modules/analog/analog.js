@@ -49,9 +49,9 @@ $(function() {
 						
 						analog_type = 'trigger';
 						if(analog_triggers[i].trig_state) {
-							this.set_analog_value(i, 10);
+							this.set_analog_value(i, true);
 						} else {
-							this.set_analog_value(i, -10);
+							this.set_analog_value(i, false);
 						}
 					}
 					
@@ -74,10 +74,10 @@ $(function() {
 				
 			this.set_analog_value = function(index, value) {
 				
-				value = parseFloat(value);
+				var num_value = _.isBoolean(value) ? (value ? 10 : -10) : parseFloat(value);
 				
 				var slide_holder = this.get_analog(index);
-				slide_holder.find('input').slider('setValue', value);
+				slide_holder.find('input').slider('setValue', num_value);
 				var slider = slide_holder.find('.slider');
 				module.on_slide(slider, value);
 			};
@@ -90,31 +90,38 @@ $(function() {
 			
 			
 			this.on_slide = function(element, value) {
+				
+				var num_value = _.isBoolean(value) ? (value ? 10 : -10) : value;
+				
 				var negative_color = '#FCC';
 				var positive_color = '#CFC';
 				var neutral_color = 'lightgray';
 				
 				//get size and position
-				var width = (Math.abs(value / 10.0) * 50).toFixed(0);
+				var width = (Math.abs(num_value / 10.0) * 50).toFixed(0);
 				var left = 50;
-				if(value < 0) {
+				if(num_value < 0) {
 					left -= width;
 				}
 				//style
 				element.find('.slider-track .slider-selection').css('left', left + '%');
 				element.find('.slider-track .slider-selection').css('width', width + '%');
-				if(value < 0) {
+				if(num_value < 0) {
 					element.find('.slider-track .slider-selection').css('background', negative_color);
 					element.find('.slider-track .slider-handle').css('background', negative_color);
-				} else if(value > 0) {
+				} else if(num_value > 0) {
 					element.find('.slider-track .slider-selection').css('background', positive_color);
 					element.find('.slider-track .slider-handle').css('background', positive_color);
 				} else {
 					element.find('.slider-track .slider-handle').css('background', neutral_color);
 				}
-					
+				
 				//display value
-				element.siblings('.slider-value').text(value.toFixed(2));
+				if(_.isBoolean(value)) {
+					element.siblings('.slider-value').text(value ? 'True' : 'False');
+				} else {
+					element.siblings('.slider-value').text(value.toFixed(2));
+				}
 			};
 		});
 	}

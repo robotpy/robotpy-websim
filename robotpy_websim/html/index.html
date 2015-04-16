@@ -15,40 +15,41 @@
 	</head>
 	<body>
 		
-			<!-- Properties Dialog -->
-	<div class="modal fade" id="config-modal">
-		<div class="modal-dialog">
-		   	<div class="modal-content">
-			    <div class="modal-header">
-				    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-				    <h4 class="modal-title">Configure Websim</h4>
-			    </div>
-			   
-				    <div class="modal-body">
-					    <!-- Module specific content goes here -->
-					    <div class="row" style="height: 100%">
-					    	<div class="col-xs-3" style="height: 100%; padding-right: 5px;">
-							    <ul id="config-categories" class="nav nav-pills nav-stacked">
-								</ul>
-							</div>
-							<div class="col-xs-9" style="height: 100%; padding-left: 5px; overflow: auto">
-								
-								<form action="#" id="config-active-category-form" class="form-horizontal">
-								</form>
-							</div>
-						</div>
-				   	</div>
-				    <div class="modal-footer">
-					    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
-					    <button id="config-modal-ok-btn" class="btn btn-primary btn-sm">OK</button>
+		<!-- Properties Dialog -->
+		<div class="modal fade" id="config-modal">
+			<div class="modal-dialog">
+			   	<div class="modal-content">
+				    <div class="modal-header">
+					    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+					    <h4 class="modal-title">Configure Websim</h4>
 				    </div>
-			    
-		   	</div>
-	  	</div>
-	</div>
+				   
+					    <div class="modal-body">
+						    <!-- Module specific content goes here -->
+						    <div class="row" style="height: 100%">
+						    	<div class="col-xs-3" style="height: 100%; padding-right: 5px;">
+								    <ul id="config-categories" class="nav nav-pills nav-stacked">
+									</ul>
+								</div>
+								<div class="col-xs-9" style="height: 100%; padding-left: 5px; overflow: auto">
+									
+									<form action="#" id="config-active-category-form" class="form-horizontal">
+									</form>
+								</div>
+							</div>
+					   	</div>
+					    <div class="modal-footer">
+						    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+						    <button id="config-modal-ok-btn" class="btn btn-primary btn-sm">OK</button>
+					    </div>
+				    
+			   	</div>
+		  	</div>
+		</div>
 	
+		<!-- Contains all the IOModules -->
 		<div id="iomodules"></div>
-	
+			
 	
 		<script src="resources/jquery-2.1.3.min.js"></script>
 		<script src="resources/validation/jquery.validate.min.js"></script>
