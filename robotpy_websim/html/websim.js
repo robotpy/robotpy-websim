@@ -92,8 +92,14 @@ var sim = new function() {
 		}
 		
 		if(this.config[id].position === undefined) {
-			this.config[id].position = { 'x' : 0, 'y' : 0 };
+			this.config[id].position = {};
 		}
+		
+		this.config[id].position = $.extend({
+			'x' : 0,
+			'y' : 0,
+			'moved' : false
+		}, this.config[id].position);
 		
 		// Initialize the iomdoule
 		iomodule = $.extend({
@@ -111,14 +117,14 @@ var sim = new function() {
 			// recent data from the server.
 			update_interface : function(data_from_server) {},
 			
-			set_position : function(x, y) {
+			set_position : function(x, y, dont_save) {
 				
 				this.element.css({
 					'left' : x,
-					'top' : y
+					'top' : y,
 				});
 				
-				sim.config[id].position = { 'x' : x, 'y' : y };
+				sim.config[id].position = { 'x' : x, 'y' : y, 'moved' : true };
 			},
 			
 			get_x : function() {
@@ -134,10 +140,6 @@ var sim = new function() {
 		iomodule.element = $('#' + id)
 		iomodule.element.addClass('iomodule');
 		iomodule.element.prepend('<h4 class="title noselect cursor-grab">' + iomodule.title + '</h4>');
-		iomodule.element.css({
-			'left' : sim.config[id].position.x,
-			'top' : sim.config[id].position.y
-		});
 		
 		this.iomodules[id] = iomodule;
 		

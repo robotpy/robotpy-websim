@@ -203,7 +203,7 @@ $(function() {
 		"type" : "radio-group",
 		"label" : "Visible:",
 		"inline" : true,
-		"value" : "n",
+		"value" : "y",
 		"radios" : [
             { "label" : "Yes", "value" : "y" },
             { "label" : "No", "value" : "n" }

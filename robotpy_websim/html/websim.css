@@ -2,6 +2,14 @@ body {
 	padding: 10px;
 }
 
+body.flow-layout .iomodule {
+	position: static;
+}
+
+body.absolute-layout .iomodule {
+	position: absolute;
+}
+
 
 .btn-circle {
   width: 18px;
@@ -21,7 +29,6 @@ body {
 	border-radius: 20px;
 	display:inline-block;
 	vertical-align: top;
-	position: absolute;
 }
 
 .iomodule > h4 {
