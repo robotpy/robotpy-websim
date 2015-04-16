@@ -13,7 +13,7 @@
 		<link rel="stylesheet" href="config.css">
 		
 	</head>
-	<body class="flow-layout">
+	<body>
 		
 			<!-- Properties Dialog -->
 	<div class="modal fade" id="config-modal">
@@ -115,22 +115,6 @@
 					sim.add_js('modules/data-tree/data-tree.js');
 					sim.add_js('modules/simple-robot/simple-robot.js');
  					sim.add_js('modules/can/can.js');
-
- 					// Set to absolute layout after modules are initialized
- 					//function set
- 					setTimeout(function() {
- 						for(var id in sim.iomodules) {
- 							var iomodule = sim.iomodules[id];
- 							var left = sim.config[id].position.moved ? sim.config[id].position.x : iomodule.element.offset().left;
- 							var top = sim.config[id].position.moved ? sim.config[id].position.y : iomodule.element.position().top;
- 							iomodule.element.css({
- 								'left' : left,
- 								'top' : top
- 							});
- 						}
- 						$('body').removeClass('flow-layout');
- 						$('body').addClass('absolute-layout');
- 					}, 3000);
 					
 					sim.start();	
 				});

@@ -141,6 +141,16 @@ var sim = new function() {
 		iomodule.element.addClass('iomodule');
 		iomodule.element.prepend('<h4 class="title noselect cursor-grab">' + iomodule.title + '</h4>');
 		
+		if(this.config[id].position.moved) {
+			iomodule.element.addClass('absolute-layout');
+			iomodule.element.css({
+				'left' : sim.config[id].position.x,
+				'top' : sim.config[id].position.y
+			});
+		} else {
+			iomodule.element.addClass('flow-layout');
+		}
+		
 		this.iomodules[id] = iomodule;
 		
 		
@@ -360,10 +370,20 @@ var sim = new function() {
 				return;
 			}
 			
-			iomodule = sim.iomodules[$iomodule.attr('id')];
+			var id = $iomodule.attr('id');
+			
+			iomodule = sim.iomodules[id];
 			
 			if(!iomodule) {
 				return;
+			}
+			
+			// Set its position if it hasn't been moved
+			if(!sim.config[id].position.moved) {
+				iomodule.set_position(iomodule.element.offset().left, iomodule.element.offset().top);
+				iomodule.element.removeClass('flow-layout');
+				iomodule.element.addClass('absolute-layout');
+				sim.config[id].position.moved = true;
 			}
 			
 	    	click_position = { 'x' : e.clientX, 'y' : e.clientY };

@@ -2,14 +2,13 @@ body {
 	padding: 10px;
 }
 
-body.flow-layout .iomodule {
-	position: static;
+.iomodule.flow-layout {
+	position: relative;
 }
 
-body.absolute-layout .iomodule {
+.iomodule.absolute-layout {
 	position: absolute;
 }
-
 
 .btn-circle {
   width: 18px;
