@@ -31,11 +31,11 @@ $(function() {
 			this.set_solenoid_value = function(index, value) {
 				var solenoid = this.get_solenoid(index).find('.solenoid');
 				
-				if(value) {
+				if(value === true) {
 					solenoid.addClass('btn-success');
 					solenoid.removeClass('btn-danger');
 					solenoid.removeClass('btn-default');
-				} else if(!value) {
+				} else if(value === false) {
 					solenoid.removeClass('btn-success');
 					solenoid.addClass('btn-danger');
 					solenoid.removeClass('btn-default');
