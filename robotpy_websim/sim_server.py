@@ -20,6 +20,7 @@ from tornado.websocket import WebSocketHandler
 
 from hal_impl import mode_helpers
 from hal_impl.data import hal_data, hal_in_data, update_hal_data
+from hal import TalonSRXConst as tsrxc
 
 import logging
 logger = logging.getLogger('websim')
@@ -136,8 +137,22 @@ class ApiHandler(tornado.web.RequestHandler):
             
             :param param: The matching parameter for /api/(.*)
         '''
+        
+        if param == 'can_mode_map':
+            can_mode_map = {
+                        tsrxc.kMode_CurrentCloseLoop: 'PercentVbus',
+                        tsrxc.kMode_DutyCycle:'PercentVbus',
+                        tsrxc.kMode_NoDrive:'Disabled',
+                        tsrxc.kMode_PositionCloseLoop:'Position',
+                        tsrxc.kMode_SlaveFollower:'Follower',
+                        tsrxc.kMode_VelocityCloseLoop:'Speed',
+                        tsrxc.kMode_VoltCompen:'Voltage'
+                     }
+            
+            self.write(can_mode_map)
                 
-        raise tornado.web.HTTPError(404)
+        else:
+            raise tornado.web.HTTPError(404)
     
     def post(self, param):
         '''

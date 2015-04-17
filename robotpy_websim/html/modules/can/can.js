@@ -10,6 +10,11 @@ $(function() {
 			
 			this.title = 'CAN';
 			
+			var can_mode_map = {};
+			
+			// Get the can mode map from the server
+			$.getJSON('/api/can_mode_map', function(data) { can_mode_map = data; });
+			
 			
 			this.modify_data_to_server = function(data_to_server) {
 				
@@ -52,14 +57,15 @@ $(function() {
 					
 					// Set the mode
 					var mode = can[i].mode_select;
-					$can.find('.can-mode').text(mode);
+					$can.find('.can-mode').text(get_mode_name(mode));
 					
 					// Set encode value
 					var encoder = can[i].enc_position;
 					$can.find('.encoder-value span').text(encoder);
 					
 					// Set S thingy value
-					var s_thingy = 0;
+					var sensor = can[i].sensor_position;
+					$can.find('.sensor-value span').text(sensor);
 					
 				}
 				
@@ -144,7 +150,7 @@ $(function() {
 					
 					'<div class="col-xs-4" style="padding-left: 10px;  padding-right: 0px;">' +
 						'<p><strong class="encoder-value">Encoder: </strong><span>0</span></p>' +
-						'<p><strong class="s-value">S: </strong><span>0</span></p>' +
+						'<p><strong class="sensor-value">Sensor: </strong><span>0</span></p>' +
 					'</div>' +
 					
 					'<div class="col-xs-2" style="left: -10px; padding-left: 0px;">' +
@@ -172,6 +178,13 @@ $(function() {
 				
 				return $can;
 				
+			}
+			
+			function get_mode_name(mode) {
+				
+				var mode_name = can_mode_map[mode];
+					
+				return (mode_name !== undefined) ? mode_name : 'Unknown';
 			}
 		});
 	}
