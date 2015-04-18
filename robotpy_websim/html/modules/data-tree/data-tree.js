@@ -2,44 +2,42 @@
 
 $(function() {
 	
-	function create_iomodule() {
+	function Data_Tree() {
+			
+		var module = this;
 		
-		return sim.add_iomodule('data-tree', new function() {
+		this.title = 'Data Tree';
+		
+		this.on_config_update = function(data_tree) {
 			
-			var module = this;
+			var visible = data_tree[0].visible;
 			
-			this.title = 'Data Tree';
+			if(visible === 'y') {
+				this.element.removeClass('hidden');
+			} else {
+				this.element.addClass('hidden');
+			}
+		};
+		
+		this.init = function() {
 			
-			this.on_config_update = function(data_tree) {
-				
-				var visible = data_tree[0].visible;
-				
-				if(visible === 'y') {
-					this.element.removeClass('hidden');
-				} else {
-					this.element.addClass('hidden');
-				}
-			};
-			
-			this.init = function() {
-				
-				this.update = true;
-				this.element.on('click', '.update-btn', function() {
-					module.update = true;
-				});	
-			};
+			this.update = true;
+			this.element.on('click', '.update-btn', function() {
+				module.update = true;
+			});	
+		};
 
-			this.update_interface = function(data) {
-				if(this.update) {
-					this.element.find('.out-tree').jsonTree({ 'data' : data });
-					this.update = false;
-				}
-				
-			};
+		this.update_interface = function(data) {
+			if(this.update) {
+				this.element.find('.out-tree').jsonTree({ 'data' : data });
+				this.update = false;
+			}
 			
-		});
+		};
 		
 	}
+	
+	Data_Tree.prototype = new IOModule();
 	
 	
 	// Load content
@@ -49,9 +47,9 @@ $(function() {
 		$('<div id="data-tree">' + content + '</div>').appendTo('body');
 		
 		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = create_iomodule();
+		var iomodule = new Data_Tree();
 		
-		if(!iomodule) {
+		if(!sim.add_iomodule('data-tree', iomodule)) {
 			return;
 		}
 		

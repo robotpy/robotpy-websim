@@ -1,3 +1,53 @@
+"use strict";
+
+function IOModule() {
+	
+	// The DOM element of the IOModule
+	this.element = null;
+	
+	// The title displayed for the module
+	this.title = 'Just Another IOModule';
+	
+	// Modifies the data sent to the server. The most recent
+	// data from the server will be passed by reference. 
+	// The data passed to this function will reflect modifications 
+	// made by IOModules' modify_data_to_server functions
+	this.modify_data_to_server = function(data_to_server) {};
+	
+	// Modifies the content displayed using a copy of the most 
+	// recent data from the server.
+	this.update_interface = function(data_from_server) {};
+	
+	this.set_position = function(x, y, dont_save) {
+		
+		this.element.css({
+			'left' : x,
+			'top' : y,
+		});
+		
+	};
+	
+	this.get_x = function() {
+		return this.element.position().left;
+	};
+	
+	this.get_y = function() {
+		return this.element.position().top;
+	};
+}
+
+function Physics_Module() {
+	
+	// The fields needed to represent the robot
+	this.robot = {};
+	
+	// Function that's called to initialize the physics module
+	this.init = function() {};
+	
+	// Called periodically to update the physics module
+	this.update = function(data_from_server, time_elapsed) {};
+}
+
 
 var sim = new function() {
 	
@@ -80,9 +130,14 @@ var sim = new function() {
 	 */
 	
 	this.add_iomodule = function(id, iomodule) {
+
+		
+		if(this.iomodules.hasOwnProperty(id)) {
+			return false;
+		}
 		
 		
-		if(this.is_running || this.iomodules.hasOwnProperty(id)) {
+		if( !(iomodule instanceof IOModule) ) {
 			return false;
 		}
 		
@@ -100,42 +155,6 @@ var sim = new function() {
 			'y' : 0,
 			'moved' : false
 		}, this.config[id].position);
-		
-		// Initialize the iomdoule
-		iomodule = $.extend({
-			
-			// The title displayed for the module
-			title : 'Just Another IOModule',
-			
-			// Modifies the data sent to the server. The most recent
-			// data from the server will be passed by reference. 
-			// The data passed to this function will reflect modifications 
-			// made by IOModules' modify_data_to_server functions
-			modify_data_to_server : function(data_to_server) {},
-			
-			// Modifies the content displayed using a copy of the most 
-			// recent data from the server.
-			update_interface : function(data_from_server) {},
-			
-			set_position : function(x, y, dont_save) {
-				
-				this.element.css({
-					'left' : x,
-					'top' : y,
-				});
-				
-				sim.config[id].position = { 'x' : x, 'y' : y, 'moved' : true };
-			},
-			
-			get_x : function() {
-				return this.element.position().left;
-			},
-			
-			get_y : function() {
-				return this.element.position().top;
-			}
-			
-		}, iomodule);
 		
 		iomodule.element = $('#' + id)
 		iomodule.element.addClass('iomodule');
@@ -211,7 +230,7 @@ var sim = new function() {
 			return;
 		}
 		
-		is_running = true;
+		this.is_running = true;
 		
 		setup_socket();
 	};
@@ -264,7 +283,7 @@ var sim = new function() {
 		socket.onopen = function() {
 			
 			// reset vars
-			data_from_sever = null;
+			data_from_server = null;
 			data_to_server = null;
 			connected = true;
 			notify_connection_listeners();
@@ -288,7 +307,7 @@ var sim = new function() {
 			
 			on_data();
 			
-			sim_msg = {}
+			var sim_msg = {};
 			sim_msg.msgtype = 'input';
 			sim_msg.data = data_to_server;
 			//console.log(data_to_server.analog_in[1]);
@@ -359,6 +378,7 @@ var sim = new function() {
 	$(function() {
 		
 		var iomodule = null;
+		var iomodule_id = null;
 		var click_position = null;
 		var iomodule_start_position = null;
 		
@@ -370,21 +390,23 @@ var sim = new function() {
 				return;
 			}
 			
-			var id = $iomodule.attr('id');
+			iomodule_id = $iomodule.attr('id');
 			
-			iomodule = sim.iomodules[id];
+			iomodule = sim.iomodules[iomodule_id];
 			
 			if(!iomodule) {
 				return;
 			}
 			
+			
 			// Set its position if it hasn't been moved
-			if(!sim.config[id].position.moved) {
+			if(!sim.config[iomodule_id].position.moved) {
 				iomodule.set_position(iomodule.element.offset().left, iomodule.element.offset().top);
 				iomodule.element.removeClass('flow-layout');
 				iomodule.element.addClass('absolute-layout');
-				sim.config[id].position.moved = true;
+				sim.config[iomodule_id].position.moved = true;
 			}
+			
 			
 	    	click_position = { 'x' : e.clientX, 'y' : e.clientY };
 	    	iomodule_start_position = { 'x' : iomodule.get_x(), 'y' : iomodule.get_y() };
@@ -395,8 +417,10 @@ var sim = new function() {
 		$(window).mouseup(function(e) {
 		   
 		   if(iomodule) {
+			   sim.config[iomodule_id].position = { 'x' : e.clientX, 'y' : e.clientY, 'moved' : true };
 			   sim.save_config();
 			   iomodule = null;
+			   iomodule_id = null;
 			   $('body').removeClass('noselect');
 		   }
 	       

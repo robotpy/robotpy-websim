@@ -9,10 +9,14 @@ $(function() {
 		$('<div id="control">' + content + '</div>').appendTo('body');
 		
 		// Create module
-		var iomodule = sim.add_iomodule('control', { 'title' : 'Control' });
+		function Control(){ this.title = 'Control'; };
+		Control.prototype = new IOModule();
 		
-		if(!iomodule)
+		var iomodule = new Control();
+
+		if(!sim.add_iomodule('control', iomodule)) {
 			return;
+		}
 		
 		// Add css
 		sim.add_css('modules/control/control.css');
