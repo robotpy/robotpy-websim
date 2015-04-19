@@ -4,8 +4,16 @@ build
 MANIFEST
 __pycache__
 *.egg-info
+.coverage
 
 version.py
 
+.DS_Store
+.settings
 .project
 .pydevproject
+
+user-config.json
+.deploy_cfg
+
+docs/_build
