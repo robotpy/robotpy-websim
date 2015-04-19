@@ -204,7 +204,7 @@ class Main:
                             help='Transmit simulation data every N ms')
         parser.add_argument('--port', default=8000, type=int,
                             help='Port for webserver listen on')
-        parser.add_argument('--no-launch', default=False,
+        parser.add_argument('--no-launch', default=False, action='store_true',
                             help="Don't automatically launch web browser")
     
     def server_thread(self):
