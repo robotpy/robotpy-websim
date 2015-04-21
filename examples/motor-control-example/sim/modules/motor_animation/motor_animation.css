@@ -1,0 +1,15 @@
+
+#motor_svg {
+	height: 200px;
+	width: 200px;
+}
+
+#motor_svg circle {
+	fill: green;
+}
+
+#motor_svg line {
+	stroke: black;
+	stroke-width: 3px;
+}
+
