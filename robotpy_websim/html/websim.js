@@ -36,19 +36,6 @@ function IOModule() {
 	};
 }
 
-function Physics_Module() {
-	
-	// The fields needed to represent the robot
-	this.robot = {};
-	
-	// Function that's called to initialize the physics module
-	this.init = function() {};
-	
-	// Called periodically to update the physics module
-	this.update = function(data_from_server, time_elapsed) {};
-}
-
-
 var sim = new function() {
 	
 	var sim = this;
@@ -90,38 +77,6 @@ var sim = new function() {
 	// dictionary that can be transmitted to sim
 	var data_to_server = null;
 	
-	this.load_config = function(callback) {
-		
-			
-		$.ajax({
-		   type: 'GET',
-		   url: '/user/config.json',
-		   dataType: 'json',
-		   success: function(config) {
-			   sim.config = config;
-		   },
-		   complete: function() {
-			   if(_.isFunction(callback)) {
-				   callback();
-			   }
-		   }
-		});
-	};
-	
-	this.save_config = function(callback) {
-		$.ajax({
-			type: 'POST',
-			url: '/api/config/save',
-			data: {
-				'config' : JSON.stringify(sim.config)
-			},
-			complete: function() {
-				if(_.isFunction(callback)) {
-					callback();
-			    }
-			}
-		});
-	};
 	
 	/*
 	 * Creates an IOModule and then returns it.
@@ -150,21 +105,21 @@ var sim = new function() {
 			this.config[id].position = {};
 		}
 		
-		this.config[id].position = $.extend({
+		var position = $.extend({
 			'x' : 0,
 			'y' : 0,
 			'moved' : false
-		}, this.config[id].position);
+		}, user_config.saved_config[id]);
 		
 		iomodule.element = $('#' + id)
 		iomodule.element.addClass('iomodule');
 		iomodule.element.prepend('<h4 class="title noselect cursor-grab">' + iomodule.title + '</h4>');
 		
-		if(this.config[id].position.moved) {
+		if(position.moved) {
 			iomodule.element.addClass('absolute-layout');
 			iomodule.element.css({
-				'left' : sim.config[id].position.x,
-				'top' : sim.config[id].position.y
+				'left' : position.x,
+				'top' : position.y
 			});
 		} else {
 			iomodule.element.addClass('flow-layout');
@@ -371,72 +326,5 @@ var sim = new function() {
 	}
 	
 	update_physics();
-	
-	
-	// Move the modules
-	// Events to drag toolbox
-	$(function() {
-		
-		var iomodule = null;
-		var iomodule_id = null;
-		var click_position = null;
-		var iomodule_start_position = null;
-		
-		$('body').on('mousedown', '.cursor-grab', function(e) {
-			
-			var $iomodule = $(this).closest('.iomodule');
-			
-			if( $iomodule.length === 0) {
-				return;
-			}
-			
-			iomodule_id = $iomodule.attr('id');
-			
-			iomodule = sim.iomodules[iomodule_id];
-			
-			if(!iomodule) {
-				return;
-			}
-			
-			
-			// Set its position if it hasn't been moved
-			if(!sim.config[iomodule_id].position.moved) {
-				iomodule.set_position(iomodule.element.offset().left, iomodule.element.offset().top);
-				iomodule.element.removeClass('flow-layout');
-				iomodule.element.addClass('absolute-layout');
-				sim.config[iomodule_id].position.moved = true;
-			}
-			
-			
-	    	click_position = { 'x' : e.clientX, 'y' : e.clientY };
-	    	iomodule_start_position = { 'x' : iomodule.get_x(), 'y' : iomodule.get_y() };
-	    	$('body').addClass('noselect');
-	    	
-	    });
-		
-		$(window).mouseup(function(e) {
-		   
-		   if(iomodule) {
-			   sim.config[iomodule_id].position = { 'x' : e.clientX, 'y' : e.clientY, 'moved' : true };
-			   sim.save_config();
-			   iomodule = null;
-			   iomodule_id = null;
-			   $('body').removeClass('noselect');
-		   }
-	       
-	    }).mousemove(function(e) {
-	    	
-	    	if(!iomodule) {
-	    		return;
-	    	}
-	    	
-	    	var dx = e.clientX - click_position.x;
-	    	var dy = e.clientY - click_position.y;
-	    	
-	    	iomodule.set_position(iomodule_start_position.x + dx, iomodule_start_position.y + dy);
-	    	
-	    });
-		
-	});
 
 }

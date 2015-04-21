@@ -178,6 +178,21 @@ class ApiHandler(tornado.web.RequestHandler):
             # TODO: This blocks, which we shouldn't do.. 
             with open(join(self.sim_path, 'config.json'), 'w') as fp:
                 fp.write(pretty_json(data))
+                
+        if param == 'user_config/save':
+            
+            # We ensure that the data being written is valid JSON
+            #data = json.loads(self.request.body.decode('utf-8'))
+            data = json.loads(self.get_argument('config'))
+            
+            # TODO: validate the format of the config file
+            
+            # TODO: Allow writing portions of the config file? or maybe module specific config files?
+            # -> BUT don't allow arbitrary writes to the filesystem when we do that!
+            
+            # TODO: This blocks, which we shouldn't do.. 
+            with open(join(self.sim_path, 'user-config.json'), 'w') as fp:
+                fp.write(pretty_json(data))
             
         else:
             raise tornado.web.HTTPError(404)

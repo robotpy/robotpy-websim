@@ -68,55 +68,82 @@ $(function() {
 		for(var i = 0; i < 8; i++) {
 			iomodule.get_solenoid(i).tooltip();
 		}
-		
+				
 		// Add to config modal
-		var form = {};
+		var config = config_modal.config_file_content;
+			
+		var data = _.isObject(config.solenoid) ? config.solenoid : {};
 		
-		form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
-	            { "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
-		
-		for(var i = 0; i < 8; i++) {
-			form['solenoid-' + i + '-tooltip'] = {
-				"type" : "input",
-				"label" : "Solenoid " + i + " Tooltip:",
-				"attr" : {
-					"type" : "text",
-					"value" : ""
-				},
-				"rules" : { },
-				"messages" : { }
-			};
+		if(data.visible != 'y' && data.visible != 'n') {
+			data.visible = 'y';
 		}
 		
-		config_modal.add_category('solenoid', 'Solenoid', form, 1);
-		config_modal.add_update_listener('solenoid', true, function(solenoid) {
+		for(var i = 0; i < 8; i++) {
+			
+			var key = 'solenoid-' + i + '-tooltip';
+			
+			if( _.isString(data[key]) == false ) {
+				data[key] = '';
+			}	
+		}
+		
+		apply_config(data);
+		
+		// config form
+		var html = config_modal.get_radio_group('Visible:', 'visible', true, [
+	            { "label" : "Yes", "value" : "y" },
+	            { "label" : "No", "value" : "n" }
+			]);
+		
+		for(var i = 0; i < 8; i++) {
+
+			html += config_modal.get_input_field('Solenoid ' + i + ' Tooltip:', {
+				type : "text",
+				name : 'solenoid-' + i + '-tooltip',
+				id : 'solenoid-' + i + '-tooltip'
+			});		
+		}
+		
+		// Add category
+		config_modal.add_category('solenoid', {
+			html: html,
+			title : 'Solenoid',
+			onselect : function(form, data) {
+
+				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 				
-			// set tooltip
-			for(var i = 0; i < 8; i++) {
-				var tooltip = solenoid[0]['solenoid-' + i + '-tooltip'];
-				iomodule.get_solenoid(i).attr('data-original-title', tooltip);
+				for(var i = 0; i < 8; i++) {
+					var name = 'solenoid-' + i + '-tooltip';
+					form.find('input[name=' + name + ']').val(data[name]);
+				}
+			},
+			onsubmit : function(form, data) {
+				
+				data.visible = form.find('input[name=visible]:checked').val();
+				
+				for(var i = 0; i < 8; i++) {
+					var name = 'solenoid-' + i + '-tooltip';
+					data[name] = form.find('input[name=' + name + ']').val();
+				}
+				
+				apply_config(data);
 			}
+		}, data);
+		
+		function apply_config(data) {
 			
-			// Set visibility
-			var visible = solenoid[0].visible;
-			
-			if(visible === 'y') {
+			if(data.visible == 'y') {
 				iomodule.element.removeClass('hidden');
 			} else {
 				iomodule.element.addClass('hidden');
 			}
 			
-		});
+			for(var i = 0; i < 8; i++) {
+				var tooltip = data['solenoid-' + i + '-tooltip'];
+				iomodule.get_solenoid(i).attr('data-original-title', tooltip);
+			}
+				
+		}
 	});
 	
 });

@@ -182,183 +182,269 @@ $(function() {
 		// Initalize the tooltip
 		$('.slide-holder, .dio-holder, .relay-holder').tooltip();
 		
-		// Add pwm to config modal
-		var pwm_form = {};
 		
-		pwm_form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
-	            { "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
-		
-		for(var i = 0; i < 20; i++) {
-			pwm_form['pwm-' + i + '-tooltip'] = {
-				"type" : "input",
-				"label" : "PWM " + i + " Tooltip:",
-				"attr" : {
-					"type" : "text",
-					"value" : ""
-				},
-				"rules" : { },
-				"messages" : { }
-			};
-		}
-		
-		config_modal.add_category('pwm', 'PWM', pwm_form, 1);
-		config_modal.add_update_listener('pwm', true, function(pwm) {
+		// Add to config modal
+		(function() {
+			var config = config_modal.config_file_content;
+				
+			var data = _.isObject(config.pwm) ? config.pwm : {};
 			
-			// Set tooltip
+			if(data.visible != 'y' && data.visible != 'n') {
+				data.visible = 'y';
+			}
+			
 			for(var i = 0; i < 20; i++) {
-				var tooltip = pwm[0]['pwm-' + i + '-tooltip'];
-				iomodule.get_pwm(i).attr('data-original-title', tooltip);
-			}
-			
-			// Set visiblity
-			var visible = pwm[0].visible;
-			
-			if(visible === 'y') {
-				iomodule.element.find('#pwms').removeClass('hidden');
-			} else {
-				iomodule.element.find('#pwms').addClass('hidden');
-			}
-			
-			// Hide all if all are hidden
-			if(iomodule.element.find('#relays').hasClass('hidden') &&
-					iomodule.element.find('#dios').hasClass('hidden') &&
-					iomodule.element.find('#pwms').hasClass('hidden') ) {
 				
-				iomodule.element.addClass('hidden');
-			} else {
-				iomodule.element.removeClass('hidden');
-			}
-			
-		});
-		
-		// Add dio to config modal
-		var dio_form = {};
-		
-		dio_form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
-	            { "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
-		
-		for(var i = 0; i < 26; i++) {
-			dio_form['dio-' + i + '-tooltip'] = {
-				"type" : "input",
-				"label" : "DIO " + i + " Tooltip:",
-				"attr" : {
-					"type" : "text",
-					"value" : ""
-				},
-				"rules" : { },
-				"messages" : { }
-			};
-		}
-		
-		config_modal.add_category('dio', 'DIO', dio_form, 1);
-		config_modal.add_update_listener('dio', true, function(dio) {
-			
-			// Set tooltip
-			for(var i = 0; i < 26; i++) {
-				var tooltip = dio[0]['dio-' + i + '-tooltip'];
-				iomodule.get_dio(i).attr('data-original-title', tooltip);
-			}
+				var key = 'pwm-' + i + '-tooltip';
 				
-			// Set visibility
-			var visible = dio[0].visible;
-			
-			if(visible === 'y') {
-				iomodule.element.find('#dios').removeClass('hidden');
-			} else {
-				iomodule.element.find('#dios').addClass('hidden');
+				if( _.isString(data[key]) == false ) {
+					data[key] = '';
+				}	
 			}
 			
-			// Hide all if all are hidden
-			if(iomodule.element.find('#relays').hasClass('hidden') &&
-					iomodule.element.find('#dios').hasClass('hidden') &&
-					iomodule.element.find('#pwms').hasClass('hidden') ) {
-				
-				iomodule.element.addClass('hidden');
-			} else {
-				iomodule.element.removeClass('hidden');
-			}
+			apply_config(data);
 			
-		});
-		
-		// Add relay to config modal
-		var relay_form = {};
-		
-		relay_form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
-	            { "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
-		
-		for(var i = 0; i < 20; i++) {
-			relay_form['relay-' + i + '-tooltip'] = {
-				"type" : "input",
-				"label" : "Relay " + i + " Tooltip:",
-				"attr" : {
-					"type" : "text",
-					"value" : ""
-				},
-				"rules" : { },
-				"messages" : { }
-			};
-		}
-		
-		config_modal.add_category('relay', 'Relay', relay_form, 1);
-		config_modal.add_update_listener('relay', true, function(relay) {
-				
-			// Set tooltip
+			// config form
+			var html = config_modal.get_radio_group('Visible:', 'visible', true, [
+		            { "label" : "Yes", "value" : "y" },
+		            { "label" : "No", "value" : "n" }
+				]);
+			
 			for(var i = 0; i < 20; i++) {
-				var tooltip = relay[0]['relay-' + i + '-tooltip'];
-				iomodule.get_relay(i).attr('data-original-title', tooltip);
+	
+				html += config_modal.get_input_field('PWM ' + i + ' Tooltip:', {
+					type : "text",
+					name : 'pwm-' + i + '-tooltip',
+					id : 'pwm-' + i + '-tooltip'
+				});		
 			}
 			
-			// Set visibility
-			var visible = relay[0].visible;
-			
-			if(visible === 'y') {
-				iomodule.element.find('#relays').removeClass('hidden');
-			} else {
-				iomodule.element.find('#relays').addClass('hidden');
-			}
-			
-			// Hide all if all are hidden
-			if(iomodule.element.find('#relays').hasClass('hidden') &&
-					iomodule.element.find('#dios').hasClass('hidden') &&
-					iomodule.element.find('#pwms').hasClass('hidden') ) {
-				
-				iomodule.element.addClass('hidden');
-			} else {
-				iomodule.element.removeClass('hidden');
-			}
+			// Add category
+			config_modal.add_category('pwm', {
+				html: html,
+				title : 'PWM',
+				onselect : function(form, data) {
+	
+					form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 					
+					for(var i = 0; i < 20; i++) {
+						var name = 'pwm-' + i + '-tooltip';
+						form.find('input[name=' + name + ']').val(data[name]);
+					}
+				},
+				onsubmit : function(form, data) {
+					
+					data.visible = form.find('input[name=visible]:checked').val();
+					
+					for(var i = 0; i < 20; i++) {
+						var name = 'pwm-' + i + '-tooltip';
+						data[name] = form.find('input[name=' + name + ']').val();
+					}
+					
+					apply_config(data);
+				}
+			}, data);
 			
-		});
+			function apply_config(data) {
+				
+				if(data.visible == 'y') {
+					iomodule.element.removeClass('hidden');
+				} else {
+					iomodule.element.addClass('hidden');
+				}
+				
+				for(var i = 0; i < 20; i++) {
+					var tooltip = data['pwm-' + i + '-tooltip'];
+					iomodule.get_pwm(i).attr('data-original-title', tooltip);
+				}
+							
+				// Hide all if all are hidden
+				if(iomodule.element.find('#relays').hasClass('hidden') &&
+						iomodule.element.find('#dios').hasClass('hidden') &&
+						iomodule.element.find('#pwms').hasClass('hidden') ) {
+					
+					iomodule.element.addClass('hidden');
+				} else {
+					iomodule.element.removeClass('hidden');
+				}
+			}
+		}());
+		
+		
+		
+		
+		(function() {
+			var config = config_modal.config_file_content;
+				
+			var data = _.isObject(config.dio) ? config.dio : {};
+			
+			if(data.visible != 'y' && data.visible != 'n') {
+				data.visible = 'y';
+			}
+			
+			for(var i = 0; i < 26; i++) {
+				
+				var key = 'dio-' + i + '-tooltip';
+				
+				if( _.isString(data[key]) == false ) {
+					data[key] = '';
+				}	
+			}
+			
+			apply_config(data);
+			
+			// config form
+			var html = config_modal.get_radio_group('Visible:', 'visible', true, [
+		            { "label" : "Yes", "value" : "y" },
+		            { "label" : "No", "value" : "n" }
+				]);
+			
+			for(var i = 0; i < 26; i++) {
+	
+				html += config_modal.get_input_field('DIO ' + i + ' Tooltip:', {
+					type : "text",
+					name : 'dio-' + i + '-tooltip',
+					id : 'dio-' + i + '-tooltip'
+				});		
+			}
+			
+			// Add category
+			config_modal.add_category('dio', {
+				html: html,
+				title : 'Digital I/O',
+				onselect : function(form, data) {
+	
+					form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
+					
+					for(var i = 0; i < 26; i++) {
+						var name = 'dio-' + i + '-tooltip';
+						form.find('input[name=' + name + ']').val(data[name]);
+					}
+				},
+				onsubmit : function(form, data) {
+					
+					data.visible = form.find('input[name=visible]:checked').val();
+					
+					for(var i = 0; i < 26; i++) {
+						var name = 'dio-' + i + '-tooltip';
+						data[name] = form.find('input[name=' + name + ']').val();
+					}
+					
+					apply_config(data);
+				}
+			}, data);
+			
+			function apply_config(data) {
+				
+				if(data.visible == 'y') {
+					iomodule.element.removeClass('hidden');
+				} else {
+					iomodule.element.addClass('hidden');
+				}
+				
+				for(var i = 0; i < 26; i++) {
+					var tooltip = data['dio-' + i + '-tooltip'];
+					iomodule.get_dio(i).attr('data-original-title', tooltip);
+				}
+							
+				// Hide all if all are hidden
+				if(iomodule.element.find('#relays').hasClass('hidden') &&
+						iomodule.element.find('#dios').hasClass('hidden') &&
+						iomodule.element.find('#pwms').hasClass('hidden') ) {
+					
+					iomodule.element.addClass('hidden');
+				} else {
+					iomodule.element.removeClass('hidden');
+				}
+			}
+		}());
+		
+		
+		(function() {
+			var config = config_modal.config_file_content;
+				
+			var data = _.isObject(config.relay) ? config.relay : {};
+			
+			if(data.visible != 'y' && data.visible != 'n') {
+				data.visible = 'y';
+			}
+			
+			for(var i = 0; i < 8; i++) {
+				
+				var key = 'relay-' + i + '-tooltip';
+				
+				if( _.isString(data[key]) == false ) {
+					data[key] = '';
+				}	
+			}
+			
+			apply_config(data);
+			
+			// config form
+			var html = config_modal.get_radio_group('Visible:', 'visible', true, [
+		            { "label" : "Yes", "value" : "y" },
+		            { "label" : "No", "value" : "n" }
+				]);
+			
+			for(var i = 0; i < 8; i++) {
+	
+				html += config_modal.get_input_field('Relay ' + i + ' Tooltip:', {
+					type : "text",
+					name : 'relay-' + i + '-tooltip',
+					id : 'relay-' + i + '-tooltip'
+				});		
+			}
+			
+			// Add category
+			config_modal.add_category('relay', {
+				html: html,
+				title : 'Relay',
+				onselect : function(form, data) {
+	
+					form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
+					
+					for(var i = 0; i < 8; i++) {
+						var name = 'relay-' + i + '-tooltip';
+						form.find('input[name=' + name + ']').val(data[name]);
+					}
+				},
+				onsubmit : function(form, data) {
+					
+					data.visible = form.find('input[name=visible]:checked').val();
+					
+					for(var i = 0; i < 20; i++) {
+						var name = 'relay-' + i + '-tooltip';
+						data[name] = form.find('input[name=' + name + ']').val();
+					}
+					
+					apply_config(data);
+				}
+			}, data);
+			
+			function apply_config(data) {
+				
+				if(data.visible == 'y') {
+					iomodule.element.removeClass('hidden');
+				} else {
+					iomodule.element.addClass('hidden');
+				}
+				
+				for(var i = 0; i < 8; i++) {
+					var tooltip = data['relay-' + i + '-tooltip'];
+					iomodule.get_relay(i).attr('data-original-title', tooltip);
+				}
+							
+				// Hide all if all are hidden
+				if(iomodule.element.find('#relays').hasClass('hidden') &&
+						iomodule.element.find('#dios').hasClass('hidden') &&
+						iomodule.element.find('#pwms').hasClass('hidden') ) {
+					
+					iomodule.element.addClass('hidden');
+				} else {
+					iomodule.element.removeClass('hidden');
+				}
+			}
+		}());
 		
 	});
 	

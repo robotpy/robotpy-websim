@@ -67,45 +67,20 @@
 	
 		<script>
 			$(document).ready(function(){
-				sim.load_config(function() {
+				
+				function load_config_files(callback) {
 					
-					// Add robot to config
-					var robot_form = {};
+					config_modal.load_config(function() {
+						
+						user_config.load_config(callback);
+						
+					});
 					
-					robot_form.width = {
-						"type" : "input",
-						"label" : "width:",
-						"attr" : {
-							"type" : "text",
-							"value" : 2,
-							"placeholder" : "Width of robot in feet"
-						},
-						"rules" : {
-							"required" : true,
-							"number": true,
-							"min": 0
-						},
-						"messages" : { }
-					};
+				}
+				
+				load_config_files(function() {
 					
-					robot_form.height = {
-						"type" : "input",
-						"label" : "height:",
-						"attr" : {
-							"type" : "text",
-							"value" : 3,
-							"placeholder" : "Height of robot in feet"
-						},
-						"rules" : {
-							"required" : true,
-							"number": true,
-							"min": 0
-						},
-						"messages" : {}				
-					};
-					
-					config_modal.add_category('robot', 'Robot', robot_form);
-					config_modal.set_active_category('robot');
+					add_robot_config();
 					
 					sim.add_js('modules/control/control.js');
 					sim.add_js('modules/analog/analog.js');
@@ -118,7 +93,80 @@
 					
 					sim.start();	
 				});
-			});	
+			});
+			
+		function add_robot_config() {
+			
+			$.get('robot-config.html', function(html) {
+				
+				// Data for config
+				var config = config_modal.config_file_content;
+					
+				var data = _.isObject(config.robot) ? config.robot : {};
+				
+				if(_.isNumber(data.height) == false || data.height < 0) {
+					data.height = 3;
+				}
+				
+				if(_.isNumber(data.width) == false || data.width < 0) {
+					data.width = 2;
+				}
+				
+				// Add config
+				config_modal.add_category('robot', {
+					html: html,
+					title : 'Robot',
+					rules : {
+						width : {
+							required : true,
+							number: true,
+							min: 0
+						},
+						height: {
+							required : true,
+							number: true,
+							min: 0
+						}
+					},
+					onselect : function(form, data) {
+						set_visible_drivetrain_config();
+						form.find('input[name=width]').val(data.width);
+						form.find('input[name=height]').val(data.height);
+					},
+					onsubmit : function(form, data) {
+						data.width = form.find('input[name=width]').val();
+						data.height = form.find('input[name=height]').val();
+					}
+				}, data);
+				
+				config_modal.category_form_element.on('change', '#drivetrain-type', set_visible_drivetrain_config);
+				
+				function set_visible_drivetrain_config() {
+					var form = config_modal.config_settings.robot.element;
+					
+					var selected_drivetrain = form.find('#drivetrain-type').val();
+					
+					var drivetrains = ['two-motor-drivetrain', 
+					                   'four-motor-drivetrain', 
+					                   'mecanum-drivetrain',
+					                   'custom-drivetrain'];
+					
+					for(var i = 0; i < drivetrains.length; i++) {
+						
+						var $drivetrain_config = form.find('#' + drivetrains[i]);
+						
+						if(drivetrains[i] == selected_drivetrain) {
+							$drivetrain_config.removeClass('hidden');
+						} else {
+							$drivetrain_config.addClass('hidden');
+						}
+					}
+					
+				}
+				
+			});
+			
+		}
 		</script>
 	
 	</body>

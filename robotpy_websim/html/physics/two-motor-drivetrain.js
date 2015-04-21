@@ -26,62 +26,21 @@
 	
 function Two_Motor_Drivetrain() {
 	
-	this.robot = {
-    	l_motor_channel: 1,
-    	r_motor_channel: 2,
-    	wheelbase: 2,
-    	speed: 5,
-    	x: 0,
-    	y: 0,
-    	angle: Math.PI / 2,
-    	fwd: 0.0,
-    	rccw: 0.0
-    };
-	
-	this.update = function(data, time_elapsed) {
-		
-		//motors
-		var l_motor = data.pwm[sim.robot.l_motor_channel];
-		var r_motor = data.pwm[sim.robot.r_motor_channel];	
-		
-		/*
-		 * update position angle of robot using an equation
-		 * that I derived and I have no idea if it is right
-		 */
-		
-		if(Math.abs(sim.robot.rccw) < .00000001) {
-			sim.robot.rccw = .00000001;
-		}
-		
-		//the change in angle
-		var da = time_elapsed * this.robot.rccw;
-		
-	
+	this.update = function(robot, elapsed_time) {
 		
 		
-		//the distance traveled
-		var distance = 2 * (this.robot.fwd / this.robot.rccw) * Math.sin(da / 2);
-		//update x and y positions. If speed if right wheels > speed of left wheels, invert it
-		this.robot.y += distance * Math.sin((Math.PI - da) / 2 + this.robot.angle - Math.PI / 2);
-		var dx = distance * Math.cos((Math.PI - da) / 2 + this.robot.angle - Math.PI / 2);
-		sim.robot.x += dx;
-		//update angle
 		
-		sim.robot.angle += da;
+		var l_motor = sim.
 		
-		
-		/*
-		 * Set speed and rotation
-		 */
-			
-		var l = -l_motor.value * this.robot.speed;
-	    var r = r_motor.value * this.robot.speed;
-	    
+		var l = -l_motor * speed;
+	    var r = r_motor * speed
 
 	    //Motion equations
-	    sim.robot.fwd = (l + r) * 0.5;
-	    sim.robot.rccw = (r - l) / this.robot.wheelbase;	    
-	}
+	    fwd = (l + r) * 0.5
+	    rcw = (l - r) / float(x_wheelbase)
+	        
+	    return this.drive(fwd, rcw, elapsed_time);
+	};
 }
 
 Two_Motor_Drivetrain.prototype = new Physics_Module();

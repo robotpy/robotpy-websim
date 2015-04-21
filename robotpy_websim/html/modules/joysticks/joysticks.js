@@ -145,93 +145,166 @@ $(function() {
 			
 		}
 		
-		// Add to config modal
-		var form = {};
 		
-		form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
-	            { "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
+		// Add to config modal
+		var config = config_modal.config_file_content;
+			
+		var data = _.isObject(config.joysticks) ? config.joysticks : {};
 		
 		var tooltips = {};
-		tooltips['x-axis'] = 'x-Axis';
-		tooltips['y-axis'] = 'y-Axis';
-		tooltips['z-axis'] = 'z-Axis';
-		tooltips['t-axis'] = 't-Axis';
+		tooltips['x-axis-tooltip'] = 'x-Axis Tooltip:';
+		tooltips['y-axis-tooltip'] = 'y-Axis Tooltip:';
+		tooltips['z-axis-tooltip'] = 'z-Axis Tooltip:';
+		tooltips['t-axis-tooltip'] = 't-Axis Tooltip:';
 		
 		for(var i = 1; i <= 12; i++) {
-			tooltips['btn-' + i] = 'Button ' + i;
+			tooltips['btn-' + i + '-tooltip'] = 'Button ' + i + ' Tooltip:';
 		}
 		
-		for(var name in tooltips) {
-			form[name + '-tooltip'] = {
-				"type" : "input",
-				"label" : tooltips[name] + " Tooltip:",
-				"attr" : {
-					"type" : "text",
-					"value" : ""
-				},
-				"rules" : { },
-				"messages" : { }
-			};
-		}
 		
-		config_modal.add_category('joysticks', 'Joysticks', form, 6);
-		config_modal.add_update_listener('joysticks', true, function(joysticks) {
+		for(var j = 0; j < 6; j++) {
 			
-			// Set tooltips
+			data[j] = _.isObject(data[j]) ? data[j] : {};
+			
+			if(data[j].visible != 'y' && data[j].visible != 'n') {
+				data[j].visible = 'y';
+			}
+			
+			for(var name in tooltips) {
+				data[j][name] = _.isString(data[j][name]) ? data[j][name] : '';
+			}
+		}
+		
+		apply_config(data);
+
+		
+		// config form
+		var html = config_modal.get_select('joystick-chooser', {
+			'0' : 'Joystick 0', '1' : 'Joystick 1', '2' : 'Joystick 2', 
+			'3' : 'Joystick 3', '4' : 'Joystick 4', '5' : 'Joystick 5'
+		});
+		
+		for(var  i = 0; i < 6; i++) {
+			
+			html += '<div class="joystick-config">';
+		
+			html += config_modal.get_radio_group('Visible:', 'visible-' + i, true, [
+		            { "label" : "Yes", "value" : "y" },
+		            { "label" : "No", "value" : "n" }
+				]);
+			
+			for(var name in tooltips) {
+				
+				html += config_modal.get_input_field(tooltips[name], {
+					type : "text",
+					name : name,
+					id : name
+				});	
+			}
+			
+			html += '</div>';
+		}
+		
+		
+		// Add category
+		config_modal.add_category('joysticks', {
+			html: html,
+			title : 'Joysticks',
+			onselect : function(form, data) {
+				
+				set_visible_joystick_config();
+				
+				var $joysticks = form.find('.joystick-config');
+				
+				for(var j = 0; j < 6; j++) {
+					
+					var $joystick = $( $joysticks[j] );
+					
+					$joystick.find('input[name=visible-' + j + '][value=' + data[j].visible + ']').prop('checked', true);
+
+					
+					for(var name in tooltips) {
+						$joystick.find('input[name=' + name + ']').val(data[j][name]);
+					}
+				}
+			},
+			onsubmit : function(form, data) {
+				
+				var $joysticks = form.find('.joystick-config');
+				
+				for(var j = 0; j < 6; j++) {
+					
+					var $joystick = $( $joysticks[j] );
+					data[j].visible = $joystick.find('input[name=visible-' + j + ']:checked').val();
+					
+					for(var name in tooltips) {
+						data[j][name] = $joystick.find('input[name=' + name + ']').val();
+					}
+				}
+				
+				
+				apply_config(data);
+			}
+		}, data);
+		
+		function apply_config(data) {
+			
+			var joystick_visible = false;
+			
 			for(var j = 0; j < 6; j++) {
+				
+				if(data[j].visible == 'y') {
+					iomodule.get_joystick(j).removeClass('hidden');
+					joystick_visible = true;
+				} else {
+					iomodule.get_joystick(j).addClass('hidden');
+				}
 				
 				// axes
 				var axes = ['x', 'y', 'z', 't'];
 				
 				for(var a = 0; a < 4; a++) {
 					
-					var tooltip = joysticks[j][axes[a] + '-axis-tooltip'];
+					var tooltip = data[j][axes[a] + '-axis-tooltip'];
 					iomodule.get_axis(j, a).attr('data-original-title', tooltip);
 				}
 				
 				// buttons
 				for(var b = 0; b < 12; b++) {
 					
-					var tooltip = joysticks[j]['btn-' + (b + 1) + '-tooltip'];
+					var tooltip = data[j]['btn-' + (b + 1) + '-tooltip'];
 					iomodule.get_button(j, b).closest('.checkbox').attr('data-original-title', tooltip);
 				}
-				
 			}
 			
-			// Set visibility 	
-			var joystick_visible = false;
+			if(joystick_visible) {
+				iomodule.element.removeClass('hidden');
+			} else {
+				iomodule.element.addClass('hidden');
+			}
+		}
+		
+		config_modal.category_form_element.on('change', '#joystick-chooser', set_visible_joystick_config);
+		
+		function set_visible_joystick_config() {
+			var form = config_modal.config_settings.joysticks.element;
 			
-			for(var i = 0; i < 6; i++) {
+			var joystick = form.find('#joystick-chooser').val();
+			var $joysticks = form.find('.joystick-config');
+			
+			
+			for(var j = 0; j < 6; j++) {
 				
-				if(joysticks[i].visible === 'y') {
-					iomodule.get_joystick(i).removeClass('hidden');
-					joystick_visible = true;
+				var $joystick = $( $joysticks[j] );
+				if(j == joystick) {
+					$joystick.removeClass('hidden');
 				} else {
-					iomodule.get_joystick(i).addClass('hidden');
+					$joystick.addClass('hidden');
 				}
 			}
-			
-			if(!joystick_visible) {
-				iomodule.element.addClass('hidden');
-			} else {
-				iomodule.element.removeClass('hidden');
-			}
-			
-		});
+		}
+		
 	});
-	
-	
-	
 	
 });
 

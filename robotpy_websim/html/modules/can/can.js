@@ -209,35 +209,47 @@ $(function() {
 	// Add tooltips to the sliders
 	iomodule.element.find('.slide-holder').tooltip();
 	
-	// Add to config modal
-	var form = {};
 	
-	form.visible = {
-		"type" : "radio-group",
-		"label" : "Visible:",
-		"inline" : true,
-		"value" : "y",
-		"radios" : [
+	// Add to config modal
+	var config = config_modal.config_file_content;
+		
+	var data = _.isObject(config.can) ? config.can : {};
+	
+	if(data.visible != 'y' && data.visible != 'n') {
+		data.visible = 'y';
+	}
+	
+	apply_config(data);
+	
+	// config form
+	var html = config_modal.get_radio_group('Visible:', 'visible', true, [
             { "label" : "Yes", "value" : "y" },
             { "label" : "No", "value" : "n" }
-		],
-		"rules" : {},
-		"messages" : {}
-	};
+		]);
 	
-	config_modal.add_category('can', 'CAN', form, 1);
-	config_modal.add_update_listener('can', true, function(can) {
+	// Add category
+	config_modal.add_category('can', {
+		html: html,
+		title : 'CAN',
+		onselect : function(form, data) {
+			form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
+		},
+		onsubmit : function(form, data) {
 			
-		var visible = can[0].visible;
+			data.visible = form.find('input[name=visible]:checked').val();
+
+			apply_config(data);
+		}
+	}, data);
+	
+	function apply_config(data) {
 		
-		if(visible === 'y') {
+		if(data.visible == 'y') {
 			iomodule.element.removeClass('hidden');
 		} else {
 			iomodule.element.addClass('hidden');
-		}
-		
-		
-	});
+		}			
+	}
 	
 
 });

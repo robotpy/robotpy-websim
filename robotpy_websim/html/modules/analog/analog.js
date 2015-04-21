@@ -168,51 +168,81 @@ $(function() {
 		iomodule.element.find('.slide-holder').tooltip();
 		
 		// Add to config modal
-		var form = {};
+		var config = config_modal.config_file_content;
+			
+		var data = _.isObject(config.analog) ? config.analog : {};
 		
-		form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
-	            { "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
-		
-		for(var i = 0; i < 8; i++) {
-			form['analog-' + i + '-tooltip'] = {
-				"type" : "input",
-				"label" : "Analog " + i + " Tooltip:",
-				"attr" : {
-					"type" : "text",
-					"value" : ""
-				},
-				"rules" : { },
-				"messages" : { }
-			};
+		if(data.visible != 'y' && data.visible != 'n') {
+			data.visible = 'y';
 		}
 		
-		config_modal.add_category('analog', 'Analog', form, 1);
-		config_modal.add_update_listener('analog', true, function(analog) {
-				
-			var visible = analog[0].visible;
+		for(var i = 0; i < 8; i++) {
 			
-			if(visible === 'y') {
+			var key = 'analog-' + i + '-tooltip';
+			
+			if( _.isString(data[key]) == false ) {
+				data[key] = '';
+			}	
+		}
+		
+		apply_config(data);
+		
+		// config form
+		var html = config_modal.get_radio_group('Visible:', 'visible', true, [
+	            { "label" : "Yes", "value" : "y" },
+	            { "label" : "No", "value" : "n" }
+			]);
+		
+		for(var i = 0; i < 8; i++) {
+
+			html += config_modal.get_input_field('Analog ' + i + ' Tooltip:', {
+				type : "text",
+				name : 'analog-' + i + '-tooltip',
+				id : 'analog-' + i + '-tooltip'
+			});		
+		}
+		
+		// Add category
+		config_modal.add_category('analog', {
+			html: html,
+			title : 'Analog',
+			onselect : function(form, data) {
+
+				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
+				
+				for(var i = 0; i < 8; i++) {
+					var name = 'analog-' + i + '-tooltip';
+					form.find('input[name=' + name + ']').val(data[name]);
+				}
+			},
+			onsubmit : function(form, data) {
+				
+				data.visible = form.find('input[name=visible]:checked').val();
+				
+				for(var i = 0; i < 8; i++) {
+					var name = 'analog-' + i + '-tooltip';
+					data[name] = form.find('input[name=' + name + ']').val();
+				}
+				
+				apply_config(data);
+			}
+		}, data);
+		
+		function apply_config(data) {
+			
+			if(data.visible == 'y') {
 				iomodule.element.removeClass('hidden');
 			} else {
 				iomodule.element.addClass('hidden');
 			}
 			
 			for(var i = 0; i < 8; i++) {
-				var tooltip = analog[0]['analog-' + i + '-tooltip'];
+				var tooltip = data['analog-' + i + '-tooltip'];
 				iomodule.get_analog(i).attr('data-original-title', tooltip);
 			}
-			
-		});
+				
+		}
+		
 	});
 	
 

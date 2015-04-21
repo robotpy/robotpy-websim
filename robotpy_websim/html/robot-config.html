@@ -1,0 +1,288 @@
+
+<select id="drivetrain-type" style="margin-bottom: 15px;">
+	<option value="two-motor-drivetrain">Two Motor Drivetrain</option>
+	<option value="four-motor-drivetrain">Four Motor Drivetrain</option>
+	<option value="mecanum-drivetrain">Mecanum Drivetrain</option>
+	<option value="custom-drivetrain">Custom Drivetrain</option>
+</select>
+
+<div id="two-motor-drivetrain">
+
+	<div class="input-holder single-line-input">
+		<label for="x-wheelbase">X Wheelbase:</label>
+		<span>
+			<input class="form-control" name="x-wheelbase" type="text" 
+				placeholder="Distance in feet between right and left wheels" />
+		</span>
+	</div>
+	
+		<div class="input-holder single-line-input">
+		<label for="speed">Speed:</label>
+		<span>
+			<input class="form-control" name="speed" type="text" 
+				placeholder="Speed of robot in feet per second" />
+		</span>
+	</div>
+
+	<label for="motor-type" style="margin-right: 10px;">Motor Type:</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="motor-type" value="can">CAN
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="motor-type" value="pwm">PWM
+	</label>
+	
+	<h3>Left Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="left-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="left-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="left-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(-1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="left-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="left-motor-inverted" value="n">No
+	</label>
+	
+	<h3>Right Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="right-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="right-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="right-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="right-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="right-motor-inverted" value="n">No
+	</label>
+	
+</div>
+
+
+<div id="four-motor-drivetrain">
+	
+	<div class="input-holder single-line-input">
+		<label for="x-wheelbase">X Wheelbase:</label>
+		<span>
+			<input class="form-control" name="x-wheelbase" type="text" 
+				placeholder="Distance in feet between right and left wheels" />
+		</span>
+	</div>
+	
+		<div class="input-holder single-line-input">
+		<label for="speed">Speed:</label>
+		<span>
+			<input class="form-control" name="speed" type="text" 
+				placeholder="Speed of robot in feet per second" />
+		</span>
+	</div>
+
+	<label for="motor-type" style="margin-right: 10px;">Motor Type:</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="motor-type" value="can">CAN
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="motor-type" value="pwm">PWM
+	</label>
+	
+	<h3>Left Rear Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="lr-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="lr-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="lr-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(-1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lr-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lr-inverted" value="n">No
+	</label>
+	
+	<h3>Right Rear Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="rr-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="rr-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="rr-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rr-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rr-motor-inverted" value="n">No
+	</label>
+	
+	<h3>Left Front Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="lf-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="lf-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="lf-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(-1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lf-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lf-motor-inverted" value="n">No
+	</label>
+	
+	<h3>Right Front Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="rf-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="rf-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="rf-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rf-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rf-motor-inverted" value="n">No
+	</label>
+
+</div>
+
+
+<div id="mecanum-drivetrain">
+
+	<div class="input-holder single-line-input">
+		<label for="x-wheelbase">X Wheelbase:</label>
+		<span>
+			<input class="form-control" name="x-wheelbase" type="text" 
+				placeholder="Distance in feet between right and left wheels" />
+		</span>
+	</div>
+	
+	<div class="input-holder single-line-input">
+		<label for="y-wheelbase">Y Wheelbase:</label>
+		<span>
+			<input class="form-control" name="y-wheelbase" type="text" 
+				placeholder="Distance in feet between forward and rear wheels" />
+		</span>
+	</div>
+	
+	<div class="input-holder single-line-input">
+		<label for="speed">Speed:</label>
+		<span>
+			<input class="form-control" name="speed" type="text" 
+				placeholder="Speed of robot in feet per second" />
+		</span>
+	</div>
+
+	<label for="motor-type" style="margin-right: 10px;">Motor Type:</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="motor-type" value="can">CAN
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="motor-type" value="pwm">PWM
+	</label>
+	
+	<h3>Left Rear Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="lr-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="lr-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="lr-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(-1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lr-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lr-inverted" value="n">No
+	</label>
+	
+	<h3>Right Rear Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="rr-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="rr-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="rr-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rr-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rr-motor-inverted" value="n">No
+	</label>
+	
+	<h3>Left Front Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="lf-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="lf-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="lf-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(-1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lf-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="lf-motor-inverted" value="n">No
+	</label>
+	
+	<h3>Right Front Motor:</h3>
+	
+	<div class="input-holder single-line-input">
+		<label for="rf-motor-number">Device Number/Channel</label>
+		<span>
+			<input class="form-control" name="rf-motor-number" type="text" />
+		</span>
+	</div>
+	<label for="rf-motor-inverted" style="margin-right: 10px;">Inverted 
+		<span style="font-weight: normal">(1 is forward):</span>
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rf-motor-inverted" value="y">Yes
+	</label>
+	<label class="radio-inline" style="padding-top: 0px;">
+		<input type="radio" name="rf-motor-inverted" value="n">No
+	</label>
+
+
+
+</div>
+
+
+<div id="custom-drivetrain">
+	<p>Implement your own drivetrain physics</p>
+</div>

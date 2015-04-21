@@ -61,35 +61,45 @@ $(function() {
 		iomodule.element.on('click', '.update-btn', function() {
 			iomodule.update = true;
 		});	
-		
+				
 		// Add to config modal
-		var form = {};
+		var config = config_modal.config_file_content;
+			
+		var data = _.isObject(config['data-tree']) ? config['data-tree'] : {};
 		
-		form.visible = {
-			"type" : "radio-group",
-			"label" : "Visible:",
-			"inline" : true,
-			"value" : "y",
-			"radios" : [
+		if(data.visible != 'y' && data.visible != 'n') {
+			data.visible = 'y';
+		}
+		
+		apply_config(data);
+		
+		// config form
+		var html = config_modal.get_radio_group('Visible:', 'visible', true, [
 	            { "label" : "Yes", "value" : "y" },
 	            { "label" : "No", "value" : "n" }
-			],
-			"rules" : {},
-			"messages" : {}
-		};
+			]);
 		
-		config_modal.add_category('data-tree', 'Data Tree', form, 1);
-		config_modal.add_update_listener('data-tree', true, function(data_tree) {
-				
-			var visible = data_tree[0].visible;
+		// Add category
+		config_modal.add_category('data-tree', {
+			html: html,
+			title : 'Data Tree',
+			onselect : function(form, data) {
+				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
+			},
+			onsubmit : function(form, data) {			
+				data.visible = form.find('input[name=visible]:checked').val();			
+				apply_config(data);
+			}
+		}, data);
+		
+		function apply_config(data) {
 			
-			if(visible === 'y') {
+			if(data.visible == 'y') {
 				iomodule.element.removeClass('hidden');
 			} else {
 				iomodule.element.addClass('hidden');
-			}
-			
-		});
+			}				
+		}
 	});
 	
 	
