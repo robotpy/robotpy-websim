@@ -1,50 +1,47 @@
 robotpy-websim
 ==============
 
-This is an experimental HTML interface to the robotpy simulation library,
-intended to be a replacement for the Tk simulator interface that comes
-with pyfrc.
+This is an web interface for controlling low fidelity FRC robot simulations.
+As the control/simulation interface is created using HTML/javascript, one of
+the goals of this project is to make it very simple to create your own
+custom animations and extensions to help simulate your robot more effectively.
 
-The primary control/simulation interface will be written in HTML/javascript,
-with easy to create extension points for custom simulation actions for your
-robot code. The idea is that this interface won't be specific to python, but
-that the frontend can be reused with C++ or Java backends using a simulated
-HAL library for those languages. Those have not been implemented yet.
+Currently, the only backend for the interface interacts with python based
+FRC robots using the RobotPy library, and is a replacement for the simulator
+that comes with pyfrc.
 
-Warning: The contents of this repo are highly experimental, and may explode
-on contact.
+However, the HTML/Javascript portion of the code is not designed to be
+specific to python, but can be reused with C++ or Java backends using a
+similar simulated HAL library for those languages. Those have not been
+implemented yet, but that would be awesome if someone did it.
 
-Installation
-============
+.. note:: The simulator and its extension APIs are still very experimental
+          and are expected to vary until the start of the 2016 FRC season.
 
-Install the latest release of this package with pip (requires python 3 to be
-installed)::
+Documentation
+=============
+
+For usage, detailed installation information, and other notes, please see
+our documentation at http://robotpy-websim.readthedocs.org
+
+Quick Install + Demo
+====================
+
+If you have python3 and pip installed, then do::
 
 	pip3 install robotpy-websim
 
-Alternatively, you can install from master from a git clone::
+Once this is done, you can run a quick demo by running::
 
-	git clone https://github.com/robotpy/robotpy-websim.git
-	cd robotpy-websim
-	pip3 install .
+    cd examples/simple
+    python3 robot.py websim
 
-Usage
-=====
-
-Given a python robot.py file, you should be able to execute the following::
-
-	python3 robot.py websim
-	
-Once this is done, you can use a web browser (Chrome is preferred) to browse
-to http://localhost:8000/ . The control interface should be there.
-
-Custom extensions
-=================
-
-TODO
+Your default browser (or Chrome) should be launched and show the control
+interface. If it does not show automatically, you can browse to 
+http://localhost:8000/
 
 Authors
 =======
 
-Dustin Spicuzza came up with the original concept, but Amory Galili has done
-much of the initial heavy lifting.
+* Dustin Spicuzza came up with the original concept
+* Amory Galili has done much of the actual work and webdesign

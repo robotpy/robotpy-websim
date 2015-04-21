@@ -128,6 +128,15 @@ class ApiHandler(tornado.web.RequestHandler):
         # Root directory of HTML content that is provided by the user
         self.sim_path = sim_path
 
+        self.builtin_module_path = join(self.root_path, 'modules')
+        self.user_module_path = join(self.sim_path, 'modules')
+
+    def _builtin_to_web_path(self, path):
+        return path[len(self.root_path):]
+
+    def _user_to_web_path(self, path):
+        return '/user' + path[len(self.sim_path):]
+
     def get(self, param):
         '''
             GET handler
@@ -150,10 +159,29 @@ class ApiHandler(tornado.web.RequestHandler):
                      }
             
             self.write(can_mode_map)
+
+        elif param == 'module_list':
+
+            # Not sure if there should be a distinction between these...
+            modules = {'builtin': [], 'user': []}
+
+            # Builtin modules
+            for path in sorted(os.listdir(self.builtin_module_path)):
+                js_path = join(self.builtin_module_path, path, path + '.js')
+                if exists(js_path):
+                    modules['builtin'].append(self._builtin_to_web_path(js_path))
+
+            # User modules
+            for path in sorted(os.listdir(self.user_module_path)):
+                js_path = join(self.user_module_path, path, path + '.js')
+                if exists(js_path):
+                    modules['user'].append(self._user_to_web_path(js_path))
+
+            self.write(modules)
                 
         else:
             raise tornado.web.HTTPError(404)
-    
+
     def post(self, param):
         '''
             POST handler
@@ -219,7 +247,7 @@ class Main:
                             help='Transmit simulation data every N ms')
         parser.add_argument('--port', default=8000, type=int,
                             help='Port for webserver listen on')
-        parser.add_argument('--no-launch', default=False,
+        parser.add_argument('--no-launch', default=False, action='store_true',
                             help="Don't automatically launch web browser")
     
     def server_thread(self):
