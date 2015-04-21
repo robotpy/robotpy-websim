@@ -314,8 +314,10 @@ var sim = new function() {
 			sim.iomodules[id].update_interface(data_from_server);
 		}
 		
+		var enabled = data_from_server.control.enabled;
+		
 		for(var id in sim.iomodules) {
-			sim.iomodules[id].modify_data_to_server(data_to_server);
+			sim.iomodules[id].modify_data_to_server(data_to_server, enabled);
 		}
 	}
 	
