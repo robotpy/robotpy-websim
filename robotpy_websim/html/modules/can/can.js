@@ -13,8 +13,17 @@ $(function() {
 		// Get the can mode map from the server
 		$.getJSON('/api/can_mode_map', function(data) { can_mode_map = data; });
 		
+		// True if user has recently interacted with the ui and the changes
+		// haven't been sent to the server.
+		this.ui_updated = false;
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
+			
+			if(!this.ui_updated)
+				return;
+			
+			this.ui_updated = false;
 			
 			var can = data_to_server.CAN;
 
@@ -187,6 +196,11 @@ $(function() {
 				
 			return (mode_name !== undefined) ? mode_name : 'Unknown';
 		}
+		
+		// Alert module that ui has been updated if fwd or rev limit switches have been pressed
+		$('body').on('click', '#can input[name=for-limit-switch], #can input[name=rev-limit-switch]', function() {
+			module.ui_updated = true;
+		});
 	}
 	
 	CAN.prototype = new IOModule();

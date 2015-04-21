@@ -9,7 +9,16 @@ $(function() {
 		
 		this.title = 'Digital';
 		
+		// True if user has recently interacted with the ui and the changes
+		// haven't been sent to the server.
+		this.ui_updated = false;
+		
 		this.modify_data_to_server = function(data_to_server) {
+			
+			if(!this.ui_updated)
+				return;
+			
+			this.ui_updated = false;
 			
 			// Send dio value to server
 			var dio = data_to_server.dio;	
@@ -138,6 +147,11 @@ $(function() {
 			//display value
 			element.siblings('.slider-value').text(value.toFixed(2));
 		};
+		
+		// Alert module that ui has been updated if fwd or rev limit switches have been pressed
+		$('body').on('click', '#digital .btn.digital-io', function() {
+			module.ui_updated = true;
+		});
 	}
 	
 	Digital.prototype = new IOModule();

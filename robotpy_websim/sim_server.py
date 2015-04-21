@@ -208,7 +208,7 @@ class ApiHandler(tornado.web.RequestHandler):
             with open(join(self.sim_path, 'config.json'), 'w') as fp:
                 fp.write(pretty_json(data))
                 
-        if param == 'user_config/save':
+        elif param == 'user_config/save':
             
             # We ensure that the data being written is valid JSON
             #data = json.loads(self.request.body.decode('utf-8'))

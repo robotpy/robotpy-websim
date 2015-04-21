@@ -86,7 +86,7 @@ $(function() {
 			onselect : function(form, data) {
 				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 			},
-			onsubmit : function(form, data) {			
+			onsubmit : function(form, data) {		
 				data.visible = form.find('input[name=visible]:checked').val();			
 				apply_config(data);
 			}

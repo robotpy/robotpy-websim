@@ -8,8 +8,17 @@ $(function() {
 		
 		var module = this;
 		
+		// True if user has recently interacted with the ui and the changes
+		// haven't been sent to the server.
+		this.ui_updated = false;
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
+			
+			if(!this.ui_updated)
+				return;
+			
+			this.ui_updated = false;
 			
 			var joysticks = data_to_server.joysticks;
 
@@ -85,6 +94,11 @@ $(function() {
 			//display value
 			element.siblings('.slider-value').text(value.toFixed(2));
 		};
+		
+		// Alert module that ui has been updated if fwd or rev limit switches have been pressed
+		$('body').on('click', '#joysticks input[type=checkbox]', function() {
+			module.ui_updated = true;
+		});
 	}
 	
 	Joysticks.prototype = new IOModule();
@@ -128,6 +142,7 @@ $(function() {
 		iomodule.element.find('.joystick-slider').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
 			iomodule.on_slide(element, ev.value);
+			iomodule.ui_updated = true;
 		});
 		
 		// Initialize the tooltips
@@ -284,7 +299,7 @@ $(function() {
 			}
 		}
 		
-		config_modal.category_form_element.on('change', '#joystick-chooser', set_visible_joystick_config);
+		config_modal.category_form_holder.on('change', '#joystick-chooser', set_visible_joystick_config);
 		
 		function set_visible_joystick_config() {
 			var form = config_modal.config_settings.joysticks.element;

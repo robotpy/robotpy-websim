@@ -14,19 +14,8 @@ var config_modal = new function() {
 	// DOM elements that contain parts of the config modal
 	this.element = $('#config-modal');
 	this.categories_element = this.element.find('#config-categories');
-	this.category_form_element = this.element.find('#config-active-category-form');
+	this.category_form_holder = this.element.find('#config-form-holder');
 	
-	// Initialize form validation
-	this.category_form_element.validate({
-		
-		errorPlacement: function(error, element) {
-	        $(error).addClass('label label-danger error');
-	        $(error).insertBefore(element);
-	    },	    
-	    errorElement: 'div',
-	    rules : {},	    
-	    messages : {}
-	});
 	
 	this.load_config = function(callback) {
 		
@@ -64,7 +53,20 @@ var config_modal = new function() {
 		}, settings);
 		
 		// Creates the jQuery element
-		this.config_settings[id].element = $('<div>' + this.config_settings[id].html + '</div>');
+		this.config_settings[id].element = $('<form action="#" id="' + id + '-form" class="form-horizontal">' + 
+												this.config_settings[id].html + 
+											'</form>');
+		
+		this.config_settings[id].element.validate({
+			
+			errorPlacement: function(error, element) {
+		        $(error).addClass('label label-danger error');
+		        $(error).insertBefore(element);
+		    },	    
+		    errorElement: 'div',
+		    rules : this.config_settings[id].rules,	    
+		    messages : this.config_settings[id].messages
+		});
 		
 		this.config_data[id] = data ? data : {};
 		
@@ -130,7 +132,6 @@ var config_modal = new function() {
 		if(config_settings === undefined) {
 			return;
 		}
-		
 
 		// Deactivate currently active category
 		this.categories_element.find('li').removeClass('active');
@@ -139,14 +140,10 @@ var config_modal = new function() {
 		this.categories_element.find('a[category-id=' + id + ']').parent().addClass('active');
 		
 		// Apply settings
-		config_settings.element.appendTo(this.category_form_element);
-		
-		var settings = this.category_form_element.validate().settings;
-		settings.rules = config_settings.rules;
-		settings.messages = config_settings.messages;
-		
+		config_settings.element.appendTo(this.category_form_holder);
+				
 		// Remove error messages when displayed
-		this.category_form_element.valid();
+		config_settings.element.valid();
 		
 		config_settings.onselect(config_settings.element, this.config_data[id]);
 	};
@@ -250,10 +247,11 @@ var config_modal = new function() {
 	// When a category is selected make it the active category
 	this.categories_element.on('click', 'a', function() {
 		
+		var category_id = config_modal.get_category_id();
+		
 		// Only change to a different category if the current form input values are valid
-		if(config_modal.category_form_element.valid()) {
-			var category_id = $(this).attr('category-id');
-			config_modal.set_category(category_id);
+		if(category_id !== null && config_modal.config_settings[category_id].element.valid()) {
+			config_modal.set_category($(this).attr('category-id'));
 		}
 		
 	});
@@ -261,8 +259,10 @@ var config_modal = new function() {
 	// Hide the config modal
 	$('#config-modal-ok-btn').click(function() {
 		
+		var category_id = config_modal.get_category_id();
+		
 		// Only save and hide if the current form input values are valid
-		if(config_modal.category_form_element.valid()) {
+		if(category_id !== null && config_modal.config_settings[category_id].element.valid()) {
 			config_modal.save_config();
 			config_modal.hide();
 		}

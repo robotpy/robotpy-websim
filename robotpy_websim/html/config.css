@@ -14,9 +14,6 @@
 	padding: 3px 5px;
 }
 
-#config-modal #config-active-category-form {
-
-}
 
 #config-modal #config-active-category-title {
 	margin: 0px 0px 15px 0px;
@@ -25,35 +22,35 @@
 	border-bottom: 1px solid lightgray;
 }
 
-#config-modal #config-active-category-form label {
+#config-modal #config-form-holder label {
 	font-size: 12px;
 	display: inline;
 }
 
-#config-modal #config-active-category-form .checkbox,
-#config-modal #config-active-category-form .radio {
+#config-modal #config-form-holder .checkbox,
+#config-modal #config-form-holder .radio {
 	padding-top: 0px;
 	min-height: 20px;
 }
 
 
-#config-modal #config-active-category-form .single-line-input {
+#config-modal #config-form-holder .single-line-input {
 	display: table; 
 	width: 100%; 
 	margin: 5px 3px;
 }
 
-#config-modal #config-active-category-form .single-line-input label {
+#config-modal #config-form-holder .single-line-input label {
 	white-space:nowrap;
 }
 
-#config-modal #config-active-category-form .single-line-input span {
+#config-modal #config-form-holder .single-line-input span {
 	display: table-cell; 
 	width: 100%; 
 	padding: 0px 10px;
 }
 
-#config-modal #config-active-category-form .single-line-input input {
+#config-modal #config-form-holder .single-line-input input {
 	width: 100%;
 	height: inherit;
 	display: inline-block;

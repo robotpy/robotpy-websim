@@ -8,11 +8,19 @@ $(function() {
 		
 		this.title = 'Analog';
 		
+		// True if user has recently interacted with the ui and the changes
+		// haven't been sent to the server.
+		this.ui_updated = false;
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
 			
-			// Send analog input values to server
+			if(!this.ui_updated)
+				return;
 			
+			this.ui_updated = false;
+			
+			// Send analog input values to server		
 			for(var i = 0; i < 8; i++) {		
 				
 				var $analog = this.get_analog(i);
@@ -121,6 +129,8 @@ $(function() {
 				element.siblings('.slider-value').text(value.toFixed(2));
 			}
 		};
+		
+		// The events that alert the server of ui updates
 	}
 	
 	Analog.prototype = new IOModule();
@@ -161,6 +171,9 @@ $(function() {
 		iomodule.element.find('.slide-holder').find('input').slider().on('slide', function(ev){
 			var element = $(ev.target).parent();
 			iomodule.on_slide(element, ev.value);
+			
+			// Alert module of ui update
+			iomodule.ui_updated = true;
 		});	
 		
 		
