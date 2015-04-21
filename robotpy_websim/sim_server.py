@@ -172,10 +172,11 @@ class ApiHandler(tornado.web.RequestHandler):
                     modules['builtin'].append(self._builtin_to_web_path(js_path))
 
             # User modules
-            for path in sorted(os.listdir(self.user_module_path)):
-                js_path = join(self.user_module_path, path, path + '.js')
-                if exists(js_path):
-                    modules['user'].append(self._user_to_web_path(js_path))
+            if exists(self.user_module_path):
+                for path in sorted(os.listdir(self.user_module_path)):
+                    js_path = join(self.user_module_path, path, path + '.js')
+                    if exists(js_path):
+                        modules['user'].append(self._user_to_web_path(js_path))
 
             self.write(modules)
                 
