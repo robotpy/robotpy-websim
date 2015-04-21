@@ -107,16 +107,7 @@
 					config_modal.add_category('robot', 'Robot', robot_form);
 					config_modal.set_active_category('robot');
 					
-					sim.add_js('modules/control/control.js');
-					sim.add_js('modules/analog/analog.js');
-					sim.add_js('modules/digital/digital.js');
-					sim.add_js('modules/solenoid/solenoid.js');
-					sim.add_js('modules/joysticks/joysticks.js');
-					sim.add_js('modules/data-tree/data-tree.js');
-					sim.add_js('modules/field/field.js');
- 					sim.add_js('modules/can/can.js');
-					
-					sim.start();	
+					sim.load_modules_and_start();
 				});
 			});	
 		</script>

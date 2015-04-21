@@ -92,7 +92,6 @@ var sim = new function() {
 	
 	this.load_config = function(callback) {
 		
-			
 		$.ajax({
 		   type: 'GET',
 		   url: '/user/config.json',
@@ -122,6 +121,29 @@ var sim = new function() {
 			}
 		});
 	};
+
+	this.load_modules_and_start = function() {
+
+		var that = this;
+		
+		// grab the list of modules from the server, and load them
+		// TODO: Provide a way for the module list to be ordered
+		$.getJSON('/api/module_list', function(data) {
+			
+			var modules = data.builtin.concat(data.user);
+			var i = 0;
+			
+			function loadNext() {
+				if (i == modules.length) {
+					that.start();
+				}
+				
+				$.getScript(modules[i++], loadNext);
+			}
+			
+			loadNext();
+		});
+	}
 	
 	/*
 	 * Creates an IOModule and then returns it.
