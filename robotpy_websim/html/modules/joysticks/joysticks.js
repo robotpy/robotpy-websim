@@ -44,7 +44,7 @@ $(function() {
 		
 		this.get_button = function(joystick, button) {
 			var joystick = this.get_joystick(joystick);
-			return joystick.find('.joystick-btn-' + (button + 1));
+			return joystick.find('.joystick-btn-' + (button));
 		};
 		
 		this.set_axis_value = function(joystick, axis, value) {
