@@ -5,19 +5,34 @@ $(function() {
 	function Solenoid() {
 		this.title = 'Solenoid';
 		
+		// Contains relevant data from the previous data from server.
+		// Used to check if the hal_data has since changed.
+		var prev_data = {
+			solenoids : { }	
+		};
+		
 		
 		this.update_interface = function(data_from_server) {
-			var solenoid = data_from_server.solenoid;
-			for(var i = 0; i < solenoid.length; i++) {
+			
+			for(var i = 0; i < data_from_server.solenoid.length; i++) {
 				
+				// Only update if data has since changed
+				var solenoid = _.pick(data_from_server.solenoid[i], 'initialized', 'value');
+				
+				if(_.isEqual(prev_data.solenoids[i], solenoid)) 
+					continue;
+				
+				prev_data.solenoids[i] = solenoid;
+				
+				// Update solenoid
 				var selector = this.get_solenoid(i);
-				if(!solenoid[i].initialized) {
+				if(!solenoid.initialized) {
 					selector.addClass('hide');
 					continue;
 				} 
 				
 				selector.removeClass('hide');
-				this.set_solenoid_value(i, solenoid[i].value);
+				this.set_solenoid_value(i, solenoid.value);
 			}
 		};
 		

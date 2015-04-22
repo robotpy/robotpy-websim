@@ -13,6 +13,14 @@ $(function() {
 		// haven't been sent to the server.
 		this.ui_updated = false;
 		
+		// Contains relevant data from the previous data from server.
+		// Used to check if the hal_data has since changed.
+		var prev_data = {
+			pwms : {},
+			dios : {},
+			relays : {}
+		};
+		
 		this.modify_data_to_server = function(data_to_server) {
 			
 			if(!this.ui_updated)
@@ -31,23 +39,41 @@ $(function() {
 		this.update_interface = function(data_from_server) {
 
 			// Hide the pwms if they aren't initialized. Update their values otherwise
-			var pwm = data_from_server.pwm;
-			for(var i = 0; i < pwm.length; i++) {
+			for(var i = 0; i < data_from_server.pwm.length; i++) {
+				
+				// Only update if data has since changed
+				var pwm = _.pick(data_from_server.pwm[i], 'initialized', 'value');
+				
+				if(_.isEqual(prev_data.pwms[i], pwm)) 
+					continue;
+				
+				prev_data.pwms[i] = pwm;
+							
+				// Update
 				var selector = this.get_pwm(i);
-				if(!pwm[i].initialized) {
+				if(!pwm.initialized) {
 					selector.addClass('hide');
 					continue;
 				}
 					
 				selector.removeClass('hide');			
-				this.set_slider_value(i, pwm[i].value);
+				this.set_slider_value(i, pwm.value);
 			}
 				
 			// Hide DIOs if they aren't initialized
-			var dio = data_from_server.dio;
-			for(var i = 0; i < dio.length; i++) {
+			for(var i = 0; i < data_from_server.dio.length; i++) {
+				
+				// Only update if data has since changed
+				var dio = _.pick(data_from_server.dio[i], 'initialized');
+				
+				if(_.isEqual(prev_data.dios[i], dio)) 
+					continue;
+				
+				prev_data.dios[i] = dio;
+				
+				// Update
 				var selector = this.get_dio(i);
-				if(!dio[i].initialized) {
+				if(!dio.initialized) {
 					selector.addClass('hide');
 					continue;
 				}
@@ -56,16 +82,25 @@ $(function() {
 			}
 			
 			// Hide the relays if they aren't initialized
-			var relay = data_from_server.relay;
-			for(var i = 0; i < relay.length; i++) {
+			for(var i = 0; i < data_from_server.relay.length; i++) {
+				
+				// Only update if data has since changed
+				var relay = _.pick(data_from_server.relay[i], 'initialized', 'fwd', 'rev');
+				
+				if(_.isEqual(prev_data.relays[i], relay)) 
+					continue;
+				
+				prev_data.relays[i] = relay;
+				
+				// Update
 				var selector = this.get_relay(i);
-				if(!relay[i].initialized) {
+				if(!relay.initialized) {
 					selector.addClass('hide');
 					continue;
 				}
 				
 				selector.removeClass('hide');
-				this.set_relay_value(i, relay[i].fwd, relay[i].rev);
+				this.set_relay_value(i, relay.fwd, relay.rev);
 
 			}
 		};

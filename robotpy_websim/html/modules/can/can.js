@@ -17,14 +17,22 @@ $(function() {
 		// haven't been sent to the server.
 		this.ui_updated = false;
 		
+		// Contains relevant data from the previous data from server.
+		// Used to check if the hal_data has since changed.
+		var prev_data = {
+			can : { }	
+		};
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
 			
+			// If the ui has not been interacted with don't update
 			if(!this.ui_updated)
 				return;
 			
 			this.ui_updated = false;
 			
+			// Update data to server
 			var can = data_to_server.CAN;
 
 			for(var i in can) {
@@ -45,11 +53,18 @@ $(function() {
 		};
 		
 		this.update_interface = function(data_from_server) {
-			var can = data_from_server.CAN;
-			
-			
-			for(var i in can) {
+
+			for(var i in data_from_server.CAN) {
 				
+				// Only update if data has since changed
+				var can = _.pick(data_from_server.CAN[i], 'value', 'mode_select', 'enc_position', 'sensor_position');
+				
+				if(_.isEqual(prev_data.can[i], can)) 
+					continue;
+				
+				prev_data.can[i] = can;
+				
+				// Update CAN
 				var $can = this.get_can(i);
 				if(!$can) {
 					

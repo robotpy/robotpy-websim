@@ -12,6 +12,12 @@ $(function() {
 		// haven't been sent to the server.
 		this.ui_updated = false;
 		
+		// Contains relevant data from the previous data from server.
+		// Used to check if the hal_data has since changed.
+		var prev_data = {
+			analogs : { }	
+		};
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
 			
@@ -33,28 +39,37 @@ $(function() {
 		};
 		
 		this.update_interface = function(data_from_server) {
-			
-			var analog_inputs = data_from_server.analog_in;
-			var analog_outputs = data_from_server.analog_out;
-			var analog_triggers = data_from_server.analog_trigger;
-			
+				
 			for(var i = 0; i < 8; i++) {
 				
+				// Only update if data has since changed
+				var analog = {
+					input : _.pick(data_from_server.analog_in[i], 'initialized', 'value'),
+					output : _.pick(data_from_server.analog_out[i], 'initialized', 'value'),
+					trigger : _.pick(data_from_server.analog_trigger[i], 'initialized', 'trig_state')
+				};
+				
+				if(_.isEqual(prev_data.analogs[i], analog)) 
+					continue;
+				
+				prev_data.analogs[i] = analog;
+				
+				// Update the interface
 				var analog_type = null;
 				
-				if(analog_inputs[i].initialized) {
+				if(analog.input.initialized) {
 					
 					analog_type = 'input';
 					
-				} else if(analog_outputs[i].initialized) {
+				} else if(analog.output.initialized) {
 					
 					analog_type = 'output';
-					this.set_analog_value(i, analog_outputs[i].value);
+					this.set_analog_value(i, analog.output.value);
 					
-				} else if(analog_triggers[i].initialized) {
+				} else if(analog.trigger.initialized) {
 					
 					analog_type = 'trigger';
-					if(analog_triggers[i].trig_state) {
+					if(analog.trigger.trig_state) {
 						this.set_analog_value(i, true);
 					} else {
 						this.set_analog_value(i, false);
