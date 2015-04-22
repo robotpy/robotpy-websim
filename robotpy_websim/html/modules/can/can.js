@@ -220,65 +220,52 @@ $(function() {
 	
 	CAN.prototype = new IOModule();
 	
-	// Add the content
-	$('<div id="can"></div>').appendTo('body');
-	
-	// Create the module. Do nothing if it wasn't properly added
-	var iomodule = new CAN();
-	
-	if(!sim.add_iomodule('can', iomodule)) {
-		return;
-	}
-	
-	// Add the css
-	sim.add_css('modules/can/can.css');
-	
-	
-	
-	// Add tooltips to the sliders
-	iomodule.element.find('.slide-holder').tooltip();
-	
-	
-	// Add to config modal
-	var config = config_modal.config_file_content;
+	sim.add_iomodule('can', CAN, function(iomodule) {
 		
-	var data = _.isObject(config.can) ? config.can : {};
 	
-	if(data.visible != 'y' && data.visible != 'n') {
-		data.visible = 'y';
-	}
-	
-	apply_config(data);
-	
-	// config form
-	var html = config_modal.get_radio_group('Visible:', 'visible', true, [
-            { "label" : "Yes", "value" : "y" },
-            { "label" : "No", "value" : "n" }
-		]);
-	
-	// Add category
-	config_modal.add_category('can', {
-		html: html,
-		title : 'CAN',
-		onselect : function(form, data) {
-			form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
-		},
-		onsubmit : function(form, data) {
-			
-			data.visible = form.find('input[name=visible]:checked').val();
-
-			apply_config(data);
+		// Add tooltips to the sliders
+		iomodule.element.find('.slide-holder').tooltip();
+		
+		
+		// Add to config modal
+		var data = _.isObject(config.saved_config.can) ? config.saved_config.can : {};
+		
+		if(data.visible != 'y' && data.visible != 'n') {
+			data.visible = 'y';
 		}
-	}, data);
-	
-	function apply_config(data) {
 		
-		if(data.visible == 'y') {
-			iomodule.element.removeClass('hidden');
-		} else {
-			iomodule.element.addClass('hidden');
-		}			
-	}
+		apply_config(data);
+		
+		// config form
+		var html = config_modal.get_radio_group('Visible:', 'visible', true, [
+	            { "label" : "Yes", "value" : "y" },
+	            { "label" : "No", "value" : "n" }
+			]);
+		
+		// Add category
+		config_modal.add_category('can', {
+			html: html,
+			title : 'CAN',
+			onselect : function(form, data) {
+				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
+			},
+			onsubmit : function(form, data) {
+				
+				data.visible = form.find('input[name=visible]:checked').val();
+	
+				apply_config(data);
+			}
+		}, data);
+		
+		function apply_config(data) {
+			
+			if(data.visible == 'y') {
+				iomodule.element.removeClass('hidden');
+			} else {
+				iomodule.element.addClass('hidden');
+			}			
+		}
+	});
 	
 
 });

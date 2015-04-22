@@ -68,21 +68,12 @@
 		<script>
 			$(document).ready(function(){
 				
-				function load_config_files(callback) {
-					
-					config_modal.load_config(function() {
-						
-						user_config.load_config(callback);
-						
-					});
-					
-				}
-				
-				load_config_files(function() {
+				config.load(function() {
 					
 					add_robot_config();
 					
 					sim.load_modules_and_start();
+					
 				});
 			});
 			
@@ -91,9 +82,8 @@
 			$.get('robot-config.html', function(html) {
 				
 				// Data for config
-				var config = config_modal.config_file_content;
 					
-				var data = _.isObject(config.robot) ? config.robot : {};
+				var data = _.isObject(config.saved_config.robot) ? config.saved_config.robot : {};
 				
 				if(_.isNumber(data.height) == false || data.height < 0) {
 					data.height = 3;

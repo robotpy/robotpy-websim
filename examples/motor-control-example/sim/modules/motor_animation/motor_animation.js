@@ -33,24 +33,8 @@ $(function() {
 			$('#encoder_value').text(encoder_val);
 		};
 	}
-	
-	MotorAnimation.prototype = new IOModule();
-	
-	
-	// Load content -- TODO: this is mostly boilerplate, make it simpler!
-	$.get('user/modules/motor_animation/motor_animation.html', function(content) {
-		
-		// Add the content
-		$('<div id="motor_animation">' + content + '</div>').appendTo('body');
-		
-		var iomodule = new MotorAnimation();
 
-		if(!sim.add_iomodule('motor_animation', iomodule)) {
-			return;
-		}
-		
-		// Add css
-		sim.add_css('user/modules/motor_animation/motor_animation.css');
-	});
+
+	sim.add_iomodule('motor_animation', MotorAnimation);
 	
 });

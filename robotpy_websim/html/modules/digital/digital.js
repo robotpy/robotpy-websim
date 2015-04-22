@@ -189,24 +189,8 @@ $(function() {
 		});
 	}
 	
-	Digital.prototype = new IOModule();
 	
-	
-	// Load content
-	$.get('modules/digital/digital.html', function(content) {
-		
-		// Add the content
-		$('<div id="digital">' + content + '</div>').appendTo('body');
-		
-		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = new Digital();
-		
-		if(!sim.add_iomodule('digital', iomodule)) {
-			return;
-		}
-		
-		// Add the css
-		sim.add_css('modules/digital/digital.css');
+	sim.add_iomodule('digital', Digital, function(iomodule) {
 		
 		// Initialize the sliders
 		iomodule.element.find('.pwm-slider').slider({
@@ -234,9 +218,8 @@ $(function() {
 		
 		// Add to config modal
 		(function() {
-			var config = config_modal.config_file_content;
-				
-			var data = _.isObject(config.pwm) ? config.pwm : {};
+
+			var data = _.isObject(config.saved_config.pwm) ? config.saved_config.pwm : {};
 			
 			if(data.visible != 'y' && data.visible != 'n') {
 				data.visible = 'y';
@@ -323,9 +306,8 @@ $(function() {
 		
 		
 		(function() {
-			var config = config_modal.config_file_content;
-				
-			var data = _.isObject(config.dio) ? config.dio : {};
+
+			var data = _.isObject(config.saved_config.dio) ? config.saved_config.dio : {};
 			
 			if(data.visible != 'y' && data.visible != 'n') {
 				data.visible = 'y';
@@ -410,9 +392,8 @@ $(function() {
 		
 		
 		(function() {
-			var config = config_modal.config_file_content;
-				
-			var data = _.isObject(config.relay) ? config.relay : {};
+
+			var data = _.isObject(config.saved_config.relay) ? config.saved_config.relay : {};
 			
 			if(data.visible != 'y' && data.visible != 'n') {
 				data.visible = 'y';

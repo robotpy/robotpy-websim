@@ -100,24 +100,8 @@ $(function() {
 			module.ui_updated = true;
 		});
 	}
-	
-	Joysticks.prototype = new IOModule();
-	
-	// Load content
-	$.get('modules/joysticks/joysticks.html', function(content) {
-		
-		// Add the content
-		$('<div id="joysticks">' + content + '</div>').appendTo('body');
-		
-		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = new Joysticks();
-		
-		if(!sim.add_iomodule('joysticks', iomodule)) {
-			return;
-		}
-		
-		// Add the css
-		sim.add_css('modules/joysticks/joysticks.css');
+
+	sim.add_iomodule('joysticks', Joysticks, function(iomodule) {
 		
 		// Initialize the sliders
 		iomodule.element.find('.joystick-slider').slider({
@@ -162,9 +146,8 @@ $(function() {
 		
 		
 		// Add to config modal
-		var config = config_modal.config_file_content;
-			
-		var data = _.isObject(config.joysticks) ? config.joysticks : {};
+
+		var data = _.isObject(config.saved_config.joysticks) ? config.saved_config.joysticks : {};
 		
 		var tooltips = {};
 		tooltips['x-axis-tooltip'] = 'x-Axis Tooltip:';

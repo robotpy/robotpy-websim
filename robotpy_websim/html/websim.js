@@ -107,34 +107,25 @@ var sim = new function() {
 	 * the id is already associated with another IOModule.
 	 */
 	
-	this.add_iomodule = function(id, iomodule) {
+	this.add_iomodule = function(id, iomodule_func, callback) {
 
 		
-		if(this.iomodules.hasOwnProperty(id)) {
+		if(this.iomodules.hasOwnProperty(id) || _.isFunction(iomodule_func) == false) {
 			return false;
 		}
 		
+		iomodule_func.prototype = new IOModule();
 		
-		if( !(iomodule instanceof IOModule) ) {
-			return false;
-		}
-		
-		// Add to config
-		if(this.config[id] === undefined) {
-			this.config[id] = {};
-		}
-		
-		if(this.config[id].position === undefined) {
-			this.config[id].position = {};
-		}
-		
+		// Add to config		
 		var position = $.extend({
 			'x' : 0,
 			'y' : 0,
 			'moved' : false
-		}, user_config.saved_config[id]);
+		}, config.saved_user_config[id]);
 		
-		iomodule.element = $('#' + id)
+		var iomodule = new iomodule_func();
+		
+		iomodule.element = $('<div id="' + id + '"></div>').appendTo('#iomodules');
 		iomodule.element.addClass('iomodule');
 		iomodule.element.prepend('<h4 class="title noselect cursor-grab">' + iomodule.title + '</h4>');
 		
@@ -147,6 +138,66 @@ var sim = new function() {
 		} else {
 			iomodule.element.addClass('flow-layout');
 		}
+		
+		// Add css
+		$.ajax({
+			type: 'GET',
+			url: 'modules/' + id + '/' + id + '.css',
+			success: function() {
+				sim.add_css('modules/' + id + '/' + id + '.css');
+			},
+			
+			// Look in user folder if css is not found
+			error: function() {
+				
+				$.ajax({
+					type: 'GET',
+					url: '/user/modules/' + id + '/' + id + '.html',
+					success: function() {
+						sim.add_css('/user/modules/' + id + '/' + id + '.css');
+					},
+				});
+				
+			}
+		});
+		
+		// Add html
+		$.ajax({
+			type: 'GET',
+			url: 'modules/' + id + '/' + id + '.html',
+			dataType: 'html',
+			success: function(content) {
+				iomodule.element.append(content);
+				
+				if(_.isFunction(callback)) {
+					callback(iomodule);
+				}
+			},
+			
+			// Look in user folder if html is not found
+			error: function() {
+				
+				$.ajax({
+					type: 'GET',
+					url: '/user/modules/' + id + '/' + id + '.html',
+					dataType: 'html',
+					success: function(content) {
+						iomodule.element.append(content);
+					},
+					
+					complete: function() {
+						
+						if(_.isFunction(callback)) {
+							callback(iomodule);
+						}
+						
+					}
+				});
+				
+			}
+		});
+		
+		
 		
 		this.iomodules[id] = iomodule;
 		

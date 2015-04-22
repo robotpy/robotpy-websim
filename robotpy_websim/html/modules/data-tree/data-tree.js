@@ -37,24 +37,7 @@ $(function() {
 		
 	}
 	
-	Data_Tree.prototype = new IOModule();
-	
-	
-	// Load content
-	$.get('modules/data-tree/data-tree.html', function(content) {
-		
-		// Add the content
-		$('<div id="data-tree">' + content + '</div>').appendTo('body');
-		
-		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = new Data_Tree();
-		
-		if(!sim.add_iomodule('data-tree', iomodule)) {
-			return;
-		}
-		
-		// Add the css
-		sim.add_css('modules/data-tree/data-tree.css');
+	sim.add_iomodule('data-tree', Data_Tree, function(iomodule) {
 		
 		// Initialize the sliders
 		iomodule.update = true;
@@ -63,9 +46,7 @@ $(function() {
 		});	
 				
 		// Add to config modal
-		var config = config_modal.config_file_content;
-			
-		var data = _.isObject(config['data-tree']) ? config['data-tree'] : {};
+		var data = _.isObject(config.saved_config['data-tree']) ? config.saved_config['data-tree'] : {};
 		
 		if(data.visible != 'y' && data.visible != 'n') {
 			data.visible = 'y';

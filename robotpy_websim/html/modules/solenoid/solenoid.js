@@ -61,23 +61,7 @@ $(function() {
 		
 	}
 	
-	Solenoid.prototype = new IOModule();
-	
-	// Load content
-	$.get('modules/solenoid/solenoid.html', function(content) {
-		
-		// Add the content
-		$('<div id="solenoid">' + content + '</div>').appendTo('body');
-		
-		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = new Solenoid();
-		
-		if(!sim.add_iomodule('solenoid', iomodule)) {
-			return;
-		}
-		
-		// Add the css
-		sim.add_css('modules/solenoid/solenoid.css');
+	sim.add_iomodule('solenoid', Solenoid, function(iomodule) {
 		
 		// Initialize the tooltip	
 		for(var i = 0; i < 8; i++) {
@@ -85,9 +69,8 @@ $(function() {
 		}
 				
 		// Add to config modal
-		var config = config_modal.config_file_content;
-			
-		var data = _.isObject(config.solenoid) ? config.solenoid : {};
+
+		var data = _.isObject(config.saved_config.solenoid) ? config.saved_config.solenoid : {};
 		
 		if(data.visible != 'y' && data.visible != 'n') {
 			data.visible = 'y';

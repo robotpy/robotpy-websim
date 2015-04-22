@@ -148,23 +148,8 @@ $(function() {
 		// The events that alert the server of ui updates
 	}
 	
-	Analog.prototype = new IOModule();
-	
-	// Load content
-	$.get('modules/analog/analog.html', function(content) {
+	sim.add_iomodule('analog', Analog, function(iomodule) {
 		
-		// Add the content
-		$('<div id="analog">' + content + '</div>').appendTo('body');
-		
-		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = new Analog();
-		
-		if(!sim.add_iomodule('analog', iomodule)) {
-			return;
-		}
-		
-		// Add the css
-		sim.add_css('modules/analog/analog.css');
 		
 		// Initialize the sliders
 		iomodule.element.find('.slide-holder').find('input').slider({
@@ -196,9 +181,7 @@ $(function() {
 		iomodule.element.find('.slide-holder').tooltip();
 		
 		// Add to config modal
-		var config = config_modal.config_file_content;
-			
-		var data = _.isObject(config.analog) ? config.analog : {};
+		var data = _.isObject(config.saved_config.analog) ? config.saved_config.analog : {};
 		
 		if(data.visible != 'y' && data.visible != 'n') {
 			data.visible = 'y';

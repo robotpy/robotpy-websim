@@ -1,43 +1,90 @@
 "use strict";
 
-var config_modal = new function() {
+var config = new function() {
 	
-	// Config file content
-	this.config_file_content = {};
+	// The state of the config file when the program first starts. Used for initialization
+	this.saved_config = {};
 	
-	// Holds all the config category data
-	this.config_settings = {};
+	// The state of the user config file when the program first starts. Used for initialization
+	this.saved_user_config = {};
 	
 	// Holds the config category data
 	this.config_data = {};
+	
+	// Holds the user config data
+	this.user_config_data = {};
+	
+	
+	this.load = function(callback) {
+		
+		$.ajax({
+		   type: 'GET',
+		   url: '/user/config.json',
+		   dataType: 'json',
+		   success: function(content) {
+			   config.saved_config = content;
+		   },
+		   complete: function() {
+			   
+				$.ajax({
+				   type: 'GET',
+				   url: '/user/user-config.json',
+				   dataType: 'json',
+				   success: function(content) {
+					   config.saved_user_config = content;
+				   },
+				   complete: function() {
+					   if(_.isFunction(callback)) {
+						   callback();
+					   }
+				   }
+				});
+			   
+			   
+		   }
+		});
+	};
+	
+	this.save_config = function() {
+		
+		$.ajax({
+			type: 'POST',
+			url: '/api/config/save',
+			data: {
+				'config' : JSON.stringify(config.config_data)
+			}
+		});
+	};
+	
+	this.save_user_config = function() {
+				
+		$.ajax({
+			type: 'POST',
+			url: '/api/user_config/save',
+			data: {
+				'config' : JSON.stringify(config.user_config_data)
+			}
+		});
+		
+	};
+	
+};
+
+var config_modal = new function() {
+
+	// Holds all form settings for the config modal
+	this.config_settings = {};
 	
 	// DOM elements that contain parts of the config modal
 	this.element = $('#config-modal');
 	this.categories_element = this.element.find('#config-categories');
 	this.category_form_holder = this.element.find('#config-form-holder');
 	
-	
-	this.load_config = function(callback) {
-		
-		
-		$.ajax({
-		   type: 'GET',
-		   url: '/user/config.json',
-		   dataType: 'json',
-		   success: function(config) {
-			   config_modal.config_file_content = config;
-		   },
-		   complete: function() {
-			   if(_.isFunction(callback)) {
-				   callback();
-			   }
-		   }
-		});
-	};
+
 	
 	this.add_category = function(id, settings, data) {
 		
-		if(this.config_settings[id] !== undefined && _.isObject(config) === false) {
+		if(this.config_settings[id] !== undefined && _.isObject(settings) === false) {
 			return false;
 		}
 		
@@ -68,7 +115,7 @@ var config_modal = new function() {
 		    messages : this.config_settings[id].messages
 		});
 		
-		this.config_data[id] = data ? data : {};
+		config.config_data[id] = data ? data : {};
 		
 		// Add to the list of categories
 		$('<li role="presentation"><a href="#" category-id="' + id + '">' + this.config_settings[id].title + '</a></li>')
@@ -88,6 +135,11 @@ var config_modal = new function() {
 			this.set_category(categories[0]);
 		}
 		
+		for(var id in this.config_settings) {
+			var settings = this.config_settings[id];
+			settings.onselect(settings.element, config.config_data[id]);
+		}
+				
 	};
 	
 	this.hide = function() {
@@ -103,18 +155,12 @@ var config_modal = new function() {
 		for(var id in this.config_settings) {
 			
 			var form = this.config_settings[id].element;
-			var data = this.config_data[id];
+			var data = config.config_data[id];
 			this.config_settings[id].onsubmit(form, data);
 			
 		}
 		
-		$.ajax({
-			type: 'POST',
-			url: '/api/config/save',
-			data: {
-				'config' : JSON.stringify(config_modal.config_data)
-			}
-		});
+		config.save_config();
 	};
 	
 	this.set_category = function(id) {
@@ -144,8 +190,6 @@ var config_modal = new function() {
 				
 		// Remove error messages when displayed
 		config_settings.element.valid();
-		
-		config_settings.onselect(config_settings.element, this.config_data[id]);
 	};
 	
 	
@@ -267,132 +311,4 @@ var config_modal = new function() {
 			config_modal.hide();
 		}
 	});	
-}
-
-var user_config = new function() {
-	
-	// The state of the config file when the program first starts
-	// used for initialization
-	this.saved_config = {};
-	
-	// Load the config file
-	this.load_config = function(callback) {
-		$.ajax({
-		   type: 'GET',
-		   url: '/user/user-config.json',
-		   dataType: 'json',
-		   success: function(config) {
-			   user_config.saved_config = config;
-		   },
-		   complete: function() {
-			   if(_.isFunction(callback)) {
-				   callback();
-			   }
-		   }
-		});
-	};
-	
-	this.save_config = function() {
-		
-		var config = {};
-		
-		for(var id in sim.iomodules) {
-			
-			var iomodule = sim.iomodules[id];
-			
-			config[id] = {
-				x : iomodule.element.offset().left,
-				y : iomodule.element.offset().top,
-				moved : iomodule.element.hasClass('absolute-layout')
-			};
-			
-			
-		};
-		
-		$.ajax({
-			type: 'POST',
-			url: '/api/user_config/save',
-			data: {
-				'config' : JSON.stringify(config)
-			}
-		});
-		
-	};
-	
-	
-	
-	// Move the modules
-	// Events to drag toolbox
-	$(function() {
-		
-		var iomodule = null;
-		var iomodule_id = null;
-		var click_position = null;
-		var iomodule_start_position = null;
-		
-		$('body').on('mousedown', '.cursor-grab', function(e) {
-			
-			var $iomodule = $(this).closest('.iomodule');
-			
-			if( $iomodule.length === 0) {
-				return;
-			}
-			
-			iomodule_id = $iomodule.attr('id');
-			
-			iomodule = sim.iomodules[iomodule_id];
-			
-			if(!iomodule) {
-				return;
-			}
-			
-			
-			// Set its position if it hasn't been moved
-			if(!sim.config[iomodule_id].position.moved) {
-				iomodule.set_position(iomodule.element.offset().left, iomodule.element.offset().top);
-				iomodule.element.removeClass('flow-layout');
-				iomodule.element.addClass('absolute-layout');
-				sim.config[iomodule_id].position.moved = true;
-			}
-			
-			
-	    	click_position = { 'x' : e.clientX, 'y' : e.clientY };
-	    	iomodule_start_position = { 'x' : iomodule.get_x(), 'y' : iomodule.get_y() };
-	    	$('body').addClass('noselect');
-	    	
-	    });
-		
-		$(window).mouseup(function(e) {
-		   
-		   if(iomodule) {
-			   user_config.save_config();
-			   iomodule = null;
-			   iomodule_id = null;
-			   $('body').removeClass('noselect');
-		   }
-	       
-	    }).mousemove(function(e) {
-	    	
-	    	if(!iomodule) {
-	    		return;
-	    	}
-	    	
-	    	var dx = e.clientX - click_position.x;
-	    	var dy = e.clientY - click_position.y;
-	    	
-	    	var x = iomodule_start_position.x + dx;
-	    	var y = iomodule_start_position.y + dy;
-	    	
-	    	iomodule.element.css({
-	    		left : x,
-	    		top : y
-	    	});
-	    	
-	    	iomodule.element.removeClass('flow-layout');
-	    	iomodule.element.addClass('absolute-layout');
-	    	
-	    });
-		
-	});
-
 }

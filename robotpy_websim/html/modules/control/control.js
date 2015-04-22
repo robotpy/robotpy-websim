@@ -2,24 +2,9 @@
 
 $(function() {
 	
-	// Load content
-	$.get('modules/control/control.html', function(content) {
-		
-		// Add the content
-		$('<div id="control">' + content + '</div>').appendTo('body');
-		
-		// Create module
-		function Control(){ this.title = 'Control'; };
-		Control.prototype = new IOModule();
-		
-		var iomodule = new Control();
-
-		if(!sim.add_iomodule('control', iomodule)) {
-			return;
-		}
-		
-		// Add css
-		sim.add_css('modules/control/control.css');
+	function Control() { this.title = 'Control'; };
+	
+	sim.add_iomodule('control', Control, function(iomodule) {
 		
 		// Initialize the module
 		iomodule.element.find("input[name='mode']").change(function() {

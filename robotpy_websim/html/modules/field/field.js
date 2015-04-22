@@ -112,32 +112,15 @@ $(function() {
 		}
 		
 	}
-	
-	Field.prototype = new IOModule();
-	
-	// Load content
-	$.get('modules/field/field.html', function(content) {
-		
-		// Add the content
-		$('<div id="field">' + content + '</div>').appendTo('body');
-		
-		// Create the module. Do nothing if it wasn't properly added
-		var iomodule = new Field();
-		
-		if(!sim.add_iomodule('field', iomodule)) {
-			return;
-		}
-		
-		// Add the css
-		sim.add_css('modules/field/field.css');
+
+	sim.add_iomodule('field', Field, function(iomodule) {
 		
 		// Initialize the sliders
 		iomodule.init();
 		
 		// Add to config modal
-		var config = config_modal.config_file_content;
-			
-		var data = _.isObject(config.field) ? config.field : {};
+
+		var data = _.isObject(config.saved_config.field) ? config.saved_config.field : {};
 		
 		if(data.visible != 'y' && data.visible != 'n') {
 			data.visible = 'y';
