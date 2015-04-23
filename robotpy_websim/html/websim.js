@@ -8,6 +8,9 @@ function IOModule() {
 	// The title displayed for the module
 	this.title = 'Just Another IOModule';
 	
+	// The higher the order the later it will appear in the DOM
+	this.order = 100;
+	
 	// Modifies the data sent to the server. The most recent
 	// data from the server will be passed by reference. 
 	// The data passed to this function will reflect modifications 
@@ -95,6 +98,8 @@ var sim = new function() {
 				}
 				
 				$.getScript(modules[i++], loadNext);
+				
+				layout_manager.set_dom_order();
 			}
 			
 			loadNext();
@@ -187,7 +192,7 @@ var sim = new function() {
 			'x' : 0,
 			'y' : 0,
 			'set' : false,
-			'order' : 0
+			'order' : iomodule.order
 		}, config.saved_user_config[id] !== undefined ? config.saved_user_config[id].position : {});
 		
 		if(config.user_config_data[id] === undefined) 

@@ -2,7 +2,10 @@
 
 $(function() {
 	
-	function Control() { this.title = 'Control'; };
+	function Control() { 
+		this.title = 'Control'; 
+		this.order = 5;
+	};
 	
 	sim.add_iomodule('control', Control, function(iomodule) {
 		

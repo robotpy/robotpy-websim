@@ -18,6 +18,8 @@ $(function() {
 			analogs : { }	
 		};
 		
+		this.order = 0;
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
 			

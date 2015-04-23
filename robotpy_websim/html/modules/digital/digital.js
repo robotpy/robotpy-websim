@@ -9,6 +9,8 @@ $(function() {
 		
 		this.title = 'Digital';
 		
+		this.order = 1;
+		
 		// True if user has recently interacted with the ui and the changes
 		// haven't been sent to the server.
 		this.ui_updated = false;

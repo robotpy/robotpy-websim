@@ -130,24 +130,7 @@ var layout_manager = new function() {
 				$('#iomodules').addClass('flow-layout');
 				
 				// Set DOM order
-				var module_unordered_list = [];
-				
-				for(var id in config.user_config_data) {
-					
-					var module = {
-						id : id,
-						order : config.user_config_data[id].position.order
-					};
-					
-					module_unordered_list.push(module);
-				}
-
-				var module_ordered_list = _.sortBy(module_unordered_list, 'order');
-				
-				for(var i = 0; i < module_ordered_list.length; i++) {
-					
-					layout_manager.set_index(module_ordered_list[i].id, i);
-				}
+				layout_manager.set_dom_order();
 				
 				for(var id in sim.iomodules) {
 					sim.iomodules[id].element.css({
@@ -204,12 +187,41 @@ var layout_manager = new function() {
 	 * to its point in the iomodules container
 	 */
 	var $iomodules = $('#iomodules');
+	var iomodule_offset = {
+		x : $iomodules.offset().left + ($iomodules.outerWidth() - $iomodules.width()) / 2,
+		y : $iomodules.offset().top + ($iomodules.outerHeight() - $iomodules.height()) / 2
+	};
 	
 	this.offset_to_position = function(x, y) {
-		var offset_x = $iomodules.offset().left + ($iomodules.outerWidth() - $iomodules.width()) / 2;
-		var offset_y = $iomodules.offset().top + ($iomodules.outerHeight() - $iomodules.height()) / 2;
-		return {x : x - offset_x, y : y - offset_y};
+		return {x : x - iomodule_offset.x, y : y - iomodule_offset.y};
 	};
+	
+	/**
+	 * Sets the order of the iomodules in the DOM based on their order value
+	 * in the config in ASC order.
+	 */
+	this.set_dom_order = function() {
+		// Set DOM order
+		var module_unordered_list = [];
+		
+		for(var id in config.user_config_data) {
+			
+			var module = {
+				id : id,
+				order : config.user_config_data[id].position.order
+			};
+			
+			module_unordered_list.push(module);
+		}
+
+		var module_ordered_list = _.sortBy(module_unordered_list, 'order');
+		
+		for(var i = 0; i < module_ordered_list.length; i++) {
+			
+			layout_manager.set_index(module_ordered_list[i].id, i);
+		}
+	}
+	
 	
 	
 	

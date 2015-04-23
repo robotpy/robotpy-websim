@@ -5,6 +5,8 @@ $(function() {
 	function Solenoid() {
 		this.title = 'Solenoid';
 		
+		this.order = 2;
+		
 		// Contains relevant data from the previous data from server.
 		// Used to check if the hal_data has since changed.
 		var prev_data = {

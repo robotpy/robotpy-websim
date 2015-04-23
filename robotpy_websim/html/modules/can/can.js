@@ -8,6 +8,8 @@ $(function() {
 		
 		this.title = 'CAN';
 		
+		this.order = 3;
+		
 		var can_mode_map = {};
 		
 		// Get the can mode map from the server

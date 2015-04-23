@@ -6,6 +6,8 @@ $(function() {
 			
 		this.title = 'Joysticks';
 		
+		this.order = 4;
+		
 		var module = this;
 		
 		// True if user has recently interacted with the ui and the changes
