@@ -109,35 +109,18 @@ var sim = new function() {
 	
 	this.add_iomodule = function(id, iomodule_func, callback) {
 
-		
+		// Do nothing if module has already been added, or module passed is invalid
 		if(this.iomodules.hasOwnProperty(id) || _.isFunction(iomodule_func) == false) {
 			return false;
 		}
 		
+		// Create the module
 		iomodule_func.prototype = new IOModule();
-		
-		// Add to config		
-		var position = $.extend({
-			'x' : 0,
-			'y' : 0,
-			'moved' : false
-		}, config.saved_user_config[id]);
-		
 		var iomodule = new iomodule_func();
 		
 		iomodule.element = $('<div id="' + id + '"></div>').appendTo('#iomodules');
 		iomodule.element.addClass('iomodule');
 		iomodule.element.prepend('<h4 class="title noselect cursor-grab">' + iomodule.title + '</h4>');
-		
-		if(position.moved) {
-			iomodule.element.addClass('absolute-layout');
-			iomodule.element.css({
-				'left' : position.x,
-				'top' : position.y
-			});
-		} else {
-			iomodule.element.addClass('flow-layout');
-		}
 		
 		// Add css
 		$.ajax({
@@ -198,11 +181,30 @@ var sim = new function() {
 		});
 		
 		
+		// Add to config	
+
+		var position = $.extend({
+			'x' : 0,
+			'y' : 0,
+			'set' : false,
+			'order' : 0
+		}, config.saved_user_config[id] !== undefined ? config.saved_user_config[id].position : {});
 		
+		if(config.user_config_data[id] === undefined) 
+			config.user_config_data[id] = {};
+		
+		config.user_config_data[id].position = position;
+		
+		if(config.config_data['websim-layout'].layout_type == 'absolute') {
+			var css_position = layout_manager.offset_to_position(position.x, position.y);
+			iomodule.element.css({
+				left : css_position.x,
+				top : css_position.y
+			});
+		}
+		
+		// Store iomodule
 		this.iomodules[id] = iomodule;
-		
-		
-		return iomodule;
 	};
 	
 	/*

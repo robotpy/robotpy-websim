@@ -2,11 +2,11 @@ body {
 	padding: 10px;
 }
 
-.iomodule.flow-layout {
+#iomodules.flow-layout .iomodule {
 	position: relative;
 }
 
-.iomodule.absolute-layout {
+#iomodules.absolute-layout .iomodule {
 	position: absolute;
 }
 

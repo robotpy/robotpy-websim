@@ -29,14 +29,14 @@ var layout_manager = new function() {
 			
 			if(index > i) {
 				if(y < top || (y < bottom && x < left)) {
-					set_index(id, ordered_module_ids, index, i);
+					this.set_index(id, i, ordered_module_ids, index);
 					return;
 				}
 				
 			} else {
 
 				if(y > bottom || y > top && x > right) {
-					set_index(id, ordered_module_ids, index, i);
+					this.set_index(id, i, ordered_module_ids, index);
 					return;
 				}
 			}
@@ -53,7 +53,12 @@ var layout_manager = new function() {
 	 * 		moved in the DOM
 	 * 		@param new_index: The module's new position in the DOM
 	 */ 
-	function set_index(id, ordered_module_ids, current_index, new_index) {
+	this.set_index = function(id, new_index, ordered_module_ids, current_index) {
+		
+		if(ordered_module_ids === undefined) {
+			ordered_module_ids = this.get_ordered_module_ids();
+			current_index = ordered_module_ids.indexOf(id);
+		}
 		
 		var module = sim.iomodules[id];
 		
@@ -85,6 +90,127 @@ var layout_manager = new function() {
 		return module_ids;
 	}
 	
+	/**
+	 * Add to config modal
+	 */
+	this.add_to_config_modal = function() {
+		var data = _.isObject(config.saved_config['websim-layout']) ? config.saved_config['websim-layout'] : {};
+		
+		if(data.layout_type != 'flow' && data.layout_type != 'absolute') {
+			data.layout_type = 'flow';
+		}
+		
+		config.config_data['websim-layout'] = data;
+		
+		apply_config(data);
+		
+		// config form
+		var html = config_modal.get_radio_group('Layout Type:', 'layout-type', true, [
+	            { "label" : "Flow", "value" : "flow" },
+	            { "label" : "Absolute", "value" : "absolute" }
+			]);
+		
+		// Add category
+		config_modal.add_category('websim-layout', {
+			html: html,
+			title : 'Websim Layout',
+			onselect : function(form, data) {
+				form.find('input[name=layout-type][value=' + data.layout_type + ']').prop('checked', true);
+			},
+			onsubmit : function(form, data) {		
+				data.layout_type = form.find('input[name=layout-type]:checked').val();			
+				apply_config(data);
+			}
+		}, data);
+		
+		function apply_config(data) {
+			
+			if(data.layout_type == 'flow') {
+				$('#iomodules').removeClass('absolute-layout');
+				$('#iomodules').addClass('flow-layout');
+				
+				// Set DOM order
+				var module_unordered_list = [];
+				
+				for(var id in config.user_config_data) {
+					
+					var module = {
+						id : id,
+						order : config.user_config_data[id].position.order
+					};
+					
+					module_unordered_list.push(module);
+				}
+
+				var module_ordered_list = _.sortBy(module_unordered_list, 'order');
+				
+				for(var i = 0; i < module_ordered_list.length; i++) {
+					
+					layout_manager.set_index(module_ordered_list[i].id, i);
+				}
+				
+				for(var id in sim.iomodules) {
+					sim.iomodules[id].element.css({
+						left : 0,
+						top : 0
+					});
+				}
+				
+				
+			} else {				
+				var module_position_unset = false;
+				
+				for(var id in sim.iomodules) {
+					
+					if(config.user_config_data[id].position.set) {
+						var x = config.user_config_data[id].position.x;
+						var y = config.user_config_data[id].position.y;
+					} else {
+						var x = sim.iomodules[id].element.offset().left;
+						var y = sim.iomodules[id].element.offset().top;
+						config.user_config_data[id].position.x = x;
+						config.user_config_data[id].position.y = y;
+						config.user_config_data[id].position.set = true;
+						module_position_unset = true;
+					}
+					
+					if(id == 'analog') {
+						console.log('x: ' + x + ', y: ' + y);
+					}
+					
+					var position = layout_manager.offset_to_position(x, y);
+					
+					sim.iomodules[id].element.css({
+						left : position.x,
+						top : position.y
+					});
+					
+					
+					
+				}
+				
+				$('#iomodules').addClass('absolute-layout');
+				$('#iomodules').removeClass('flow-layout');
+				
+				if(module_position_unset) {
+					config.save_user_config();
+				}
+			}				
+		}
+	};
+	
+	/**
+	 * Converts a point relative to the top left corner of the page
+	 * to its point in the iomodules container
+	 */
+	var $iomodules = $('#iomodules');
+	
+	this.offset_to_position = function(x, y) {
+		var offset_x = $iomodules.offset().left + ($iomodules.outerWidth() - $iomodules.width()) / 2;
+		var offset_y = $iomodules.offset().top + ($iomodules.outerHeight() - $iomodules.height()) / 2;
+		return {x : x - offset_x, y : y - offset_y};
+	};
+	
 	
 	
 	// Move the modules
@@ -95,8 +221,7 @@ var layout_manager = new function() {
 		var click_position = null;
 		var iomodule_start_position = null;
 		
-		$('body').on('mousedown', '.cursor-grab', function(e) {
-			
+		function set_module(e) {
 			var $iomodule = $(this).closest('.iomodule');
 			
 			if( $iomodule.length === 0) {
@@ -112,51 +237,83 @@ var layout_manager = new function() {
 			}
 			
 			
-			// Set its position if it hasn't been moved
-			if(!sim.config[iomodule_id].position.moved) {
-				iomodule.set_position(iomodule.element.offset().left, iomodule.element.offset().top);
-				iomodule.element.removeClass('flow-layout');
-				iomodule.element.addClass('absolute-layout');
-				sim.config[iomodule_id].position.moved = true;
+	    	click_position = { 'x' : e.pageX, 'y' : e.pageY };
+	    	iomodule_start_position = { 'x' : iomodule.element.offset().left, 'y' : iomodule.element.offset().top };
+	    	$('body').addClass('noselect');
+		}
+		
+		function unset_module(e) {
+			
+			if(!iomodule) {
+				return;
+			}
+			
+			if(config.config_data['websim-layout'].layout_type == 'absolute') {
+				_.assign(config.user_config_data[iomodule_id].position, {
+					x : iomodule.element.offset().left,
+					y : iomodule.element.offset().top,
+					set : true
+				});
+
+			} else {
+				
+				// Set order for all modules
+				var ordered_module_ids = layout_manager.get_ordered_module_ids();
+				
+				for(var i = 0; i < ordered_module_ids.length; i++) {
+					
+					config.user_config_data[ ordered_module_ids[i] ].position.order = i;
+				}
+				
 			}
 			
 			
-	    	click_position = { 'x' : e.clientX, 'y' : e.clientY };
-	    	iomodule_start_position = { 'x' : iomodule.get_x(), 'y' : iomodule.get_y() };
-	    	$('body').addClass('noselect');
-	    	
-	    });
+			config.save_user_config();
+			iomodule = null;
+			iomodule_id = null;
+			$('body').removeClass('noselect');
+		}
 		
-		$(window).mouseup(function(e) {
-		   
-		   if(iomodule) {
-			   user_config.save_config();
-			   iomodule = null;
-			   iomodule_id = null;
-			   $('body').removeClass('noselect');
-		   }
-	       
-	    }).mousemove(function(e) {
-	    	
-	    	if(!iomodule) {
-	    		return;
-	    	}
-	    	
-	    	var dx = e.clientX - click_position.x;
-	    	var dy = e.clientY - click_position.y;
-	    	
-	    	var x = iomodule_start_position.x + dx;
-	    	var y = iomodule_start_position.y + dy;
-	    	
-	    	iomodule.element.css({
-	    		left : x,
-	    		top : y
-	    	});
-	    	
-	    	iomodule.element.removeClass('flow-layout');
-	    	iomodule.element.addClass('absolute-layout');
+		$('body').on('mousedown', '.cursor-grab', set_module);
+		
+		$(window)
+			.mouseup(unset_module)
+			.mousemove(function(e) {
+				
+				if(!iomodule) {
+		    		return;
+		    	}
+		    	
+				
+				if(config.config_data['websim-layout'].layout_type == 'absolute') {
+
+			    	var dx = e.pageX - click_position.x;
+			    	var dy = e.pageY - click_position.y;
+			    	
+			    	var x = iomodule_start_position.x + dx;
+			    	var y = iomodule_start_position.y + dy;
+			    	
+			    	var position = layout_manager.offset_to_position(x, y);
+			    	
+			    	iomodule.element.css({
+			    		left : position.x,
+			    		top : position.y
+			    	});
+			    	
+			    	iomodule.element.removeClass('flow-layout');
+			    	iomodule.element.addClass('absolute-layout');
+			    	
+				} else {
+					var x = e.pageX;
+					var y = e.pageY;
+					
+					layout_manager.set_order(iomodule_id, x, y);
+					
+				}
+				
 	    	
 	    });
 		
 	});
+	
 };

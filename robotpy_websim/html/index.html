@@ -62,6 +62,7 @@
 		<script src="plugins/json-tree/json-tree.js"></script>
 		<script src="websim.js"></script>
 		<script src="config.js"></script>
+		<script src="layout-manager.js"></script>
 		
 		<script src="animation.js"></script>
 	
@@ -71,8 +72,11 @@
 				config.load(function() {
 					
 					add_robot_config();
-					
+
+					layout_manager.add_to_config_modal();
 					sim.load_modules_and_start();
+					
+
 					
 				});
 			});
