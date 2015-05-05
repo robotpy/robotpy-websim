@@ -45,7 +45,7 @@ var sim = new function() {
 	
 	this.config = {};
 	
-	// constant that controls the time between updates
+	// constant that controls the time between interface updates
 	this.UPDATE_RATE = 100;
 		
 	// Object that holds all the ioModules. Property names are the id 
@@ -367,27 +367,15 @@ var sim = new function() {
 	
 	function on_data() {
 			
-		//update interface
-		for(var id in sim.iomodules) {
-			sim.iomodules[id].update_interface(data_from_server);
-		}
-		
-		var enabled = data_from_server.control.enabled;
-		
+		// Update server if modules have changed
 		for(var id in sim.iomodules) {
 			sim.iomodules[id].modify_data_to_server(data_to_server, enabled);
 		}
-	}
-	
-	
-	
-	
-	
-	function update_physics() {
 		
-		var enabled = data_from_server && data_from_server.control.enabled;
+		// Update Physics if enabled	
+		var enabled = data_from_server.control.enabled;
 		
-		if(socket && enabled) {
+		if(enabled) {
 
 			// TODO: should this information be calculated by the sim?
 			var elapsed_time = 0;
@@ -403,11 +391,27 @@ var sim = new function() {
 				sim.physics_modules[id].update(data_from_server, elapsed_time / 1000);
 			}
 		}
-		
-		setTimeout(update_physics, sim.UPDATE_RATE);
-		
 	}
 	
-	update_physics();
+	
+	
+	
+	// Updates the interface periodically based on the update rate
+	(function update_interface() {
+
+		var enabled = data_from_server && data_from_server.control.enabled;
+		
+		if(socket && data_from_server) {
+			//update interface
+			for(var id in sim.iomodules) {
+				sim.iomodules[id].update_interface(data_from_server);
+			}
+
+		}
+		
+		setTimeout(update_interface, sim.UPDATE_RATE);
+		
+	})();
+	
 
 }
