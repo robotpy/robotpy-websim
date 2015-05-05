@@ -29,7 +29,7 @@ Quick Install + Demo
 
 If you have python3 and pip installed, then do::
 
-	pip3 install robotpy-websim
+	pip3 install --pre robotpy-websim
 
 Once this is done, you can run a quick demo by running::
 
