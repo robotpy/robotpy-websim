@@ -25,6 +25,9 @@ $(function() {
 			can : { }	
 		};
 		
+		// List of DOM CAN elements
+		var can_elements = {};
+		
 		
 		this.modify_data_to_server = function(data_to_server) {
 			
@@ -39,18 +42,14 @@ $(function() {
 
 			for(var i in can) {
 				
-				var $can = this.get_can(i);
-				if(!$can) {
-					$can = add_can(i);
-				}
+				if(can_elements[i] === undefined)
+					add_can(i);
+				
+				var $can = can_elements[i];
 				
 				// Set limit switches
-				var rev_closed = $can.find('input[name=rev-limit-switch]').prop('checked');
-				//console.log(console.log(i) + ', ' + rev_closed);
-				can[i].limit_switch_closed_rev = rev_closed;
-				
-				var fwd_closed = $can.find('input[name=fwd-limit-switch]').prop('checked');
-				can[i].limit_switch_closed_for = fwd_closed;
+				can[i].limit_switch_closed_rev = $can.rev_limit_switch.prop('checked');
+				can[i].limit_switch_closed_for = $can.fwd_limit_switch.prop('checked');
 			}
 		};
 		
@@ -67,98 +66,28 @@ $(function() {
 				prev_data.can[i] = can;
 				
 				// Update CAN
-				var $can = this.get_can(i);
-				if(!$can) {
-					
-					$can = add_can(i);		
-				}
+				if(can_elements[i] === undefined)
+					add_can(i);
 				
-				
+				var $can = can_elements[i];
+		
 				// Set value
-				var value = can[i].value / 1024;
-				this.set_can_value(i, value);
+				$can.slider.sliderFacade('setValue', can.value / 1024);
 				
 				// Set the mode
-				var mode = can[i].mode_select;
-				$can.find('.can-mode').text(get_mode_name(mode));
+				$can.mode.text(get_mode_name(can.mode_select));
 				
 				// Set encode value
-				var encoder = can[i].enc_position;
-				$can.find('.encoder-value span').text(encoder);
+				$can.encoder_value.text(can.enc_position);
 				
 				// Set S thingy value
-				var sensor = can[i].sensor_position;
-				$can.find('.sensor-value span').text(sensor);
+				$can.sensor_value.text(can.sensor_position);
 				
 			}
 			
-		};
-		
-		this.get_can = function(index) {
-			//console.log('index: ' + index);
-			var can = this.element.find('.can-device[device-index=' + index + ']');
-
-			if(can.length === 0) {
-				return  null;
-			}
-			
-			return can;
-			
-		};
-		
-		this.get_can_value_holder = function(index) {
-			var can = this.get_can(index);
-			return can.find('.slide-holder');
-		};
-			
-		this.set_can_value = function(index, value) {
-			
-			value = parseFloat(value);
-			
-			var can_value_holder = this.get_can_value_holder(index);
-			can_value_holder.find('input').slider('setValue', value);
-			var slider = can_value_holder.find('.slider');
-			module.on_slide(slider, value);
-		};
-		
-		
-		this.get_can_value = function(index) {
-			var can_value_holder = this.get_can_value_holder(index);
-			return parseFloat(can_value_holder.find('.slider-value').text());
-		};
-		
-		
-		this.on_slide = function(element, value) {
-			var negative_color = '#FCC';
-			var positive_color = '#CFC';
-			var neutral_color = 'lightgray';
-			
-			//get size and position
-			var width = (Math.abs(value / 1.0) * 50.00).toFixed(0);
-			var left = 50;
-			if(value < 0) {
-				left -= width;
-			}
-			//style
-			element.find('.slider-track .slider-selection').css('left', left + '%');
-			element.find('.slider-track .slider-selection').css('width', width + '%');
-			if(value < 0) {
-				element.find('.slider-track .slider-selection').css('background', negative_color);
-				element.find('.slider-track .slider-handle').css('background', negative_color);
-			} else if(value > 0) {
-				element.find('.slider-track .slider-selection').css('background', positive_color);
-				element.find('.slider-track .slider-handle').css('background', positive_color);
-			} else {
-				element.find('.slider-track .slider-handle').css('background', neutral_color);
-			}
-				
-			//display value
-			element.siblings('.slider-value').text(value.toFixed(2));
 		};
 		
 		function add_can(index) {
-			
-			//console.log(module);
 
 			var $can = $('<div class="row can-device" device-index="' + index + '">' +
 				'<div class="col-xs-1" style="padding-left: 10px">' +
@@ -166,10 +95,7 @@ $(function() {
 				'</div>' +
 				
 				'<div class="col-xs-5" style="padding-left: 0px; padding-right: 0px">' +
-					'<p class="slide-holder">' +
-						'<input type="text" class="form-control" value="">' +
-						'<span class="slider-value">0</span>' +
-					'</p>' +
+					'<p class="slide-holder"></p>' +
 					'<span style="font-weight: 600">Mode: </span><span class="can-mode">PercentVBus</span>' +						
 				'</div>' +
 				
@@ -184,26 +110,16 @@ $(function() {
 				'</div>' +
 			'</div>').appendTo(module.element);
 			
-			$can.find('.slide-holder').find('input').slider({
-				min: -1,
-				max: 1,
-				value: 0,
-				step: .01,
-				tooltip: 'hide',
-				handle: 'round',
-				formater: function(value) {
-					return value.toFixed(2);
-				}
-			});
+			var can_element = {};
 			
+			can_element.slider = $can.find('.slide-holder').sliderFacade().tooltip();
+			can_element.mode = $can.find('.can-mode');
+			can_element.encoder_value = $can.find('.encoder-value span');
+			can_element.sensor_value = $can.find('.sensor-value span');
+			can_element.fwd_limit_switch = $can.find('input[name=for-limit-switch]');
+			can_element.rev_limit_switch = $can.find('input[name=rev-limit-switch]');
 			
-			
-			$can.find('.slide-holder').find('input').slider().on('slide', function(ev){
-				var element = $(ev.target).parent();
-				module.on_slide(element, ev.value);
-			});	
-			
-			return $can;
+			can_elements[index] = can_element;
 			
 		}
 		
@@ -220,14 +136,7 @@ $(function() {
 		});
 	}
 	
-	CAN.prototype = new IOModule();
-	
 	sim.add_iomodule('can', CAN, function(iomodule) {
-		
-	
-		// Add tooltips to the sliders
-		iomodule.element.find('.slide-holder').tooltip();
-		
 		
 		// Add to config modal
 		var data = _.isObject(config.saved_config.can) ? config.saved_config.can : {};
@@ -271,4 +180,3 @@ $(function() {
 	
 
 });
-	

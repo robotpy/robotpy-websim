@@ -23,6 +23,80 @@ $(function() {
 			relays : {}
 		};
 		
+		// Holds DOM elements
+		var pwm_elements = [];
+		var dio_elements = [];
+		var relay_elements = [];
+		
+		// initializes the module
+		this.init = function() {
+			
+			var $digital = $('<div class="row">' +
+					 	 	'<div class="col-xs-5" id="pwms">' +
+					 	 		'<h4 class="text-center">PWM</h4>' +
+					 	 		'<form class="form-horizontal" action=""></form>' +
+					 	 	'</div>' +
+					 	 	'<div class="col-xs-4" id="dios">' +
+					 	 		'<h4 class="text-center">Digital I/O</h4>' +
+					 	 		'<form class="form-horizontal" action="" class="dio-buttons"></form>' +
+				 	 		'</div>' +
+				 	 		'<div class="col-xs-3" id="relays">' +
+				 	 			'<h4 class="text-center">Relay</h4>' +
+				 	 			'<form class="form-horizontal" action=""></form>' +
+			 	 			'</div>' +
+						 '</row>').appendTo(this.element);
+			
+			// Initializes the pwms
+			var $pwms = $digital.find('#pwms form');
+			
+			for(var i = 0; i < 20; i++) {
+				var $pwm = $('<p class="slide-holder"></p>').appendTo($pwms).tooltip().sliderFacade({
+					label: '<b>' + i + '</b> '
+				});
+				pwm_elements.push($pwm);
+			}
+			
+			// Initialize the dios
+			var $dios = $digital.find('#dios form');
+			
+			for(var i = 0; i < 26; i++) {
+				
+				if(i < 10)
+					var index = '&nbsp;' + i;
+				else
+					var index = i;
+				
+				var $dio_holder = $('<div class="col-xs-6 dio-holder">' +
+									'<div class="row">' +
+										'<div class="col-xs-6"><b>' + index + '</b></div>' +
+										'<div class="col-xs-5">' +
+											'<a href="#" class="btn btn-danger btn-circle digital-io"></a>' +
+										'</div>' +
+									'</div>' +
+								'</div>').appendTo($dios).tooltip();
+				
+				var $dio = $dio_holder.find('.digital-io');
+				dio_elements.push({ holder: $dio_holder, button: $dio });
+			}
+			
+			// Initialize the relays
+			var $relays = $digital.find('#relays form');
+			
+			for(var i = 0; i < 8; i++) {
+				var $relay_holder = $('<div class="row relay-holder">' +
+						  		      '<div class="col-xs-4"><b>&nbsp;' + i + '</b></div>' +
+					  		          '<div class="col-xs-5">' +
+				  		          	     '<a href="#" class="btn btn-danger btn-circle relay"></a>' +
+				  		          	  '</div>' +
+			  		          	  '</div>').appendTo($relays).tooltip();
+				
+				var $relay = $relay_holder.find('.relay');
+				relay_elements.push({ holder: $relay_holder, button: $relay });
+			}
+			
+			
+		};
+		
 		this.modify_data_to_server = function(data_to_server) {
 			
 			if(!this.ui_updated)
@@ -33,7 +107,7 @@ $(function() {
 			// Send dio value to server
 			var dio = data_to_server.dio;	
 			for(var i = 0; i < dio.length; i++) {
-				dio[i].value = this.get_dio(i).find('.digital-io').hasClass('btn-success');
+				dio[i].value = dio_elements[i].button.hasClass('btn-success');
 			}
 
 		};
@@ -52,14 +126,13 @@ $(function() {
 				prev_data.pwms[i] = pwm;
 							
 				// Update
-				var selector = this.get_pwm(i);
 				if(!pwm.initialized) {
-					selector.addClass('hide');
+					pwm_elements[i].addClass('hide');
 					continue;
 				}
 					
-				selector.removeClass('hide');			
-				this.set_slider_value(i, pwm.value);
+				pwm_elements[i].removeClass('hide');
+				pwm_elements[i].sliderFacade('setValue', pwm.value);
 			}
 				
 			// Hide DIOs if they aren't initialized
@@ -74,13 +147,12 @@ $(function() {
 				prev_data.dios[i] = dio;
 				
 				// Update
-				var selector = this.get_dio(i);
 				if(!dio.initialized) {
-					selector.addClass('hide');
+					dio_elements[i].holder.addClass('hide');
 					continue;
 				}
 					
-				selector.removeClass('hide');
+				dio_elements[i].holder.removeClass('hide');
 			}
 			
 			// Hide the relays if they aren't initialized
@@ -95,95 +167,36 @@ $(function() {
 				prev_data.relays[i] = relay;
 				
 				// Update
-				var selector = this.get_relay(i);
 				if(!relay.initialized) {
-					selector.addClass('hide');
+					relay_elements[i].holder.addClass('hide');
 					continue;
 				}
 				
-				selector.removeClass('hide');
+				relay_elements[i].holder.removeClass('hide');
 				this.set_relay_value(i, relay.fwd, relay.rev);
 
 			}
 		};
 		
-		this.get_pwm = function(index) {			
-			var $pwms = this.element.find('.slide-holder');
-			return $( $pwms[index] );
-		};
-		
-		this.get_dio = function(index) {
-			var $dios = this.element.find('.dio-holder');
-			return $( $dios[index] );
-		};
-		
-		this.get_relay = function(index) {
-			var $relays = this.element.find('.relay-holder');
-			return $( $relays[index] );
-		}
 		
 		this.set_relay_value = function(index, fwd, rev) {
-			var relay = this.get_relay(index);
+			var relay = relay_elements[index].button;
 			
 			if(fwd) {
-				relay.find('.relay').addClass('btn-success');
-				relay.find('.relay').removeClass('btn-danger');
-				relay.find('.relay').removeClass('btn-default');
+				relay.addClass('btn-success');
+				relay.removeClass('btn-danger');
+				relay.removeClass('btn-default');
 			} else if(rev) {
-				relay.find('.relay').removeClass('btn-success');
-				relay.find('.relay').addClass('btn-danger');
-				relay.find('.relay').removeClass('btn-default');
+				relay.removeClass('btn-success');
+				relay.addClass('btn-danger');
+				relay.removeClass('btn-default');
 			} else {
-				relay.find('.relay').removeClass('btn-success');
-				relay.find('.relay').removeClass('btn-danger');
-				relay.find('.relay').addClass('btn-default');
+				relay.removeClass('btn-success');
+				relay.removeClass('btn-danger');
+				relay.addClass('btn-default');
 			}
 		};
 		
-		
-		this.set_slider_value = function(index, value) {
-			
-			value = parseFloat(value);
-			
-			var slide_holder = this.get_pwm(index);
-			slide_holder.find('input').slider('setValue', value);
-			var slider = slide_holder.find('.slider');
-			module.on_slide(slider, value);
-		};
-		
-		
-		this.get_slider_value = function(index) {
-			var slide_holder = this.get_pwm(index);
-			return parseFloat(slide_holder.find('.slider-value').text());
-		};
-		
-		this.on_slide = function(element, value) {
-			var negative_color = '#FCC';
-			var positive_color = '#CFC';
-			var neutral_color = 'lightgray';
-			
-			//get size and position
-			var width = (Math.abs(value / 1.0) * 50).toFixed(0);
-			var left = 50;
-			if(value < 0) {
-				left -= width;
-			}
-			//style
-			element.find('.slider-track .slider-selection').css('left', left + '%');
-			element.find('.slider-track .slider-selection').css('width', width + '%');
-			if(value < 0) {
-				element.find('.slider-track .slider-selection').css('background', negative_color);
-				element.find('.slider-track .slider-handle').css('background', negative_color);
-			} else if(value > 0) {
-				element.find('.slider-track .slider-selection').css('background', positive_color);
-				element.find('.slider-track .slider-handle').css('background', positive_color);
-			} else {
-				element.find('.slider-track .slider-handle').css('background', neutral_color);
-			}
-				
-			//display value
-			element.siblings('.slider-value').text(value.toFixed(2));
-		};
 		
 		// Alert module that ui has been updated if fwd or rev limit switches have been pressed
 		$('body').on('click', '#digital .btn.digital-io', function() {
@@ -194,18 +207,7 @@ $(function() {
 	
 	sim.add_iomodule('digital', Digital, function(iomodule) {
 		
-		// Initialize the sliders
-		iomodule.element.find('.pwm-slider').slider({
-			min: -1,
-			max: 1,
-			value: 0,
-			step: .01,
-			tooltip: 'hide',
-			handle: 'round',
-			formater: function(value) {
-				return value.toFixed(2);
-			}
-		});
+		iomodule.init();
 		
 		//digital i/o, relay
 		iomodule.element.find('.digital-io').click(function(e) {
@@ -213,10 +215,6 @@ $(function() {
 			$(this).toggleClass('btn-success');
 			$(this).toggleClass('btn-danger');
 		});
-		
-		// Initalize the tooltip
-		$('.slide-holder, .dio-holder, .relay-holder').tooltip();
-		
 		
 		// Add to config modal
 		(function() {
@@ -303,9 +301,6 @@ $(function() {
 				}
 			}
 		}());
-		
-		
-		
 		
 		(function() {
 
@@ -479,6 +474,5 @@ $(function() {
 		}());
 		
 	});
-	
 	
 });
