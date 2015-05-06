@@ -21,6 +21,9 @@ $(function() {
 		this.order = 0;
 		
 		
+		this.sliders = [];
+		
+		
 		this.modify_data_to_server = function(data_to_server) {
 			
 			if(!this.ui_updated)
@@ -31,11 +34,11 @@ $(function() {
 			// Send analog input values to server		
 			for(var i = 0; i < 8; i++) {		
 				
-				var $analog = this.get_analog(i);
-				var analog_type = $analog.find('.analog-type').text();
+				var analog_type = module.sliders[i].analogTypeElement.text();
 				
 				if(analog_type === 'input') {
-					data_to_server.analog_in[i].value = this.get_analog_value(i);
+					var value = module.sliders[i].element.sliderFacade('getValue');
+					data_to_server.analog_in[i].value = value;
 				}
 			}
 		};
@@ -59,93 +62,26 @@ $(function() {
 				// Update the interface
 				var analog_type = null;
 				
-				if(analog.input.initialized) {
-					
+				if(analog.input.initialized)			
 					analog_type = 'input';
-					
-				} else if(analog.output.initialized) {
-					
-					analog_type = 'output';
-					this.set_analog_value(i, analog.output.value);
-					
-				} else if(analog.trigger.initialized) {
-					
+				else if(analog.output.initialized)
+					analog_type = 'output';			
+				else if(analog.trigger.initialized)					
 					analog_type = 'trigger';
-					if(analog.trigger.trig_state) {
-						this.set_analog_value(i, true);
-					} else {
-						this.set_analog_value(i, false);
-					}
-				}
-				
-				var $analog = this.get_analog(i);
-				
+
 				if(analog_type === null) {
-					$analog.addClass('hidden');
+					this.sliders[i].element.addClass('hidden');
 				} else {
-					$analog.removeClass('hidden');
-					$analog.find('.analog-type').text(analog_type);
+					this.sliders[i].element.removeClass('hidden');
+					this.sliders[i].analogTypeElement.text(analog_type);
 					
+					if(analog_type != 'input')
+						this.sliders[i].element.sliderFacade('setValue', analog.output.value);
 				}
 			}
 		};
 		
-		this.get_analog = function(index) {
-			var $slide_holders = this.element.find('.slide-holder');
-			return $( $slide_holders[index] );
-		};
-			
-		this.set_analog_value = function(index, value) {
-			
-			var num_value = _.isBoolean(value) ? (value ? 10 : -10) : parseFloat(value);
-			
-			var slide_holder = this.get_analog(index);
-			slide_holder.find('input').slider('setValue', num_value);
-			var slider = slide_holder.find('.slider');
-			module.on_slide(slider, value);
-		};
 		
-		
-		this.get_analog_value = function(index) {
-			var slide_holder = this.get_analog(index);
-			return parseFloat(slide_holder.find('.slider-value').text());
-		};
-		
-		
-		this.on_slide = function(element, value) {
-			
-			var num_value = _.isBoolean(value) ? (value ? 10 : -10) : value;
-			
-			var negative_color = '#FCC';
-			var positive_color = '#CFC';
-			var neutral_color = 'lightgray';
-			
-			//get size and position
-			var width = (Math.abs(num_value / 10.0) * 50).toFixed(0);
-			var left = 50;
-			if(num_value < 0) {
-				left -= width;
-			}
-			//style
-			element.find('.slider-track .slider-selection').css('left', left + '%');
-			element.find('.slider-track .slider-selection').css('width', width + '%');
-			if(num_value < 0) {
-				element.find('.slider-track .slider-selection').css('background', negative_color);
-				element.find('.slider-track .slider-handle').css('background', negative_color);
-			} else if(num_value > 0) {
-				element.find('.slider-track .slider-selection').css('background', positive_color);
-				element.find('.slider-track .slider-handle').css('background', positive_color);
-			} else {
-				element.find('.slider-track .slider-handle').css('background', neutral_color);
-			}
-			
-			//display value
-			if(_.isBoolean(value)) {
-				element.siblings('.slider-value').text(value ? 'True' : 'False');
-			} else {
-				element.siblings('.slider-value').text(value.toFixed(2));
-			}
-		};
 		
 		// The events that alert the server of ui updates
 	}
@@ -153,34 +89,35 @@ $(function() {
 	sim.add_iomodule('analog', Analog, function(iomodule) {
 		
 		
-		// Initialize the sliders
-		iomodule.element.find('.slide-holder').find('input').slider({
-			min: -10,
-			max: 10,
-			value: 0,
-			step: .01,
-			tooltip: 'hide',
-			handle: 'round',
-			formater: function(value) {
-				return value.toFixed(2);
-			}
-		});
-		
+		// Create 8 sliders
 		for(var i = 0; i < 8; i++) {
-			iomodule.set_analog_value(i, 0);
-		}
-		
-		iomodule.element.find('.slide-holder').find('input').slider().on('slide', function(ev){
-			var element = $(ev.target).parent();
-			iomodule.on_slide(element, ev.value);
 			
-			// Alert module of ui update
-			iomodule.ui_updated = true;
-		});	
-		
-		
-		// Add tooltips to the sliders
-		iomodule.element.find('.slide-holder').tooltip();
+			var slider_element = $('<p></p>')
+				.appendTo(iomodule.element)
+				.sliderFacade({
+					magnitude: 10,
+					label: '<b>' + i + '</b> (<span class="analog-type"></span>)',
+					setTextValue: function(element, value) {
+
+						var $analog_type = element.data('websim-sliderFacade').analogTypeElement;
+							
+						if($analog_type && $analog_type.text() == 'trigger') {
+							return (value < 0) ? 'False' : 'True';
+						}
+						
+						return value;
+					},
+					onChange(element, value) {
+						iomodule.ui_updated = true;
+					}
+				});
+			
+			var slider_obj = slider_element.data('websim-sliderFacade');
+			slider_obj.analogTypeElement = slider_obj.labelElement.find('.analog-type');
+			slider_obj.sliderHolderElement.tooltip();
+			
+			iomodule.sliders.push(slider_obj);		
+		}
 		
 		// Add to config modal
 		var data = _.isObject(config.saved_config.analog) ? config.saved_config.analog : {};
@@ -251,7 +188,7 @@ $(function() {
 			
 			for(var i = 0; i < 8; i++) {
 				var tooltip = data['analog-' + i + '-tooltip'];
-				iomodule.get_analog(i).attr('data-original-title', tooltip);
+				iomodule.sliders[i].sliderHolderElement.attr('data-original-title', tooltip);
 			}
 				
 		}
