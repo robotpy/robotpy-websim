@@ -53,7 +53,7 @@ $(function() {
 					var $button_holder = $('<div class="col-xs-4 joystick-btn-container">' +
 										      '<div class="checkbox">' +
 										         '<label>' +
-										         	'<input type="checkbox" class="joystick-btn"> ' + b +
+										         	'<input type="checkbox" class="joystick-btn"> ' + (b + 1) +
 										      	 '</label>' +
 										      '</div>' +
 									       '</div>').appendTo($buttons).tooltip();
