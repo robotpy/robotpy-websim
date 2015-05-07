@@ -2,6 +2,23 @@
 
 (function($) {
 	
+	$.fn.slider.Constructor.prototype.disable = function () {
+		this.picker.off();
+	};
+	
+	$.fn.slider.Constructor.prototype.enable = function () {
+	        if (this.touchCapable) {
+	            // Touch: Bind touch events:
+	            this.picker.on({
+	                touchstart: $.proxy(this.mousedown, this)
+	            });
+	        } else {
+	            this.picker.on({
+	                mousedown: $.proxy(this.mousedown, this)
+	            });
+	        }
+	};
+	
 	$.widget( "websim.sliderFacade", {
 		
 		options : {
@@ -130,6 +147,14 @@
 		
 		getValue: function() {
 			return parseFloat(this.textElement.text());
+		},
+		
+		enable: function() {
+			this.sliderElement.slider('enable');
+		},
+		
+		disable: function() {
+			this.sliderElement.slider('disable');
 		}
 		
 	});

@@ -53,6 +53,7 @@ $(function() {
 				var $pwm = $('<p class="slide-holder"></p>').appendTo($pwms).tooltip().sliderFacade({
 					label: '<b>' + i + '</b> '
 				});
+				$pwm.sliderFacade('disable');
 				this.pwm_elements.push($pwm);
 			}
 			

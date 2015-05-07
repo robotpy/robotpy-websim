@@ -113,6 +113,7 @@ $(function() {
 			var can_element = {};
 			
 			can_element.slider = $can.find('.slide-holder').sliderFacade().tooltip();
+			can_element.slider.sliderFacade('disable');
 			can_element.mode = $can.find('.can-mode');
 			can_element.encoder_value = $can.find('.encoder-value span');
 			can_element.sensor_value = $can.find('.sensor-value span');
