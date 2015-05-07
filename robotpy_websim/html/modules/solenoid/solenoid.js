@@ -13,6 +13,30 @@ $(function() {
 			solenoids : { }	
 		};
 		
+		// Solenoid DOM elements
+		this.solenoid_elements = [];
+		
+		this.init = function() {
+			
+			var $solenoids = $('<div class="row">' +
+							      '<form class="form-horizontal" action=""></form>' +
+							   '</div>').appendTo(this.element);
+			
+			for(var i = 0; i < 8; i++) {
+				
+				var $solenoid_holder = $('<div class="col-xs-3 solenoid-holder">' +
+								     '<div class="row">' +
+								     	'<b>' + i + '</b>' +
+								     	'<a href="#" class="btn btn-danger btn-circle solenoid"></a>' +
+								     '</div>' +
+								  '</div>').appendTo($solenoids).tooltip();	
+				
+				var $solenoid = $solenoid_holder.find('.solenoid');
+				
+				this.solenoid_elements.push({ holder: $solenoid_holder, solenoid: $solenoid });
+			}
+		};
+		
 		
 		this.update_interface = function(data_from_server) {
 			
@@ -27,24 +51,19 @@ $(function() {
 				prev_data.solenoids[i] = solenoid;
 				
 				// Update solenoid
-				var selector = this.get_solenoid(i);
 				if(!solenoid.initialized) {
-					selector.addClass('hide');
+					this.solenoid_elements[i].holder.addClass('hide');
 					continue;
 				} 
 				
-				selector.removeClass('hide');
+				this.solenoid_elements[i].holder.removeClass('hide');
 				this.set_solenoid_value(i, solenoid.value);
 			}
 		};
 		
-		this.get_solenoid = function(index) {
-			return this.element.find('.solenoid-holder:nth-of-type(' + (index + 1) + ')');
-		};
-		
 		// TODO: Set the color of the solenoid indicator based on the real value given
 		this.set_solenoid_value = function(index, value) {
-			var solenoid = this.get_solenoid(index).find('.solenoid');
+			var solenoid = this.solenoid_elements[index].solenoid;
 			
 			if(value === true) {
 				solenoid.addClass('btn-success');
@@ -66,10 +85,8 @@ $(function() {
 	sim.add_iomodule('solenoid', Solenoid, function(iomodule) {
 		
 		// Initialize the tooltip	
-		for(var i = 0; i < 8; i++) {
-			iomodule.get_solenoid(i).tooltip();
-		}
-				
+		iomodule.init();
+		
 		// Add to config modal
 
 		var data = _.isObject(config.saved_config.solenoid) ? config.saved_config.solenoid : {};
@@ -140,7 +157,7 @@ $(function() {
 			
 			for(var i = 0; i < 8; i++) {
 				var tooltip = data['solenoid-' + i + '-tooltip'];
-				iomodule.get_solenoid(i).attr('data-original-title', tooltip);
+				iomodule.solenoid_elements[i].holder.attr('data-original-title', tooltip);
 			}
 				
 		}

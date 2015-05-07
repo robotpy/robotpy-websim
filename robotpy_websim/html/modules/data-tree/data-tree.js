@@ -8,6 +8,9 @@ $(function() {
 		
 		this.title = 'Data Tree';
 		
+		this.update_button_element = null;
+		this.tree_element = null;
+		
 		this.on_config_update = function(data_tree) {
 			
 			var visible = data_tree[0].visible;
@@ -21,6 +24,14 @@ $(function() {
 		
 		this.init = function() {
 			
+			
+			// Add update button
+			this.update_button_element = $('<button class="btn btn-primary btn-xs update-btn">Update</button>')
+				.appendTo(this.element);
+			
+			this.tree_element = $('<div class="data-tree"></div>')
+				.appendTo(this.element);
+			
 			this.update = true;
 			this.element.on('click', '.update-btn', function() {
 				module.update = true;
@@ -29,7 +40,7 @@ $(function() {
 
 		this.update_interface = function(data) {
 			if(this.update) {
-				this.element.find('.out-tree').jsonTree({ 'data' : data });
+				module.tree_element.jsonTree({ 'data' : data });
 				this.update = false;
 			}
 			
@@ -39,11 +50,7 @@ $(function() {
 	
 	sim.add_iomodule('data-tree', Data_Tree, function(iomodule) {
 		
-		// Initialize the sliders
-		iomodule.update = true;
-		iomodule.element.on('click', '.update-btn', function() {
-			iomodule.update = true;
-		});	
+		iomodule.init();
 				
 		// Add to config modal
 		var data = _.isObject(config.saved_config['data-tree']) ? config.saved_config['data-tree'] : {};

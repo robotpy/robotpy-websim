@@ -21,6 +21,9 @@ $(function() {
 		};
 		
 		this.init = function() {
+			
+			// Add field
+			this.element.append('<svg class="field"></svg>');
 
 			var properties = this.properties;
 
