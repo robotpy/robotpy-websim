@@ -15,6 +15,59 @@ $(function() {
 		this.ui_updated = false;
 		
 		
+		this.joystick_elements = [];
+		
+		this.init = function() {
+			
+			
+			var $joysticks = $('<div class="row"></div>').appendTo(this.element);
+			
+			for(var i = 0; i < 6; i++) {
+				
+				var joystick_element = { holder: null, axes: [], buttons: [] };
+				
+				var $joystick = $('<div class="col-xs-4 joystick">' +
+							     '<h4 class="text-center">Joystick ' + i + '</h4>' +
+							     '<form class="form-horizontal" action=""></form>' +
+						     '</div>').appendTo($joysticks);
+				
+				joystick_element.holder = $joystick;
+				
+				var axis_names = ['x', 'y', 'z', 't'];
+				for(var a in axis_names) {
+					
+					var $axis = $('<p class="slide-holder ' + axis_names[a] + '-axis"></p>').appendTo($joystick).tooltip().sliderFacade({
+						label: '<b>' + _.string.capitalize(axis_names[a]) + ' </b>',
+						onChange: function() {
+							module.ui_updated = true;
+						}
+					});
+					
+					joystick_element.axes.push($axis);
+				}
+				
+				var $buttons = $('<div class="row"></row>').appendTo($joystick);
+				
+				for(var b = 0; b < 12; b++) {
+					
+					var $button_holder = $('<div class="col-xs-4 joystick-btn-container">' +
+										      '<div class="checkbox">' +
+										         '<label>' +
+										         	'<input type="checkbox" class="joystick-btn"> ' + b +
+										      	 '</label>' +
+										      '</div>' +
+									       '</div>').appendTo($buttons).tooltip();
+					
+					var $button = $button_holder.find('input');
+					
+					joystick_element.buttons.push({ holder: $button_holder, button: $button });
+				}
+				
+				this.joystick_elements.push(joystick_element);
+			}
+			
+		};
+		
 		this.modify_data_to_server = function(data_to_server) {
 			
 			if(!this.ui_updated)
@@ -26,77 +79,15 @@ $(function() {
 
 			for(var j = 0; j < 6; j++) {
 				for(var a = 0; a < 4; a++) {
-					joysticks[j].axes[a] = this.get_axis_value(j, a);
+					joysticks[j].axes[a] = this.joystick_elements[j].axes[a].sliderFacade('getValue');
 				}
 				
 				for(var b = 0; b < 12; b++) {
-					joysticks[j].buttons[b] = this.get_button_value(j, b);
+					joysticks[j].buttons[b] = this.joystick_elements[j].buttons[b].button.prop('checked');
 				}
 			}
 		};
-		
-		this.get_joystick = function(index) {
-			return this.element.find('.joystick:nth-of-type(' + (index + 1) + ')');
-		};
-		
-		this.get_axis = function(joystick, axis) {
-			var joystick = this.get_joystick(joystick);
-			return joystick.find('.slide-holder:nth-of-type(' + (axis + 1) + ')');
-		};
-		
-		this.get_button = function(joystick, button) {
-			var joystick = this.get_joystick(joystick);
-			return joystick.find('.joystick-btn-' + (button));
-		};
-		
-		this.set_axis_value = function(joystick, axis, value) {
 			
-			value = parseFloat(value);
-			
-			var axis = this.get_axis(joystick, axis);
-			axis.find('input').slider('setValue', value);
-			var slider = axis.find('.slider');
-			this.on_slide(slider, value);
-		}
-		
-		this.get_axis_value = function(joystick, axis) {
-			var axis = this.get_axis(joystick, axis);
-			return parseFloat(axis.find('.slider-value').text());
-		};
-		
-		this.get_button_value = function(joystick, button) {
-			var button = this.get_button(joystick, button);
-			return button.is(":checked");
-		}
-		
-		this.on_slide = function(element, value) {
-			var negative_color = '#FCC';
-			var positive_color = '#CFC';
-			var neutral_color = 'lightgray';
-			
-			//get size and position
-			var width = (Math.abs(value / 1.0) * 50).toFixed(0);
-			var left = 50;
-			if(value < 0) {
-				left -= width;
-			}
-			//style
-			element.find('.slider-track .slider-selection').css('left', left + '%');
-			element.find('.slider-track .slider-selection').css('width', width + '%');
-			if(value < 0) {
-				element.find('.slider-track .slider-selection').css('background', negative_color);
-				element.find('.slider-track .slider-handle').css('background', negative_color);
-			} else if(value > 0) {
-				element.find('.slider-track .slider-selection').css('background', positive_color);
-				element.find('.slider-track .slider-handle').css('background', positive_color);
-			} else {
-				element.find('.slider-track .slider-handle').css('background', neutral_color);
-			}
-				
-			//display value
-			element.siblings('.slider-value').text(value.toFixed(2));
-		};
-		
 		// Alert module that ui has been updated if fwd or rev limit switches have been pressed
 		$('body').on('click', '#joysticks input[type=checkbox]', function() {
 			module.ui_updated = true;
@@ -105,50 +96,9 @@ $(function() {
 
 	sim.add_iomodule('joysticks', Joysticks, function(iomodule) {
 		
-		// Initialize the sliders
-		iomodule.element.find('.joystick-slider').slider({
-			min: -1,
-			max: 1,
-			value: 0,
-			step: .01,
-			tooltip: 'hide',
-			handle: 'round',
-			formater: function(value) {
-				return value.toFixed(2);
-			}
-		});
-		
-		for(var j = 0; j < 6; j++) {			
-			for(var a = 0; a < 4; a++) {
-				iomodule.set_axis_value(j, a, 0);
-			}
-		}
-		
-
-		iomodule.element.find('.joystick-slider').slider().on('slide', function(ev){
-			var element = $(ev.target).parent();
-			iomodule.on_slide(element, ev.value);
-			iomodule.ui_updated = true;
-		});
-		
-		// Initialize the tooltips
-		for(var j = 0; j < 6; j++) {
-			
-			// axes
-			for(var a = 0; a < 4; a++) {
-				iomodule.get_axis(j, a).tooltip();
-			}
-			
-			// buttons
-			for(var b = 0; b < 12; b++) {
-				iomodule.get_button(j, b).closest('.checkbox').tooltip();
-			}
-			
-		}
-		
-		
+		iomodule.init();
+				
 		// Add to config modal
-
 		var data = _.isObject(config.saved_config.joysticks) ? config.saved_config.joysticks : {};
 		
 		var tooltips = {};
@@ -254,10 +204,10 @@ $(function() {
 			for(var j = 0; j < 6; j++) {
 				
 				if(data[j].visible == 'y') {
-					iomodule.get_joystick(j).removeClass('hidden');
+					iomodule.joystick_elements[j].holder.removeClass('hidden');
 					joystick_visible = true;
 				} else {
-					iomodule.get_joystick(j).addClass('hidden');
+					iomodule.joystick_elements[j].holder.addClass('hidden');
 				}
 				
 				// axes
@@ -266,14 +216,14 @@ $(function() {
 				for(var a = 0; a < 4; a++) {
 					
 					var tooltip = data[j][axes[a] + '-axis-tooltip'];
-					iomodule.get_axis(j, a).attr('data-original-title', tooltip);
+					iomodule.joystick_elements[j].axes[a].attr('data-original-title', tooltip);
 				}
 				
 				// buttons
 				for(var b = 0; b < 12; b++) {
 					
 					var tooltip = data[j]['btn-' + (b + 1) + '-tooltip'];
-					iomodule.get_button(j, b).closest('.checkbox').attr('data-original-title', tooltip);
+					iomodule.joystick_elements[j].buttons[b].holder.attr('data-original-title', tooltip);
 				}
 			}
 			
@@ -307,6 +257,4 @@ $(function() {
 	});
 	
 });
-
-
 	

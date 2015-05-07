@@ -24,9 +24,9 @@ $(function() {
 		};
 		
 		// Holds DOM elements
-		var pwm_elements = [];
-		var dio_elements = [];
-		var relay_elements = [];
+		this.pwm_elements = [];
+		this.dio_elements = [];
+		this.relay_elements = [];
 		
 		// initializes the module
 		this.init = function() {
@@ -53,7 +53,7 @@ $(function() {
 				var $pwm = $('<p class="slide-holder"></p>').appendTo($pwms).tooltip().sliderFacade({
 					label: '<b>' + i + '</b> '
 				});
-				pwm_elements.push($pwm);
+				this.pwm_elements.push($pwm);
 			}
 			
 			// Initialize the dios
@@ -76,7 +76,7 @@ $(function() {
 								'</div>').appendTo($dios).tooltip();
 				
 				var $dio = $dio_holder.find('.digital-io');
-				dio_elements.push({ holder: $dio_holder, button: $dio });
+				this.dio_elements.push({ holder: $dio_holder, button: $dio });
 			}
 			
 			// Initialize the relays
@@ -91,7 +91,7 @@ $(function() {
 			  		          	  '</div>').appendTo($relays).tooltip();
 				
 				var $relay = $relay_holder.find('.relay');
-				relay_elements.push({ holder: $relay_holder, button: $relay });
+				this.relay_elements.push({ holder: $relay_holder, button: $relay });
 			}
 			
 			
@@ -127,12 +127,12 @@ $(function() {
 							
 				// Update
 				if(!pwm.initialized) {
-					pwm_elements[i].addClass('hide');
+					this.pwm_elements[i].addClass('hide');
 					continue;
 				}
 					
-				pwm_elements[i].removeClass('hide');
-				pwm_elements[i].sliderFacade('setValue', pwm.value);
+				this.pwm_elements[i].removeClass('hide');
+				this.pwm_elements[i].sliderFacade('setValue', pwm.value);
 			}
 				
 			// Hide DIOs if they aren't initialized
@@ -148,11 +148,11 @@ $(function() {
 				
 				// Update
 				if(!dio.initialized) {
-					dio_elements[i].holder.addClass('hide');
+					this.dio_elements[i].holder.addClass('hide');
 					continue;
 				}
 					
-				dio_elements[i].holder.removeClass('hide');
+				this.dio_elements[i].holder.removeClass('hide');
 			}
 			
 			// Hide the relays if they aren't initialized
@@ -168,11 +168,11 @@ $(function() {
 				
 				// Update
 				if(!relay.initialized) {
-					relay_elements[i].holder.addClass('hide');
+					this.relay_elements[i].holder.addClass('hide');
 					continue;
 				}
 				
-				relay_elements[i].holder.removeClass('hide');
+				this.relay_elements[i].holder.removeClass('hide');
 				this.set_relay_value(i, relay.fwd, relay.rev);
 
 			}
@@ -180,7 +180,7 @@ $(function() {
 		
 		
 		this.set_relay_value = function(index, fwd, rev) {
-			var relay = relay_elements[index].button;
+			var relay = this.relay_elements[index].button;
 			
 			if(fwd) {
 				relay.addClass('btn-success');
@@ -287,7 +287,7 @@ $(function() {
 				
 				for(var i = 0; i < 20; i++) {
 					var tooltip = data['pwm-' + i + '-tooltip'];
-					iomodule.get_pwm(i).attr('data-original-title', tooltip);
+					iomodule.pwm_elements[i].attr('data-original-title', tooltip);
 				}
 							
 				// Hide all if all are hidden
@@ -372,7 +372,7 @@ $(function() {
 				
 				for(var i = 0; i < 26; i++) {
 					var tooltip = data['dio-' + i + '-tooltip'];
-					iomodule.get_dio(i).attr('data-original-title', tooltip);
+					iomodule.dio_elements[i].holder.attr('data-original-title', tooltip);
 				}
 							
 				// Hide all if all are hidden
@@ -458,7 +458,7 @@ $(function() {
 				
 				for(var i = 0; i < 8; i++) {
 					var tooltip = data['relay-' + i + '-tooltip'];
-					iomodule.get_relay(i).attr('data-original-title', tooltip);
+					iomodule.relay_elements[i].holder.attr('data-original-title', tooltip);
 				}
 							
 				// Hide all if all are hidden
