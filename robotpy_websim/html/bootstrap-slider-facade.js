@@ -73,6 +73,11 @@
 				});
 			
 			sliderFacade.sliderElement.slider().on('slide', function(ev){
+				
+				// Sets focus when sliding
+				sliderFacade.element.focus();
+				
+				//
 				var element = $(ev.target).parent();
 				var value = ev.value;
 				sliderFacade._onSlide(element, value);
@@ -124,13 +129,6 @@
 				
 			});
 			
-
-			/*$('body').on('keydown', sliderFacade.element, function(e) {
-				
-				if($(this).is(':focus')) {
-					console.log('sdfdfd');
-				}
-			});*/
 			
 			
 		},
