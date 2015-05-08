@@ -109,12 +109,12 @@ $(function() {
 					},
 					onChange(element, value) {
 						iomodule.ui_updated = true;
-					}
-				});
+					},
+					keyStep: 1
+				}).tooltip();
 			
 			var slider_obj = slider_element.data('websim-sliderFacade');
 			slider_obj.analogTypeElement = slider_obj.labelElement.find('.analog-type');
-			slider_obj.sliderHolderElement.tooltip();
 			
 			iomodule.sliders.push(slider_obj);		
 		}
@@ -188,7 +188,7 @@ $(function() {
 			
 			for(var i = 0; i < 8; i++) {
 				var tooltip = data['analog-' + i + '-tooltip'];
-				iomodule.sliders[i].sliderHolderElement.attr('data-original-title', tooltip);
+				iomodule.sliders[i].element.attr('data-original-title', tooltip);
 			}
 				
 		}

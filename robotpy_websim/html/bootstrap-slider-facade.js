@@ -32,8 +32,13 @@
 			},
 			onChange: function(element, value) {
 				
-			}
+			},
+			// How much slider moves up or down when +/- keys are pressed
+			keyStep: .1
 		},
+		
+		// If disabled the slider can't be moved with the mouse or keyboard
+		_enabled: true,
 	
 		labelElement: null,
 		sliderElement: null,
@@ -44,6 +49,9 @@
 			
 			// Prevents scoping issues
 			var sliderFacade = this;
+			
+			// Add bootstrap slider class
+			sliderFacade.element.addClass('bootstrap-slider-facade');
 			
 			// Initialize the label element
 			sliderFacade.labelElement = $('<span>' + sliderFacade.options.label + '</span>')
@@ -78,6 +86,53 @@
 			
 			// Set value
 			sliderFacade.setValue(0);
+			
+			// Make the slider focusable
+			this.element.attr('tabindex', 1);
+			
+			this.element.on('keypress', function(e) {
+				
+				if(!sliderFacade._enabled)
+					return;
+				
+				// - pressed
+				if(e.keyCode == 45) {
+					
+					var value = sliderFacade.getValue() - sliderFacade.options.keyStep;
+					
+					if(value < -sliderFacade.options.magnitude) {
+						value = -sliderFacade.options.magnitude;
+					}
+					
+					sliderFacade.setValue(value);
+					
+				// + or +/= pressed
+				} else if(e.keyCode == 43 || e.keyCode == 61) {
+					
+					var value = sliderFacade.getValue() + sliderFacade.options.keyStep;
+					
+					if(value > sliderFacade.options.magnitude) {
+						value = sliderFacade.options.magnitude;
+					}
+					
+					sliderFacade.setValue(value);
+					
+				// 0 is pressed
+				} else if(e.keyCode == 48) {
+					sliderFacade.setValue(0);
+				}
+				
+			});
+			
+
+			/*$('body').on('keydown', sliderFacade.element, function(e) {
+				
+				if($(this).is(':focus')) {
+					console.log('sdfdfd');
+				}
+			});*/
+			
+			
 		},
 		
 		
@@ -139,6 +194,11 @@
 	    	// Prevents scoping issues
 	    	var sliderFacade = this;
 	    	
+	    	if(value > sliderFacade.options.magnitude)
+	    		value = sliderFacade.options.magnitude;
+	    	else if(value < -sliderFacade.options.magnitude)
+	    		value = -sliderFacade.options.magnitude;
+	    	
 			sliderFacade.sliderElement.slider('setValue', value);
 			var slider = sliderFacade.sliderHolderElement;
 			sliderFacade._onSlide(slider, value);
@@ -150,11 +210,17 @@
 		},
 		
 		enable: function() {
+			this._enabled = true;
 			this.sliderElement.slider('enable');
 		},
 		
 		disable: function() {
+			this._enabled = false;
 			this.sliderElement.slider('disable');
+		},
+		
+		enabled: function() {
+			return this._enabled;
 		}
 		
 	});
