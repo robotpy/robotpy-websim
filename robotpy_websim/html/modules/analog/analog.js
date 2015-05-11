@@ -120,7 +120,10 @@ $(function() {
 		}
 		
 		// Add to config modal
-		var data = _.isObject(config.saved_config.analog) ? config.saved_config.analog : {};
+		if(!config.config_data.analog)
+			 config.config_data.analog = {};
+		
+		var data = config.config_data.analog;
 		
 		if(data.visible != 'y' && data.visible != 'n') {
 			data.visible = 'y';
@@ -153,10 +156,11 @@ $(function() {
 		}
 		
 		// Add category
-		config_modal.add_category('analog', {
+		config_modal.add_category({
+			config_key: 'analog',
 			html: html,
 			title : 'Analog',
-			onselect : function(form, data) {
+			onopen : function(form, data) {
 
 				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 				
@@ -165,7 +169,7 @@ $(function() {
 					form.find('input[name=' + name + ']').val(data[name]);
 				}
 			},
-			onsubmit : function(form, data) {
+			onsave : function(form, data) {
 				
 				data.visible = form.find('input[name=visible]:checked').val();
 				
@@ -176,7 +180,7 @@ $(function() {
 				
 				apply_config(data);
 			}
-		}, data);
+		});
 		
 		function apply_config(data) {
 			
@@ -192,6 +196,19 @@ $(function() {
 			}
 				
 		}
+		
+		
+		// Context menu
+		context_menu.add(iomodule, {
+			config_key: 'analog',
+			oncreate: function(menu, data) {
+				menu.find('#hide-iomodule').on('click', function() {
+					data.visible = 'n';
+					iomodule.element.addClass('hidden');
+					config.save_config();
+				});
+			}
+		});
 		
 	});
 	

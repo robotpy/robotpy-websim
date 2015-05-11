@@ -185,7 +185,6 @@ var sim = new function() {
 			}
 		});
 		
-		
 		// Add to config	
 
 		var position = $.extend({
@@ -193,14 +192,14 @@ var sim = new function() {
 			'y' : 0,
 			'set' : false,
 			'order' : iomodule.order
-		}, config.saved_user_config[id] !== undefined ? config.saved_user_config[id].position : {});
+		}, config.user_config_data[id] !== undefined ? config.user_config_data[id].position : {});
 		
 		if(config.user_config_data[id] === undefined) 
 			config.user_config_data[id] = {};
 		
 		config.user_config_data[id].position = position;
 		
-		if(config.config_data['websim-layout'].layout_type == 'absolute') {
+		if(config.user_config_data['websim-layout'].layout_type == 'absolute') {
 			var css_position = layout_manager.offset_to_position(position.x, position.y);
 			iomodule.element.css({
 				left : css_position.x,

@@ -123,7 +123,10 @@ $(function() {
 		
 		// Add to config modal
 
-		var data = _.isObject(config.saved_config.field) ? config.saved_config.field : {};
+		if(!config.config_data.field)
+			config.config_data.field = {};
+		
+		var data = config.config_data.field;
 		
 		if(data.visible != 'y' && data.visible != 'n') {
 			data.visible = 'y';
@@ -138,19 +141,20 @@ $(function() {
 			]);
 		
 		// Add category
-		config_modal.add_category('field', {
+		config_modal.add_category({
+			config_key: 'field',
 			html: html,
 			title : 'Field',
-			onselect : function(form, data) {
+			onopen : function(form, data) {
 				form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 			},
-			onsubmit : function(form, data) {
+			onsave : function(form, data) {
 				
 				data.visible = form.find('input[name=visible]:checked').val();
 
 				apply_config(data);
 			}
-		}, data);
+		});
 		
 		function apply_config(data) {
 			
@@ -160,6 +164,18 @@ $(function() {
 				iomodule.element.addClass('hidden');
 			}			
 		}
+		
+		// Context menu
+		context_menu.add(iomodule, {
+			config_key: 'field',
+			oncreate: function(menu, data) {
+				menu.find('#hide-iomodule').on('click', function() {
+					data.visible = 'n';
+					iomodule.element.addClass('hidden');
+					config.save_config();
+				});
+			}
+		});
 	});
 	
 	

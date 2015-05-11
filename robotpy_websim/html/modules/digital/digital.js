@@ -24,6 +24,10 @@ $(function() {
 		};
 		
 		// Holds DOM elements
+		this.pwm_holder = null;
+		this.dio_holder = null;
+		this.relay_holder = null;
+		
 		this.pwm_elements = [];
 		this.dio_elements = [];
 		this.relay_elements = [];
@@ -48,6 +52,7 @@ $(function() {
 			
 			// Initializes the pwms
 			var $pwms = $digital.find('#pwms form');
+			this.pwm_holder = $digital.find('#pwms');
 			
 			for(var i = 0; i < 20; i++) {
 				var $pwm = $('<p class="slide-holder"></p>').appendTo($pwms).tooltip().sliderFacade({
@@ -59,6 +64,7 @@ $(function() {
 			
 			// Initialize the dios
 			var $dios = $digital.find('#dios form');
+			this.dio_holder = $digital.find('#dios');
 			
 			for(var i = 0; i < 26; i++) {
 				
@@ -82,6 +88,7 @@ $(function() {
 			
 			// Initialize the relays
 			var $relays = $digital.find('#relays form');
+			this.relay_holder = $digital.find('#relays');
 			
 			for(var i = 0; i < 8; i++) {
 				var $relay_holder = $('<div class="row relay-holder">' +
@@ -217,10 +224,15 @@ $(function() {
 			$(this).toggleClass('btn-danger');
 		});
 		
+		
 		// Add to config modal
 		(function() {
 
-			var data = _.isObject(config.saved_config.pwm) ? config.saved_config.pwm : {};
+
+			if(!config.config_data.pwm)
+				config.config_data.pwm = {};
+
+			var data = config.config_data.pwm;
 			
 			if(data.visible != 'y' && data.visible != 'n') {
 				data.visible = 'y';
@@ -253,10 +265,11 @@ $(function() {
 			}
 			
 			// Add category
-			config_modal.add_category('pwm', {
+			config_modal.add_category({
+				config_key: 'pwm',
 				html: html,
 				title : 'PWM',
-				onselect : function(form, data) {
+				onopen : function(form, data) {
 	
 					form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 					
@@ -265,7 +278,7 @@ $(function() {
 						form.find('input[name=' + name + ']').val(data[name]);
 					}
 				},
-				onsubmit : function(form, data) {
+				onsave : function(form, data) {
 					
 					data.visible = form.find('input[name=visible]:checked').val();
 					
@@ -276,14 +289,14 @@ $(function() {
 					
 					apply_config(data);
 				}
-			}, data);
+			});
 			
 			function apply_config(data) {
 				
 				if(data.visible == 'y') {
-					iomodule.element.removeClass('hidden');
+					iomodule.pwm_holder.removeClass('hidden');
 				} else {
-					iomodule.element.addClass('hidden');
+					iomodule.pwm_holder.addClass('hidden');
 				}
 				
 				for(var i = 0; i < 20; i++) {
@@ -291,21 +304,17 @@ $(function() {
 					iomodule.pwm_elements[i].attr('data-original-title', tooltip);
 				}
 							
-				// Hide all if all are hidden
-				if(iomodule.element.find('#relays').hasClass('hidden') &&
-						iomodule.element.find('#dios').hasClass('hidden') &&
-						iomodule.element.find('#pwms').hasClass('hidden') ) {
-					
-					iomodule.element.addClass('hidden');
-				} else {
-					iomodule.element.removeClass('hidden');
-				}
+				hide_digital_if_empty();
 			}
+			
 		}());
 		
 		(function() {
 
-			var data = _.isObject(config.saved_config.dio) ? config.saved_config.dio : {};
+			if(!config.config_data.dio)
+				config.config_data.dio = {};
+			
+			var data = config.config_data.dio;
 			
 			if(data.visible != 'y' && data.visible != 'n') {
 				data.visible = 'y';
@@ -338,10 +347,11 @@ $(function() {
 			}
 			
 			// Add category
-			config_modal.add_category('dio', {
+			config_modal.add_category({
+				config_key: 'dio',
 				html: html,
 				title : 'Digital I/O',
-				onselect : function(form, data) {
+				onopen : function(form, data) {
 	
 					form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 					
@@ -350,7 +360,7 @@ $(function() {
 						form.find('input[name=' + name + ']').val(data[name]);
 					}
 				},
-				onsubmit : function(form, data) {
+				onsave : function(form, data) {
 					
 					data.visible = form.find('input[name=visible]:checked').val();
 					
@@ -361,14 +371,14 @@ $(function() {
 					
 					apply_config(data);
 				}
-			}, data);
+			});
 			
 			function apply_config(data) {
 				
 				if(data.visible == 'y') {
-					iomodule.element.removeClass('hidden');
+					iomodule.dio_holder.removeClass('hidden');
 				} else {
-					iomodule.element.addClass('hidden');
+					iomodule.dio_holder.addClass('hidden');
 				}
 				
 				for(var i = 0; i < 26; i++) {
@@ -376,22 +386,17 @@ $(function() {
 					iomodule.dio_elements[i].holder.attr('data-original-title', tooltip);
 				}
 							
-				// Hide all if all are hidden
-				if(iomodule.element.find('#relays').hasClass('hidden') &&
-						iomodule.element.find('#dios').hasClass('hidden') &&
-						iomodule.element.find('#pwms').hasClass('hidden') ) {
-					
-					iomodule.element.addClass('hidden');
-				} else {
-					iomodule.element.removeClass('hidden');
-				}
+				hide_digital_if_empty();
 			}
 		}());
 		
 		
 		(function() {
 
-			var data = _.isObject(config.saved_config.relay) ? config.saved_config.relay : {};
+			if(!config.config_data.relay)
+				config.config_data.relay = {};
+			
+			var data = config.config_data.relay;
 			
 			if(data.visible != 'y' && data.visible != 'n') {
 				data.visible = 'y';
@@ -424,10 +429,11 @@ $(function() {
 			}
 			
 			// Add category
-			config_modal.add_category('relay', {
+			config_modal.add_category({
+				config_key: 'relay',
 				html: html,
 				title : 'Relay',
-				onselect : function(form, data) {
+				onopen : function(form, data) {
 	
 					form.find('input[name=visible][value=' + data.visible + ']').prop('checked', true);
 					
@@ -436,7 +442,7 @@ $(function() {
 						form.find('input[name=' + name + ']').val(data[name]);
 					}
 				},
-				onsubmit : function(form, data) {
+				onsave : function(form, data) {
 					
 					data.visible = form.find('input[name=visible]:checked').val();
 					
@@ -447,14 +453,14 @@ $(function() {
 					
 					apply_config(data);
 				}
-			}, data);
+			});
 			
 			function apply_config(data) {
 				
 				if(data.visible == 'y') {
-					iomodule.element.removeClass('hidden');
+					iomodule.relay_holder.removeClass('hidden');
 				} else {
-					iomodule.element.addClass('hidden');
+					iomodule.relay_holder.addClass('hidden');
 				}
 				
 				for(var i = 0; i < 8; i++) {
@@ -462,17 +468,55 @@ $(function() {
 					iomodule.relay_elements[i].holder.attr('data-original-title', tooltip);
 				}
 							
-				// Hide all if all are hidden
-				if(iomodule.element.find('#relays').hasClass('hidden') &&
-						iomodule.element.find('#dios').hasClass('hidden') &&
-						iomodule.element.find('#pwms').hasClass('hidden') ) {
-					
-					iomodule.element.addClass('hidden');
-				} else {
-					iomodule.element.removeClass('hidden');
-				}
+				hide_digital_if_empty();
 			}
 		}());
+		
+		
+		// Context menu
+		context_menu.add(iomodule, {
+			html: context_menu.create_checkbox('show-pwms', 'Show PWMs') +
+				  context_menu.create_checkbox('show-dios', 'Show DIOs') +
+				  context_menu.create_checkbox('show-relays', 'Show Relays'),
+			oncreate: function(menu, data) {
+				
+				var categories = ['pwm', 'dio', 'relay'];
+				for(var i = 0; i < categories.length; i++) {
+					
+					(function(cat) {
+					
+						menu.find('#show-' + cat + 's input').prop('checked', data[cat].visible == 'y');
+						context_menu.add_checkbox_events(menu.find('#show-' + cat + 's'), function(checked) {
+							if(checked) {
+								data[cat].visible = 'y';
+								iomodule[cat + '_holder'].removeClass('hidden');
+							} else {
+								data[cat].visible = 'n';
+								iomodule[cat + '_holder'].addClass('hidden');
+							}
+							
+							hide_digital_if_empty();
+							config.save_config();
+						});
+					})(categories[i]);
+				}
+			
+			}
+		});
+		
+		function hide_digital_if_empty() {
+			// Hide all if all are hidden
+			if(iomodule.relay_holder.hasClass('hidden') &&
+					iomodule.dio_holder.hasClass('hidden') &&
+					iomodule.pwm_holder.hasClass('hidden') ) {
+				
+				iomodule.element.addClass('hidden');
+			} else {
+				iomodule.element.removeClass('hidden');
+			}
+		}
+		
+		
 		
 	});
 	

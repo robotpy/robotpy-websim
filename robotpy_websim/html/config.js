@@ -2,12 +2,6 @@
 
 var config = new function() {
 	
-	// The state of the config file when the program first starts. Used for initialization
-	this.saved_config = {};
-	
-	// The state of the user config file when the program first starts. Used for initialization
-	this.saved_user_config = {};
-	
 	// Holds the config category data
 	this.config_data = {};
 	
@@ -22,7 +16,7 @@ var config = new function() {
 		   url: '/user/config.json',
 		   dataType: 'json',
 		   success: function(content) {
-			   config.saved_config = content;
+			   config.config_data = content;
 		   },
 		   complete: function() {
 			   
@@ -31,7 +25,7 @@ var config = new function() {
 				   url: '/user/user-config.json',
 				   dataType: 'json',
 				   success: function(content) {
-					   config.saved_user_config = content;
+					   config.user_config_data = content;
 				   },
 				   complete: function() {
 					   if(_.isFunction(callback)) {
@@ -73,7 +67,7 @@ var config = new function() {
 var config_modal = new function() {
 
 	// Holds all form settings for the config modal
-	this.config_settings = {};
+	this.config_settings = [];
 	
 	// DOM elements that contain parts of the config modal
 	this.element = $('#config-modal');
@@ -82,43 +76,48 @@ var config_modal = new function() {
 	
 
 	
-	this.add_category = function(id, settings, data) {
+	this.add_category = function(settings) {
 		
-		if(this.config_settings[id] !== undefined && _.isObject(settings) === false) {
+		if(_.isObject(settings) === false) {
 			return false;
 		}
 		
-		this.config_settings[id] = $.extend(true, {
+		var category = $.extend(true, {
 			
+			// False by default. If true then the config data is retrieved from the user config
+			user_config: false,
+			// The key that contains the config data. If omitted or empty then all the config data is given
+			config_key: '',
 			html : '',
 			rules : {},
 			messages : {},
-			onsubmit : function(form, data) {},
-			onselect : function(form, data) {},
+			onopen : function(form, data) {},
+			onsave : function(form, data) {},
 			title : 'Just Another Category'
 			
 		}, settings);
 		
-		// Creates the jQuery element
-		this.config_settings[id].element = $('<form action="#" id="' + id + '-form" class="form-horizontal">' + 
-												this.config_settings[id].html + 
+		var index = this.config_settings.length;
+		this.config_settings.push(category);
+		
+		// Creates the jQuery element		
+		category.element = $('<form action="#" id="' + index + '-form" class="form-horizontal">' + 
+												category.html + 
 											'</form>');
 		
-		this.config_settings[id].element.validate({
+		category.element.validate({
 			
 			errorPlacement: function(error, element) {
 		        $(error).addClass('label label-danger error');
 		        $(error).insertBefore(element);
 		    },	    
 		    errorElement: 'div',
-		    rules : this.config_settings[id].rules,	    
-		    messages : this.config_settings[id].messages
+		    rules : category.rules,	    
+		    messages : category.messages
 		});
 		
-		config.config_data[id] = data ? data : {};
-		
 		// Add to the list of categories
-		$('<li role="presentation"><a href="#" category-id="' + id + '">' + this.config_settings[id].title + '</a></li>')
+		$('<li role="presentation"><a href="#" category-index="' + index + '">' + category.title + '</a></li>')
 				.appendTo(this.categories_element);
 		
 		return true;
@@ -129,15 +128,18 @@ var config_modal = new function() {
 		this.element.modal('show');
 		
 		// Set a category if none have been chosen
-		var categories = Object.keys(this.config_settings);
-		
-		if(categories.length > 0) {
-			this.set_category(categories[0]);
+		if(this.config_settings.length > 0 && this.get_category_index() === null) {
+			this.set_category(0);
 		}
 		
-		for(var id in this.config_settings) {
-			var settings = this.config_settings[id];
-			settings.onselect(settings.element, config.config_data[id]);
+		for(var i = 0; i < this.config_settings.length; i++) {
+			var settings = this.config_settings[i];
+			if(settings.user_config) {
+				var config_data = settings.config_key == '' ? config.user_config_data : config.user_config_data[settings.config_key];
+			} else {
+				var config_data = settings.config_key == '' ? config.config_data : config.config_data[settings.config_key];
+			}
+			settings.onopen(settings.element, config_data);
 		}
 				
 	};
@@ -152,28 +154,32 @@ var config_modal = new function() {
 	
 	this.save_config = function() {
 
-		for(var id in this.config_settings) {
+		for(var i = 0; i < this.config_settings.length; i++) {
 			
-			var form = this.config_settings[id].element;
-			var data = config.config_data[id];
-			this.config_settings[id].onsubmit(form, data);
+			var settings = this.config_settings[i];
+			if(settings.user_config) {
+				var config_data = settings.config_key == '' ? config.user_config_data : config.user_config_data[settings.config_key];
+			} else {
+				var config_data = settings.config_key == '' ? config.config_data : config.config_data[settings.config_key];
+			}
+			settings.onsave(settings.element, config_data);
 			
 		}
 		
 		config.save_config();
 	};
 	
-	this.set_category = function(id) {
+	this.set_category = function(index) {
 		
 		// Detach current category element
-		var current_category_id = this.get_category_id();
+		var current_category_index = this.get_category_index();
 		
-		if(current_category_id) {
-			this.config_settings[current_category_id].element.detach();
+		if(current_category_index) {
+			this.config_settings[current_category_index].element.detach();
 		}
 		
 		// Get the settings of the current config category
-		var config_settings = this.config_settings[id];
+		var config_settings = this.config_settings[index];
 		
 		if(config_settings === undefined) {
 			return;
@@ -183,7 +189,7 @@ var config_modal = new function() {
 		this.categories_element.find('li').removeClass('active');
 		
 		// Activate current category
-		this.categories_element.find('a[category-id=' + id + ']').parent().addClass('active');
+		this.categories_element.find('a[category-index=' + index + ']').parent().addClass('active');
 		
 		// Apply settings
 		config_settings.element.appendTo(this.category_form_holder);
@@ -194,11 +200,10 @@ var config_modal = new function() {
 	
 	
 	// Gets the current active category
-	this.get_category_id = function() {
+	this.get_category_index = function() {
 		
-		var category_id = this.categories_element.find('li.active a').attr('category-id');
-		
-		return category_id ? category_id : null;
+		var category_index = this.categories_element.find('li.active a').attr('category-index');
+		return category_index ? category_index : null;
 	};
 	
 	// Returns the html for a single input
@@ -290,12 +295,12 @@ var config_modal = new function() {
 	
 	// When a category is selected make it the active category
 	this.categories_element.on('click', 'a', function() {
-		
-		var category_id = config_modal.get_category_id();
+
+		var category_index = config_modal.get_category_index();
 		
 		// Only change to a different category if the current form input values are valid
-		if(category_id !== null && config_modal.config_settings[category_id].element.valid()) {
-			config_modal.set_category($(this).attr('category-id'));
+		if(category_index !== null && config_modal.config_settings[category_index].element.valid()) {
+			config_modal.set_category($(this).attr('category-index'));
 		}
 		
 	});
@@ -303,10 +308,10 @@ var config_modal = new function() {
 	// Hide the config modal
 	$('#config-modal-ok-btn').click(function() {
 		
-		var category_id = config_modal.get_category_id();
+		var category_index = config_modal.get_category_index();
 		
 		// Only save and hide if the current form input values are valid
-		if(category_id !== null && config_modal.config_settings[category_id].element.valid()) {
+		if(category_index !== null && config_modal.config_settings[category_index].element.valid()) {
 			config_modal.save_config();
 			config_modal.hide();
 		}

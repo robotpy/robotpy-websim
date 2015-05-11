@@ -94,13 +94,16 @@ var layout_manager = new function() {
 	 * Add to config modal
 	 */
 	this.add_to_config_modal = function() {
-		var data = _.isObject(config.saved_config['websim-layout']) ? config.saved_config['websim-layout'] : {};
+		
+		if(!config.user_config_data['websim-layout'])
+			config.user_config_data['websim-layout'] = {};
+
+		var data = config.user_config_data['websim-layout'];
 		
 		if(data.layout_type != 'flow' && data.layout_type != 'absolute') {
 			data.layout_type = 'flow';
 		}
 		
-		config.config_data['websim-layout'] = data;
 		
 		apply_config(data);
 		
@@ -111,17 +114,19 @@ var layout_manager = new function() {
 			]);
 		
 		// Add category
-		config_modal.add_category('websim-layout', {
+		config_modal.add_category({
+			user_config: true,
+			config_key: 'websim-layout',
 			html: html,
 			title : 'Websim Layout',
-			onselect : function(form, data) {
+			onopen : function(form, data) {
 				form.find('input[name=layout-type][value=' + data.layout_type + ']').prop('checked', true);
 			},
-			onsubmit : function(form, data) {		
+			onsave : function(form, data) {		
 				data.layout_type = form.find('input[name=layout-type]:checked').val();			
 				apply_config(data);
 			}
-		}, data);
+		});
 		
 		function apply_config(data) {
 			
@@ -204,7 +209,7 @@ var layout_manager = new function() {
 		// Set DOM order
 		var module_unordered_list = [];
 		
-		for(var id in config.user_config_data) {
+		for(var id in sim.iomodules) {
 			
 			var module = {
 				id : id,
@@ -260,7 +265,7 @@ var layout_manager = new function() {
 				return;
 			}
 			
-			if(config.config_data['websim-layout'].layout_type == 'absolute') {
+			if(config.user_config_data['websim-layout'].layout_type == 'absolute') {
 				_.assign(config.user_config_data[iomodule_id].position, {
 					x : iomodule.element.offset().left,
 					y : iomodule.element.offset().top,
@@ -297,7 +302,7 @@ var layout_manager = new function() {
 		    	}
 		    	
 				
-				if(config.config_data['websim-layout'].layout_type == 'absolute') {
+				if(config.user_config_data['websim-layout'].layout_type == 'absolute') {
 
 			    	var dx = e.pageX - click_position.x;
 			    	var dy = e.pageY - click_position.y;

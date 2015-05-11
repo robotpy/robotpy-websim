@@ -99,7 +99,10 @@ $(function() {
 		iomodule.init();
 				
 		// Add to config modal
-		var data = _.isObject(config.saved_config.joysticks) ? config.saved_config.joysticks : {};
+		if(!config.config_data.joysticks)
+			config.config_data.joysticks;
+		
+		var data = config.config_data.joysticks;
 		
 		var tooltips = {};
 		tooltips['x-axis-tooltip'] = 'x-Axis Tooltip:';
@@ -157,11 +160,14 @@ $(function() {
 		
 		
 		// Add category
-		config_modal.add_category('joysticks', {
+		var config_form = null;
+		
+		config_modal.add_category({
+			config_key: 'joysticks',
 			html: html,
 			title : 'Joysticks',
-			onselect : function(form, data) {
-				
+			onopen : function(form, data) {
+				config_form = form;
 				set_visible_joystick_config();
 				
 				var $joysticks = form.find('.joystick-config');
@@ -178,7 +184,7 @@ $(function() {
 					}
 				}
 			},
-			onsubmit : function(form, data) {
+			onsave : function(form, data) {
 				
 				var $joysticks = form.find('.joystick-config');
 				
@@ -195,7 +201,7 @@ $(function() {
 				
 				apply_config(data);
 			}
-		}, data);
+		});
 		
 		function apply_config(data) {
 			
@@ -237,10 +243,9 @@ $(function() {
 		config_modal.category_form_holder.on('change', '#joystick-chooser', set_visible_joystick_config);
 		
 		function set_visible_joystick_config() {
-			var form = config_modal.config_settings.joysticks.element;
 			
-			var joystick = form.find('#joystick-chooser').val();
-			var $joysticks = form.find('.joystick-config');
+			var joystick = config_form.find('#joystick-chooser').val();
+			var $joysticks = config_form.find('.joystick-config');
 			
 			
 			for(var j = 0; j < 6; j++) {
@@ -253,6 +258,56 @@ $(function() {
 				}
 			}
 		}
+		
+		// Context menu
+		var context_menu_html = '';
+		
+		for(var i = 0; i < 6; i++) {
+			context_menu_html += context_menu.create_checkbox('show-joystick-' + i, 'Show Joystick ' + i);
+		}
+		
+		context_menu.add(iomodule, {
+			config_key: 'joysticks',
+			html: context_menu_html,
+			oncreate: function(menu, data) {
+				
+				for(var i = 0; i < 6; i++) {
+					
+					(function(i) {
+					
+						menu.find('#show-joystick-' + i + ' input').prop('checked', data[i].visible == 'y');
+						context_menu.add_checkbox_events(menu.find('#show-joystick-' + i), function(checked) {
+							if(checked) {
+								data[i].visible = 'y';
+								iomodule.joystick_elements[i].holder.removeClass('hidden');
+							} else {
+								data[i].visible = 'n';
+								iomodule.joystick_elements[i].holder.addClass('hidden');
+							}
+							
+							var joystick_visible = false;
+							
+							for(var j = 0; j < 6; j++) {
+								
+								if(config.config_data.joysticks[j].visible == 'y') {
+									joystick_visible = true;
+									break;
+								}
+							}
+							
+							if(!joystick_visible)
+								iomodule.element.addClass('hidden');
+							
+							config.save_config();
+						});
+						
+					
+					})(i);
+				}
+			
+			}
+		});
+		
 		
 	});
 	
