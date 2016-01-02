@@ -107,7 +107,7 @@ $(function() {
 						
 						return value;
 					},
-					onChange(element, value) {
+					onChange : function(element, value) {
 						iomodule.ui_updated = true;
 					},
 					keyStep: 1
