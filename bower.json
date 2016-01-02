@@ -1,0 +1,22 @@
+{
+  "name": "robot-websim2",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Amory Galili",
+      "email": "robotpy@googlegroups.com"
+    },
+    {
+      "name": "Dustin Spicuzza",
+      "email": "robotpy@googlegroups.com"
+    }
+  ],
+  "license": "MIT",
+  "description": "RobotPy web-based low fidelity FRC robot simulation package",
+  "dependencies": {
+    "jquery": ">=1.7",
+    "bootstrap": "~3.3.6",
+    "lodash": "~3.10.1",
+    "q": "~2.0.2"
+  }
+}

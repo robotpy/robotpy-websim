@@ -17,3 +17,5 @@ user-config.json
 .deploy_cfg
 
 docs/_build
+bower_components*
+node_modules*
