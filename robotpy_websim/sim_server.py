@@ -196,7 +196,19 @@ class ApiHandler(tornado.web.RequestHandler):
                         data['css'].append(join(p['to_web_path'](p['path']), file))
                 module_data[module] = data
 
-            self.write(module_data)
+            # Get config files
+            config = user_config = ''
+            if exists(join(self.sim_path, 'config.json')):
+                 with open(join(self.sim_path, 'config.json'), 'r') as content_file:
+                    content = content_file.read()
+                    config = content
+
+            if exists(join(self.sim_path, 'user_config.json')):
+                 with open(join(self.sim_path, 'user_config.json'), 'r') as content_file:
+                    content = content_file.read()
+                    user_config = content
+
+            self.write({'modules' : module_data, 'config' : config, 'user_config' : user_config})
 
 
         elif param == 'module_list':
