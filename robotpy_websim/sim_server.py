@@ -160,6 +160,45 @@ class ApiHandler(tornado.web.RequestHandler):
             
             self.write(can_mode_map)
 
+        elif param =='modules_and_config':
+
+            module_paths = [{'path' : self.builtin_module_path, 'to_web_path' : self._builtin_to_web_path}]
+
+            if exists(self.user_module_path):
+                module_paths.append({'path' : self.user_module_path, 'to_web_path' : self._user_to_web_path})
+
+            #print(module_paths)
+            # Get modules and module paths
+            modules = {};
+            for m in module_paths:
+                # Get all module folders in the the module path
+                module_names = [f for f in os.listdir(m['path']) if os.path.isdir(join(m['path'], f))]
+                for name in module_names:
+                    modules[name] = {'path' : join(m['path'], name), 'to_web_path' : m['to_web_path']}
+
+            module_data = {}
+            # Sort the js, css, and template files in the module
+            html_pattern = re.compile(r"\.html$", re.I)
+            js_pattern = re.compile(r"\.js$", re.I)
+            css_pattern = re.compile(r"\.css$", re.I)
+            for module, p in modules.items():
+                data = {'js': [], 'css': [], 'templates': {} }
+                files = [f for f in os.listdir(p['path']) if os.path.isfile(join(p['path'], f))]
+                for file in files:
+                    if html_pattern.search(file):
+                        # Get content from file and add template
+                        with open(join(p['path'], file), 'r') as content_file:
+                            content = content_file.read()
+                            data['templates'][file[:-5]] = content 
+                    elif js_pattern.search(file):
+                        data['js'].append(join(p['to_web_path'](p['path']), file))
+                    elif css_pattern.search(file):
+                        data['css'].append(join(p['to_web_path'](p['path']), file))
+                module_data[module] = data
+
+            self.write(module_data)
+
+
         elif param == 'module_list':
 
             # Not sure if there should be a distinction between these...
