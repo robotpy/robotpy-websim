@@ -181,6 +181,7 @@ class ApiHandler(tornado.web.RequestHandler):
             html_pattern = re.compile(r"\.html$", re.I)
             js_pattern = re.compile(r"\.js$", re.I)
             css_pattern = re.compile(r"\.css$", re.I)
+            tabs_line_pattern = re.compile(r"\r\n|\n|\r|\t")
             for module, p in modules.items():
                 data = {'js': [], 'css': [], 'templates': {} }
                 files = [f for f in os.listdir(p['path']) if os.path.isfile(join(p['path'], f))]
@@ -189,7 +190,8 @@ class ApiHandler(tornado.web.RequestHandler):
                         # Get content from file and add template
                         with open(join(p['path'], file), 'r') as content_file:
                             content = content_file.read()
-                            data['templates'][file[:-5]] = content 
+
+                            data['templates'][file[:-5]] = tabs_line_pattern.sub('', content)
                     elif js_pattern.search(file):
                         data['js'].append(join(p['to_web_path'](p['path']), file))
                     elif css_pattern.search(file):
@@ -201,12 +203,12 @@ class ApiHandler(tornado.web.RequestHandler):
             if exists(join(self.sim_path, 'config.json')):
                  with open(join(self.sim_path, 'config.json'), 'r') as content_file:
                     content = content_file.read()
-                    config = content
+                    config = tabs_line_pattern.sub('', content)
 
             if exists(join(self.sim_path, 'user_config.json')):
                  with open(join(self.sim_path, 'user_config.json'), 'r') as content_file:
                     content = content_file.read()
-                    user_config = content
+                    user_config = tabs_line_pattern.sub('', content)
 
             self.write({'modules' : module_data, 'config' : config, 'user_config' : user_config})
 
