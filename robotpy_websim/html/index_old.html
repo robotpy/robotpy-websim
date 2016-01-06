@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>FRC HTML Simulator Interface</title>
+		
+		<link rel="stylesheet" href="resources/css/bootstrap-3.3.2.min.css">
+		<link rel="stylesheet" href="resources/css/bootstrap-theme-3.3.2.min.css">
+		<link rel="stylesheet" href="plugins/slider/css/slider.css">
+		<link rel="stylesheet" href="bootstrap-slider-facade.css">
+		<link rel="stylesheet" href="plugins/json-tree/json-tree.css">
+			
+		<link rel="stylesheet" href="websim.css">
+		<link rel="stylesheet" href="config.css">
+		<link rel="stylesheet" href="context-menu.css">
+		
+	</head>
+	<body>
+		
+		<!-- Properties Dialog -->
+		<div class="modal fade" id="config-modal">
+			<div class="modal-dialog">
+			   	<div class="modal-content">
+				    <div class="modal-header">
+					    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+					    <h4 class="modal-title">Configure Websim</h4>
+				    </div>
+				   
+					    <div class="modal-body">
+						    <!-- Module specific content goes here -->
+						    <div class="row" style="height: 100%">
+						    	<div class="col-xs-3" style="height: 100%; padding-right: 5px;">
+								    <ul id="config-categories" class="nav nav-pills nav-stacked">
+									</ul>
+								</div>
+								<div class="col-xs-9" style="height: 100%; padding-left: 5px; overflow: auto">
+									
+									<div id="config-form-holder">
+									</div>
+								</div>
+							</div>
+					   	</div>
+					    <div class="modal-footer">
+						    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+						    <button id="config-modal-ok-btn" class="btn btn-primary btn-sm">OK</button>
+					    </div>
+				    
+			   	</div>
+		  	</div>
+		</div>
+		
+		<!-- Context Menu pops up when IOModules are right clicked in build mode -->
+			<div id="context-menu" class="dropdown clearfix">
+	   	<!-- <ul class="dropdown-menu" role="menu">
+	     
+	     <li id="delete-module-btn"><a href="#"><span class="glyphicon glyphicon-remove"></span> Delete</a></li>
+	     <li id="deselect-module-btn"><a href="#"><span class="glyphicon glyphicon-minus"></span> Deselect</a></li>
+	     <li id="networktables-btn"><a href="#"><span class="glyphicon glyphicon-link"></span> NetworkTables</a></li>
+	     <li id="module-properties-btn"><a href="#"><span class="glyphicon glyphicon-cog"></span> Properties</a></li>
+	    </ul>-->
+ 	</div>
+	
+		<!-- Contains all the IOModules -->
+		<div id="iomodules"></div>
+			
+	
+		<script src="resources/jquery-2.1.3.min.js"></script>
+		<script src="resources/jquery-ui.min.js"></script>
+		<script src="resources/validation/jquery.validate.min.js"></script>
+		<script src="resources/validation/additional-methods.min.js"></script>
+		<script src="resources/bootstrap-3.3.2.min.js"></script>
+		<script src="resources/d3.v3.min.js"></script>
+		<script src="resources/underscore-min.js"></script>
+		<script src="resources/underscore.string.min.js"></script>
+		<script src="plugins/slider/js/bootstrap-slider.js"></script>
+		<script src="bootstrap-slider-facade.js"></script>
+		<script src="plugins/json-tree/json-tree.js"></script>
+		<script src="websim.js"></script>
+		<script src="config.js"></script>
+		<script src="layout-manager.js"></script>
+		<script src="context-menu.js"></script>
+		
+		<script src="animation.js"></script>
+	
+		<script>
+			$(document).ready(function(){
+				
+				config.load(function() {
+					
+					add_robot_config();
+					layout_manager.add_to_config_modal();
+					sim.load_modules_and_start();
+					
+				});
+			});
+			
+		function add_robot_config() {
+			
+			$.get('robot-config.html', function(html) {
+				
+				// The config form
+				var config_form = null;
+				
+				// Data for config
+				
+				if(!config.config_data.robot)
+					config.config_data.robot;
+				
+				var data = config.config_data.robot;
+				
+				if(_.isNumber(data.height) == false || data.height < 0) {
+					data.height = 3;
+				}
+				
+				if(_.isNumber(data.width) == false || data.width < 0) {
+					data.width = 2;
+				}
+				
+				// Add config
+				config_modal.add_category({
+					config_key: 'robot',
+					html: html,
+					title : 'Robot',
+					rules : {
+						width : {
+							required : true,
+							number: true,
+							min: 0
+						},
+						height: {
+							required : true,
+							number: true,
+							min: 0
+						}
+					},
+					onopen : function(form, data) {
+						config_form = form;
+						set_visible_drivetrain_config();
+						form.find('input[name=width]').val(data.width);
+						form.find('input[name=height]').val(data.height);
+					},
+					onsave : function(form, data) {
+						data.width = form.find('input[name=width]').val();
+						data.height = form.find('input[name=height]').val();
+					}
+				});
+				
+				config_modal.category_form_holder.on('change', '#drivetrain-type', set_visible_drivetrain_config);
+				
+				function set_visible_drivetrain_config() {
+					
+					var selected_drivetrain = config_form.find('#drivetrain-type').val();
+					
+					var drivetrains = ['two-motor-drivetrain', 
+					                   'four-motor-drivetrain', 
+					                   'mecanum-drivetrain',
+					                   'custom-drivetrain'];
+					
+					for(var i = 0; i < drivetrains.length; i++) {
+						
+						var $drivetrain_config = config_form.find('#' + drivetrains[i]);
+						
+						if(drivetrains[i] == selected_drivetrain) {
+							$drivetrain_config.removeClass('hidden');
+						} else {
+							$drivetrain_config.addClass('hidden');
+						}
+					}
+					
+				}
+				
+			});
+			
+		}
+		</script>
+	
+	</body>
+</html>

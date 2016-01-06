@@ -7,6 +7,7 @@ import threading
 import time
 import re
 import webbrowser
+import subprocess
 
 try:
     import ujson as json
@@ -310,6 +311,7 @@ class Main:
             (r'/api/(.*)', ApiHandler, {'root_path': self.root_path, 'sim_path': self.sim_path}),
             (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period}),
             (r'/user/(.*)', MyStaticFileHandler, {'path': self.sim_path }),
+            (r'/bower/(.*)', MyStaticFileHandler, {'path': self.bower_path }),
             (r"/()", MyStaticFileHandler, {"path": join(self.root_path, 'index.html')}),
             (r"/(.*)", MyStaticFileHandler, {'path': self.root_path })
         ])
@@ -361,7 +363,16 @@ class Main:
         # Path where user files are served from
         robot_file = abspath(inspect.getfile(robot_class))
         robot_path = dirname(robot_file)
+
+        # Path where bower components are stored
+        self.bower_path = abspath(join(dirname(__file__), '..', 'bower_components'))
         
+        print('*********************')
+        print(self.bower_path)
+        print('*********************')
+        subprocess.call("ls", shell=True, cwd=abspath(join(dirname(__file__), '..')))
+        print('*********************')
+
         self.sim_path = join(robot_path, 'sim')
         if not exists(self.sim_path):
             os.mkdir(self.sim_path)

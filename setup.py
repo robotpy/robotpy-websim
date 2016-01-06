@@ -62,6 +62,7 @@ setup(
     keywords='frc first robotics simulation',
     packages=find_packages(),
     include_package_data=True,
+    package_data={'': ['bower_components**']},
     zip_safe=False,
     entry_points={'robotpy': [ 'websim = robotpy_websim.sim_server:Main' ]},
     install_requires=[
