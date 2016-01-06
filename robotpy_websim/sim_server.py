@@ -365,12 +365,12 @@ class Main:
         robot_path = dirname(robot_file)
 
         # Path where bower components are stored
-        self.bower_path = abspath(join(dirname(__file__), '..', 'bower_components'))
+        self.bower_path = join(self.root_path, 'bower_components')
         
         print('*********************')
         print(self.bower_path)
         print('*********************')
-        subprocess.call("ls", shell=True, cwd=abspath(join(dirname(__file__), '..')))
+        subprocess.call("ls", shell=True, cwd=self.bower_path)
         print('*********************')
 
         self.sim_path = join(robot_path, 'sim')
