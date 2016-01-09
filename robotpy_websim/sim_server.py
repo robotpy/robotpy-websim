@@ -366,12 +366,6 @@ class Main:
 
         # Path where bower components are stored
         self.bower_path = join(self.root_path, 'bower_components')
-        
-        print('*********************')
-        print(self.bower_path)
-        print('*********************')
-        subprocess.call("ls", shell=True, cwd=self.bower_path)
-        print('*********************')
 
         self.sim_path = join(robot_path, 'sim')
         if not exists(self.sim_path):

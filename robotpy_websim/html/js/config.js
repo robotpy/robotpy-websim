@@ -3,31 +3,36 @@
  */
 (function(sim) {
 
-	sim.config = {
-		data : window.config,
-		save : function() {
-			$.ajax({
-				type: 'POST',
-				url: '/api/config/save',
-				data: {
-					'config' : JSON.stringify(this.data)
-				}
-			});
-		}
+	function SimConfig(url) {
+		this.config = {};
+		this.url = url;
+	}
+
+	SimConfig.prototype.updateCategory = function(category, data) {
+		this.config[category] || (this.config[category] = {});
+		$.extend(true, this.config[category], data);
 	};
 
-	sim.userConfig = {
-		data : window.userConfig,
-		save : function() {
-			$.ajax({
-				type: 'POST',
-				url: '/api/user_config/save',
-				data: {
-					'config' : JSON.stringify(this.data)
-				}
-			});
-		}
+	SimConfig.prototype.getCategory = function(category) {
+		this.config[category] || (this.config[category] = {});
+		return this.config[category];
 	};
+
+	SimConfig.prototype.save = function() {
+		var url = this.url,
+			config = this.config;
+
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: {
+				'config' : JSON.stringify(config)
+			}
+		});
+	};
+
+	sim.config = new SimConfig('/api/config/save');
+	sim.userConfig = new SimConfig('/api/user_config/save');
 
 })(window.sim = window.sim || {});
 
@@ -78,11 +83,11 @@
 	});
 
 	$cache.saveBtn.on('click', function(e) {
-		$cache.categories.forEach(function(category) {
-			sim.events.trigger('configModalSave', category, [category.inputs]);
+		_.forEach($cache.categories, function(category, categoryName) {
+			sim.events.trigger('configModalSave', categoryName, [category.inputs]);
 		});
-		sim.config.saveConfig();
-		sim.config.saveUserConfig();
+		sim.config.save();
+		sim.userConfig.save();
 		$cache.modal.trigger('save');
 	});
 

@@ -16,9 +16,9 @@
 			callback = arguments.length == 3 ? arguments[2] : arguments[1];
 
 		if(_.isString(event) && _.isFunction(callback)) {
-			this.events[event] && (this.events[event] = {});
-			this.events[event][context] && (this.events[event][context] = []);
-			this.events[event][context].push(_.blah(callback));
+			this.events[event] || (this.events[event] = {});
+			this.events[event][context] || (this.events[event][context] = []);
+			this.events[event][context].push(callback);
 		}
 
 		return this;
@@ -32,7 +32,7 @@
 
 		if(event in this.events && context in this.events[event]) {
 			this.events[event][context].forEach(function(callback) {
-				callback(args);
+				callback.apply(window, args);
 			});
 		}
 	};

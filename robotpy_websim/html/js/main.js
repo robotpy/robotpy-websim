@@ -46,12 +46,12 @@
 			}
 			
 			var enabled = dataFromServer.control.enabled;
-			sim.events.trigger('dataToServerUpdate', [dataToServer, enabled]);
-			sim.events.trigger('dataFromServerUpdate', [dataFromServer, enabled]);
+			sim.events.trigger('serverDataUpdate', [dataFromServer, enabled]);
+			sim.events.trigger('requestWebDataUpdate', [dataToServer, enabled]);
 			
 			var simMsg = {};
-			sim_msg.msgtype = 'input';
-			sim_msg.data = dataToServer;
+			simMsg.msgtype = 'input';
+			simMsg.data = dataToServer;
 			socket.send(JSON.stringify(simMsg));
 		};
 		
@@ -60,7 +60,7 @@
 	sim.main = {
 		start : function() {
 			if(!this.isRunning()) {
-				setup_socket();
+				setupSocket();
 			}
 		},
 		stop : function() {
@@ -70,7 +70,7 @@
 			}
 		},
 		isRunning : function() {
-			return socket && socket.readyState == WebSocket.OPEN;
+			return (socket && socket.readyState == WebSocket.OPEN) ? true : false;
 		},
 		setRobotMode : function(mode, enabled) {
 			if (socket == null)
