@@ -1,5 +1,5 @@
 /*
- *	Save conifg
+ *	Config and Templates
  */
 (function(sim) {
 
@@ -9,6 +9,7 @@
 	}
 
 	SimConfig.prototype.updateCategory = function(category, data) {
+		console.log(category, data);
 		this.config[category] || (this.config[category] = {});
 		$.extend(true, this.config[category], data);
 	};
@@ -16,6 +17,10 @@
 	SimConfig.prototype.getCategory = function(category) {
 		this.config[category] || (this.config[category] = {});
 		return this.config[category];
+	};
+
+	SimConfig.prototype.getCategoryNames = function() {
+		return Object.keys(this.config);
 	};
 
 	SimConfig.prototype.save = function() {
@@ -33,6 +38,38 @@
 
 	sim.config = new SimConfig('/api/config/save');
 	sim.userConfig = new SimConfig('/api/user_config/save');
+	sim.templates = {};
+
+	// Loads config files and module templates
+	sim.getConfigAndModules = function() {
+		return Q($.getJSON('/api/modules_and_config')).then(function(data) {
+
+			// Update config categories
+			_.forEach(data.config, function(categoryData, categoryName) {
+				sim.config.updateCategory(categoryName, categoryData);
+			});
+			// Update user config categories
+			_.forEach(data.user_config, function(categoryData, categoryName) {
+				sim.userConfig.updateCategory(categoryName, categoryData);
+			});
+			// load template js, css, and templates
+			_.forEach(data.modules, function(moduleData, moduleName) {
+				var css = moduleData.css,
+					js = moduleData.js,
+					templates = moduleData.templates;
+
+				css.forEach(function(fileName) {
+					$('<link rel="stylesheet" href="' + fileName + '">').appendTo('head');
+				});
+
+				js.forEach(function(fileName) {
+					$('<script src="' + fileName + '"></script>').appendTo('body');
+				});
+
+				sim.templates[moduleName] = templates;
+			});
+		});
+	};
 
 })(window.sim = window.sim || {});
 

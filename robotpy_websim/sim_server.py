@@ -200,16 +200,16 @@ class ApiHandler(tornado.web.RequestHandler):
                 module_data[module] = data
 
             # Get config files
-            config = user_config = ''
+            config = user_config = {}
             if exists(join(self.sim_path, 'config.json')):
                  with open(join(self.sim_path, 'config.json'), 'r') as content_file:
                     content = content_file.read()
-                    config = tabs_line_pattern.sub('', content)
+                    config = json.loads(tabs_line_pattern.sub('', content))
 
-            if exists(join(self.sim_path, 'user_config.json')):
-                 with open(join(self.sim_path, 'user_config.json'), 'r') as content_file:
+            if exists(join(self.sim_path, 'user-config.json')):
+                 with open(join(self.sim_path, 'user-config.json'), 'r') as content_file:
                     content = content_file.read()
-                    user_config = tabs_line_pattern.sub('', content)
+                    user_config = json.loads(tabs_line_pattern.sub('', content))
 
             self.write({'modules' : module_data, 'config' : config, 'user_config' : user_config})
 
