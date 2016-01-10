@@ -58,6 +58,8 @@
 					js = moduleData.js,
 					templates = moduleData.templates;
 
+				sim.templates[moduleName] = templates;
+				
 				css.forEach(function(fileName) {
 					$('<link rel="stylesheet" href="' + fileName + '">').appendTo('head');
 				});
@@ -66,7 +68,6 @@
 					$('<script src="' + fileName + '"></script>').appendTo('body');
 				});
 
-				sim.templates[moduleName] = templates;
 			});
 		});
 	};
