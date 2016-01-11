@@ -81,43 +81,51 @@
 
 
 	var $cache = {
-		modal : $('#config-modal'),
+		modal : $('.config-modal'),
 		openBtn : null,
-		closeBtn : $('#config-modal .modal-footer .close-btn'),
-		xBtn : $('#config-modal .modal-header .x-btn'),
-		saveBtn : $('#config-modal .modal-footer .save-btn'),
-		categoryTabs : $('#config-modal .config-categories'),
+		closeBtn : $('.config-modal .modal-footer .close-btn'),
+		xBtn : $('.config-modal .modal-header .x-btn'),
+		saveBtn : $('.config-modal .modal-footer .save-btn'),
+		categoryTabs : $('.config-modal .config-categories'),
 		categories : {},
-		form : $('#config-modal .config-form')
+		form : $('.config-modal .config-form')
 	};
 
 	function getCurrentCategoryId() {
-		return $cache.categoryTabs.find('li.active');
+		return $cache.categoryTabs.find('li.active').data('category-id');
 	}
 
-	function changeCategory($el) {
-		$cache.categoryTabs.find('li').removeClass('active');
-		$cache.modal.find('.category').remove('active');
-		var categoryId = $el.data('category-id');
-		$el.addClass('active');
-		$cache.categories[categoryId].addClass('active');
+	function changeCategory(categoryId) {
+		// Make current category not active
+		var currentCatId = getCurrentCategoryId();
+		if(currentCatId) {
+			$cache.categories[currentCatId].tab.removeClass('active');
+			$cache.categories[currentCatId].inputs.removeClass('active');
+		}
+		// Set new active category
+		$cache.categories[categoryId].tab.addClass('active');
+		$cache.categories[categoryId].inputs.addClass('active');
 	}
 
 	// Modal Events
 	$cache.modal.on('hidden.bs.modal', function(e) {
-		$cache.modal.trigger('modalClose');
+		sim.events.trigger('configModalHidden');
 	});
 
 	$cache.modal.on('show.bs.modal', function(e) {
-		$cache.modal.trigger('modalOpen');
+		var firstCategory = $cache.categoryTabs.find('li:first-of-type');
+		if(firstCategory.length > 0) {
+			changeCategory(firstCategory.data('category-id'));
+		}
+		sim.events.trigger('configModalShown');
 	});
 
 	$cache.categoryTabs.on('click', 'li', function(e) {
 		var $el = $(this);
-		changeCategory($el);
 		var categoryId = $el.data('category-id');
+		changeCategory(categoryId);
 		var $category = $cache.categories[categoryId];
-		$cache.modal.trigger('categoryChange', [categoryId, $category]);
+		sim.events.trigger('configModalCategoryChange', [categoryId, $category]);
 	});
 
 	$cache.saveBtn.on('click', function(e) {
@@ -127,6 +135,7 @@
 		sim.config.save();
 		sim.userConfig.save();
 		$cache.modal.trigger('save');
+		sim.configModal.hide();
 	});
 
 	sim.configModal = {
@@ -138,7 +147,7 @@
 				return false;
 			}
 			$cache.categories[categoryId] = {
-				tab : $('<li data-category-id="' + categoryId + '"></li>').appendTo($cache.categoryTabs),
+				tab : $('<li data-category-id="' + categoryId + '">' + _.startCase(categoryId) + '</li>').appendTo($cache.categoryTabs),
 				inputs : $category.appendTo($cache.form)
 			};
 		},
@@ -147,6 +156,12 @@
 				$cache.modal.find('[data-category-id]').remove();
 				delete $cache.categories[categoryId];
 			}
+		},
+		show : function() {
+			this.$el.modal('show');
+		},
+		hide : function() {
+			this.$el.modal('hide');
 		}
 	};
 
