@@ -1,3 +1,4 @@
+"use strict";
 
 
 /*
@@ -5,7 +6,7 @@
  */
 (function(sim) {
 
-	var animationQueue = {};
+	var animationQueue = {},
 		lastTime = 0;
 
 	function animate(timestamp) {
@@ -15,7 +16,7 @@
 		// Update interface and perform animation
 		var dt = timestamp - lastTime;
 		lastTime = timestamp;
-		sim.events.trigger('interfaceUpdate', [dt/1000, timestamp]);
+		sim.events.trigger('interfaceUpdate', [dt/1000, timestamp/1000]);
 
 		var queueCopy = _.assign(animationQueue);
 		animationQueue = {};

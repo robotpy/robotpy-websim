@@ -47,16 +47,15 @@
 		<script src="bower/lodash/lodash.min.js"></script>
 		<script src="bower/q/q.js"></script>
 		<script src="js/events.js"></script>
+		<script src="js/animation.js"></script>
 		<script src="js/config.js"></script>
 		<script src="js/main.js"></script>
 
 
 		<script>
-
-			
-
-
-			sim.main.start();
+			sim.getConfigAndModules().then(function() {
+				sim.main.start();
+			});
 		</script>
 
 	</body>
