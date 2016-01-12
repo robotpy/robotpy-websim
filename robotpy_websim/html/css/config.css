@@ -16,10 +16,9 @@
 
 
 .config-modal .config-categories li.active {
-	margin: 0px 0px 15px 0px;
-	padding: 5px 10px;
+	/*margin: 0px 0px 15px 0px;*/
+	/*padding: 5px 10px;*/
 	font-weight: bold;
-	border-bottom: 1px solid lightgray;
 }
 
 .config-modal .config-form [data-category-id]:not(.active) {

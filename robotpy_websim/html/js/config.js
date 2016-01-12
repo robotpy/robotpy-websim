@@ -147,7 +147,7 @@
 				return false;
 			}
 			$cache.categories[categoryId] = {
-				tab : $('<li data-category-id="' + categoryId + '">' + _.startCase(categoryId) + '</li>').appendTo($cache.categoryTabs),
+				tab : $('<li role="presentation" data-category-id="' + categoryId + '"><a href="#">' + _.startCase(categoryId) + '</a></li>').appendTo($cache.categoryTabs),
 				inputs : $category.appendTo($cache.form)
 			};
 		},
