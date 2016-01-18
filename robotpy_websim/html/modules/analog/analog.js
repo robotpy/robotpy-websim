@@ -39,7 +39,7 @@
 				}
 				
 				return value;
-			}
+			},
 		}).tooltip();
 
 		var analog = {
@@ -121,13 +121,32 @@
 
 	sim.config.setCategoryDefaults('analog', defaults);
 
-	$cache.config = $(sim.compileTemplate.handlebars(sim.templates.analog.config, {
-		tooltips : _.range(8)
-	}));
+	// Add analog to config modal
+	var configTemplateData = {
+		visible : {
+			label : 'Visible:',
+			name : 'visible',
+			inline : true,
+			radios : [
+				{ "label" : "Yes", "value" : "y" },
+	            { "label" : "No", "value" : "n" }
+			]
+		},
+		tooltips : []
+	};
 
-	sim.configModal.addCategory('analog', $cache.config);
+	for(var i = 0; i < 8; i++) {
+		configTemplateData.tooltips.push({
+			name : 'analog-' + i + '-tooltip',
+			label : 'Analog ' + i + ' Tooltip:'
+		});
+	}
+
+	$cache.config = $(sim.compileTemplate.handlebars(sim.templates.analog.config, configTemplateData));
+
+	sim.configModal.addCategory($cache.config);
 	
-
+	// Populate inputs when config modal is opened
 	sim.events.on('configModalCategoryShown', 'analog', function() {
 
 		var data = sim.config.getCategory('analog');
@@ -136,10 +155,11 @@
 				
 		for(var i = 0; i < 8; i++) {
 			var name = 'analog-' + i + '-tooltip';
-			form.find('[name=' + name + ']').val(data[name]);
+			$cache.config.find('[name=' + name + ']').val(data[name]);
 		}
 	});
 
+	// Update config data when modal is saved
 	sim.events.on('configModalCategorySave', 'analog', function() {
 
 		var data = {
@@ -148,7 +168,7 @@
 
 		for(var i = 0; i < 8; i++) {
 			var name = 'analog-' + i + '-tooltip';
-			data[name] = form.find('input[name=' + name + ']').val();
+			data[name] = $cache.config.find('input[name=' + name + ']').val();
 		}
 
 		sim.config.updateCategory('analog', data);
@@ -177,9 +197,6 @@
 	$cache.element.appendTo('.websim-modules');
 
 })(window.sim = window.sim || {});
-
-
-
 
 /*
 

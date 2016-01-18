@@ -16,18 +16,27 @@
 		}
 	};
 
+	'Visible:', 'visible', true, [
+	            { "label" : "Yes", "value" : "y" },
+	            { "label" : "No", "value" : "n" }
+			]
+
 	// Register block expressions and helpers for handlebars
 	Handlebars.registerHelper('configInput', function(input) {
 
+		var name = input.name,
+			label = input.label,
+			attrs = input.attrs || {};
+
 		var inputAttrs = ' ';
-		_.forEach(input.attrs, function(value, attr) {
+		_.forEach(attrs, function(value, attr) {
 			inputAttrs += attr + '="' + value + '" ';
 		});
 
 		var result = '<div class="input-holder single-line-input">' +
-					 	'<label for="' + input.name + '">' + input.label + '</label>' +
+					 	'<label for="' + name + '">' + label + '</label>' +
 						'<span>' +
-							'<input class="form-control" name="' + input.name +'" ' + inputAttrs + '>' +
+							'<input class="form-control" name="' + name +'" ' + inputAttrs + '>' +
 						'</span>' +
 				 	'</div>';
 
