@@ -1,3 +1,4 @@
+/*
 "use strict";
 
 $(function() {
@@ -42,4 +43,4 @@ $(function() {
 		
 	});
 	
-});
+});*/

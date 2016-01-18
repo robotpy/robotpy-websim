@@ -30,11 +30,9 @@
 			setTextValue: function(element, value) {
 				return value;
 			},
-			onChange: function(element, value) {
-				
-			},
 			// How much slider moves up or down when +/- keys are pressed
-			keyStep: .1
+			keyStep: .1,
+			width: '100px'
 		},
 		
 		// If disabled the slider can't be moved with the mouse or keyboard
@@ -71,6 +69,9 @@
 						return value.toFixed(2);
 					}
 				});
+
+			sliderFacade.element.find('.slider-horizontal')[0]
+				.style.setProperty('width', sliderFacade.options.width, 'important');
 			
 			sliderFacade.sliderElement.slider().on('slide', function(ev){
 				
@@ -166,7 +167,9 @@
 			sliderFacade.textElement.text(sliderFacade.options.setTextValue(sliderFacade.element, value.toFixed(2)));
 			
 			// Alert for change
-			sliderFacade.options.onChange(sliderFacade.element, value.toFixed(2));
+			sliderFacade.element.trigger('sliderChange', [sliderFacade.element, value.toFixed(2)]);
+
+
 		},
 		
 		// Sets options

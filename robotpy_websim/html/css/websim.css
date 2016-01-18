@@ -1,0 +1,63 @@
+body {
+	padding: 10px;
+}
+
+.websim-modules.flow-layout .websim-module {
+	position: relative;
+}
+
+.websim-modules.absolute-layout .websim-module {
+	position: absolute;
+}
+
+.btn-circle {
+  width: 18px;
+  height: 18px;
+  padding: 6px 0;
+  border-radius: 9px;
+}
+
+.websim-module {
+	padding: 15px;
+	padding-top: 20px;
+	margin: 6px;
+	background-color: #fff;
+	border: 2px solid #ccc;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	display:inline-block;
+	vertical-align: top;
+}
+
+.websim-module > h4 {
+	top: -20px;
+	left: 5%;
+	text-align: center;
+	color: #558;
+	font-weight: bold;
+	position: absolute;
+	background: #666;
+	color: white;
+	padding: 3px 7px 3px 7px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.cursor-grab, .cursor-grab * {
+	cursor: url(/resources/images/openhand.cur), move;
+}
+
+.cursor-grab:active, .cursor-grab *:active {
+	cursor: url(/resources/images/closedhand.cur), move;
+}

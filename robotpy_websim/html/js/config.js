@@ -1,5 +1,6 @@
 "use strict";
 
+
 /*
  *	Config and Templates
  */
@@ -10,8 +11,12 @@
 		this.url = url;
 	}
 
+	SimConfig.prototype.setCategoryDefaults = function(category, data) {
+		this.config[category] || (this.config[category] = {});
+		this.config[category] = $.extend(true, data, this.config[category]);
+	};
+
 	SimConfig.prototype.updateCategory = function(category, data) {
-		console.log(category, data);
 		this.config[category] || (this.config[category] = {});
 		$.extend(true, this.config[category], data);
 	};
@@ -40,7 +45,6 @@
 
 	sim.config = new SimConfig('/api/config/save');
 	sim.userConfig = new SimConfig('/api/user_config/save');
-	sim.templates = {};
 
 	// Loads config files and module templates
 	sim.getConfigAndModules = function() {
@@ -120,6 +124,10 @@
 			changeCategory(firstCategory.data('category-id'));
 		}
 		sim.events.trigger('configModalShown');
+
+		_.forEach($cache.categories, function(category, categoryName) {
+			sim.events.trigger('configModalCategoryShown', categoryName, [category.inputs]);
+		});
 	});
 
 	$cache.categoryTabs.on('click', 'li', function(e) {
@@ -131,8 +139,10 @@
 	});
 
 	$cache.saveBtn.on('click', function(e) {
+
+		sim.events.trigger('configModalSave');
 		_.forEach($cache.categories, function(category, categoryName) {
-			sim.events.trigger('configModalSave', categoryName, [category.inputs]);
+			sim.events.trigger('configModalCategorySave', categoryName, [category.inputs]);
 		});
 		sim.config.save();
 		sim.userConfig.save();
@@ -144,6 +154,9 @@
 		$el: $cache.modal,
 		$categories : $cache.categories,
 		addCategory : function($category) {
+
+			$category = _.isString($category) ? $($category) : $category;
+
 			var categoryId = $category.data('category-id');
 			if(categoryId in $cache.categories) {
 				return false;

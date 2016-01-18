@@ -1,4 +1,4 @@
-"use strict";
+/*"use strict";
 
 
 $(function() {
@@ -520,4 +520,4 @@ $(function() {
 		
 	});
 	
-});
+});*/

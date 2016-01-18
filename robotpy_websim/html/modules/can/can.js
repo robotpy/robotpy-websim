@@ -1,5 +1,5 @@
 "use strict";
-
+/*
 $(function() {
 	
 	function CAN() {
@@ -196,4 +196,4 @@ $(function() {
 	});
 	
 
-});
+});*/
