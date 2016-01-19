@@ -1,12 +1,12 @@
-#can {
+.can-module {
 	min-width: 100px;
 }
 
-#can .can-device {
+.can-module .can-device {
 	width: 415px;	
 }
 
-#can .can-index {
+.can-module .can-index {
 	
   display: -webkit-flexbox;
   display: -ms-flexbox;
