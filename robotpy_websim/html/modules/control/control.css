@@ -1,12 +1,13 @@
-#control {
+.control-module {
 	width: 120px;
 	padding-left: 20px;
 }
 
-#connection_notification.disconnected {
+
+.control-module .connection-notification.disconnected {
 	color: red;
 }
 
-#connection_notification.connected {
+.control-module .connection-notification.connected {
 	color: green;
 }

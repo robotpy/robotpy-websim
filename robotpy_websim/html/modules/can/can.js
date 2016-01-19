@@ -116,7 +116,7 @@
 	// Populate inputs when config modal is opened
 	sim.events.on('configModalCategoryShown', 'can', function() {
 		var data = sim.config.getCategory('can');
-		$cache.config.find('[name=visible]').prop('checked', data.visible == 'y');
+		cache.$config.find('[name=visible]').prop('checked', data.visible == 'y');
 	});
 
 	// Update config data when modal is saved

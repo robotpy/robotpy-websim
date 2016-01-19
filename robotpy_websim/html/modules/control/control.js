@@ -1,46 +1,45 @@
-/*
 "use strict";
 
-$(function() {
-	
-	function Control() { 
-		this.title = 'Control'; 
-		this.order = 5;
+(function() {
+
+	var cache = {
+		$element : null,
+		$mode : null,
+		$connectionIndicator : null,
+		$openConfigModalBtn : null
 	};
-	
-	sim.add_iomodule('control', Control, function(iomodule) {
-		
-		// Initialize the module
-		iomodule.element.find("input[name='mode']").change(function() {
-			var mode = $(this).val();
-			var enabled = mode != 'disabled';
-			if (mode == 'disabled')
-				mode = 'teleop';
-			sim.set_robot_mode(mode, enabled);
-		});
-		
-		// enable config modal button
-		$('#open-config-modal-btn').click(function() {
-			config_modal.show();
-		});
-		
-		// Add connection listener
-		sim.add_connection_listener(function(connected) {
-			
-			var $connection_indicator = iomodule.element.find('#connection_notification');
-			
-			if(connected) {
-				$connection_indicator.addClass('connected');
-				$connection_indicator.removeClass('disconnected');
-				$connection_indicator.text('Connected!');		
-			} else {
-				$connection_indicator.removeClass('connected');
-				$connection_indicator.addClass('disconnected');
-				$connection_indicator.text('Disconnected!');
-			}
-			
-		});
-		
+
+	// Render the module
+	cache.$element = $(sim.templates.control.control);
+	cache.$mode = cache.$element.find("input[name='mode']");
+	cache.$connectionIndicator = cache.$element.find(".connection-notification");
+	cache.$openConfigModalBtn = cache.$element.find('.open-config-modal-btn');
+
+	// Set robot mode
+	cache.$mode.change(function() {
+		var mode = $(this).val();
+		var enabled = mode != 'disabled';
+		if (mode == 'disabled')
+			mode = 'teleop';
+		sim.main.setRobotMode(mode, enabled);
 	});
-	
-});*/
+
+	cache.$openConfigModalBtn.click(function() {
+		sim.configModal.show();
+	});
+
+	sim.events.on('simConnected', function() {
+		cache.$connectionIndicator.addClass('connected');
+		cache.$connectionIndicator.removeClass('disconnected');
+		cache.$connectionIndicator.text('Connected!');		
+	});
+
+	sim.events.on('simDisconnected', function() {
+		cache.$connectionIndicator.removeClass('connected');
+		cache.$connectionIndicator.addClass('disconnected');
+		cache.$connectionIndicator.text('Disconnected!');
+	});
+
+	cache.$element.appendTo('.websim-modules');
+
+})(window.sim = window.sim || {});

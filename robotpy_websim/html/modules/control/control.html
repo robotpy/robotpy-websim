@@ -1,29 +1,33 @@
-<p id="control_source"></p>
 
-<form class="form" action="">
-	<div class="form-group">
-		<div class="col-xs-offset-1">
-			<label class="radio"> 
-				<input type="radio" name="mode" value="disabled" checked="true" />Disabled
-			</label> 
-			<label class="radio"> 
-				<input type="radio" name="mode" value="auto" />Auto 
-			</label>
-			<label class="radio"> 
-				<input type="radio" name="mode" value="teleop" />Teleop
-			</label>
-			<label class="radio"> 
-				<input type="radio" name="mode" value="test" />Test
-			</label>
+<div class="control-module websim-module">
+	<h4 class="title noselect cursor-grab">Control</h4>
+	<p id="control_source"></p>
+
+	<form class="form" action="">
+		<div class="form-group">
+			<div class="col-xs-offset-1">
+				<label class="radio"> 
+					<input type="radio" name="mode" value="disabled" checked="true" />Disabled
+				</label> 
+				<label class="radio"> 
+					<input type="radio" name="mode" value="auto" />Auto 
+				</label>
+				<label class="radio"> 
+					<input type="radio" name="mode" value="teleop" />Teleop
+				</label>
+				<label class="radio"> 
+					<input type="radio" name="mode" value="test" />Test
+				</label>
+			</div>
 		</div>
+	</form>
+
+	<div id="top-menu" style="margin-bottom: 12px;">
+		<button class="open-config-modal-btn" class="btn btn-default btn-xs" >
+			<strong>Config</strong>
+		</button>
 	</div>
-</form>
 
-<div id="top-menu" style="margin-bottom: 12px;">
-	<button id="open-config-modal-btn" class="btn btn-default btn-xs" >
-		<strong>Config</strong>
-	</button>
+	<!--  TODO: add some event to dynamically flip this when websocket connects/disconnects -->
+	<div class="connection-notification">Disconnected!</div>
 </div>
-
-<!--  TODO: add some event to dynamically flip this when websocket connects/disconnects -->
-<div id="connection_notification">Disconnected!</div>
