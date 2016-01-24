@@ -111,88 +111,23 @@
 	});
 
 	// Add analog to config
-	var defaults = {
-		visible : 'y'
-	};
-
-	for(var i = 0; i < 8; i++) {
-		defaults['analog-' + i + '-tooltip'] = '';
-	}
-
-	sim.config.setCategoryDefaults('analog', defaults);
-
-	// Add analog to config modal
-	var configTemplateData = {
-		visible : {
-			label : 'Visible:',
-			name : 'visible',
-			inline : true,
-			radios : [
-				{ "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			]
-		},
-		tooltips : []
-	};
-
-	for(var i = 0; i < 8; i++) {
-		configTemplateData.tooltips.push({
-			name : 'analog-' + i + '-tooltip',
-			label : 'Analog ' + i + ' Tooltip:'
-		});
-	}
-
-	$cache.config = $(sim.compileTemplate.handlebars(sim.templates.analog.config, configTemplateData));
-
-	sim.configModal.addCategory($cache.config);
-	
-	// Populate inputs when config modal is opened
-	sim.events.on('configModalCategoryShown', 'analog', function() {
-
-		var data = sim.config.getCategory('analog');
-	
-		$cache.config.find('[name=visible]').prop('checked', data.visible == 'y');
-				
-		for(var i = 0; i < 8; i++) {
-			var name = 'analog-' + i + '-tooltip';
-			$cache.config.find('[name=' + name + ']').val(data[name]);
-		}
-	});
-
-	// Update config data when modal is saved
-	sim.events.on('configModalCategorySave', 'analog', function() {
-
-		var data = {
-			visible : $cache.config.find('[name=visible]').prop('checked')
-		};
-
-		for(var i = 0; i < 8; i++) {
-			var name = 'analog-' + i + '-tooltip';
-			data[name] = $cache.config.find('input[name=' + name + ']').val();
-		}
-
-		sim.config.updateCategory('analog', data);
-		
-		applyConfig();
-	});
+	sim.configHelpers.setBasicConfig('analog', 'Analog', 8);
 
 
-	function applyConfig() {	
+	sim.events.on('configCategoryUpdated', 'analog', function(config) {	
 		sim.animation.queue('analogApplyConfig', function() {
-			var data = sim.config.getCategory('analog');
-			if(data.visible == 'y') {
+			if(config.visible == 'y') {
 				$cache.element.removeClass('hidden');
 			} else {
 				$cache.element.addClass('hidden');
 			}
 			
 			for(var i = 0; i < 8; i++) {
-				var tooltip = data['analog-' + i + '-tooltip'];
+				var tooltip = config['analog-' + i + '-tooltip'];
 				$cache.analogs[i].element.attr('data-original-title', tooltip);
 			}	
 		});	
-	}
-
+	});
 
 	$cache.element.appendTo('.websim-modules');
 

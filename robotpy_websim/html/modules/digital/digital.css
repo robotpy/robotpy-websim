@@ -1,25 +1,25 @@
-#digital {
+.digital-module {
 
 }
 
-#digital .slider.slider-horizontal .slider-handle.round {
+.digital-module .slider.slider-horizontal .slider-handle.round {
   background: lightgray;
 }
 
-#digital #pwms {
+.digital-module .pwms {
 	width: 200px;
 }
 
-#digital #dios {
+.digital-module .dios {
 	width: 200px;
 }
 
-#digital #relays {
+.digital-module .relays {
 	width: 130px;
 }
 
 
-#digital .digital-io-holder, .relay-holder {
+.digital-module .digital-io-holder, .relay-holder {
 	padding-left: 0px;
 	margin-bottom: 5px;
 }
