@@ -1,0 +1,15 @@
+<div class="solenoid-module websim-module">
+	<h4 class="title noselect cursor-grab">Solenoid</h4>	
+		<div class="row">
+			<form class="form-horizontal" action="">
+				{{#each solenoids as |solenoid index|}}
+					<div class="col-xs-3 solenoid-holder">
+						<div class="row">
+							<b>{{index}}</b>
+							<a href="#" class="btn btn-danger btn-circle solenoid"></a>
+						</div>
+					</div>
+				{{/each}}
+			</form>
+		</div>
+</div>
