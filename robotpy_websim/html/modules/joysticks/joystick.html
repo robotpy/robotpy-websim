@@ -1,0 +1,14 @@
+<form class="form-horizontal" action="">
+	{{#each axis as |axisName index|}}
+		<p class="slide-holder {{axisName}}-axis" data-axis="{{axisName}}"></p>
+	{{/each}}  	
+	<div class="row">
+		{{#each buttons as |button index|}}
+			<div class="col-xs-4 joystick-btn-container">
+				<div class="checkbox">
+					<label><input type="checkbox" class="joystick-btn">{{button}}</label>
+				</div>
+			</div>
+		{{/each}}
+	</div>
+</form>

@@ -111,7 +111,7 @@
 	Handlebars.registerHelper('configSelect', function(data) {
 
 		var options = '';
-		_.forEach(data.options, function(value, label) {
+		_.forEach(data.options, function(label, value) {
 			options += '<option value="' + value + '" style="font-weight: bold">' + label + '</option>';
 		});
 

@@ -1,0 +1,11 @@
+<div data-category-id="joystick">
+	{{configSelect joystickChooser}}
+	{{#each joysticks as |joystick index|}}
+		<div data-joystick="{{index}}">
+			{{configRadioGroup joystick.visible}}
+			{{#each joystick.tooltips as |tooltip index|}}
+				{{configInput tooltip}}
+			{{/each}}
+		</div>
+	{{/each}}
+</div>

@@ -75,7 +75,6 @@
 				});
 
 				js.forEach(function(fileName) {
-					console.log(fileName);
 					$('<script src="' + fileName + '"></script>').appendTo('body');
 				});
 
@@ -224,7 +223,7 @@
 
 		for(var i = 0; i < deviceCount; i++) {
 			configTemplateData.tooltips.push({
-				name : categoryId + '-' + i + '-tooltip',
+				name : 'tooltip-' + i,
 				label : categoryTitle + ' ' + i + ' Tooltip:'
 			});
 		}
