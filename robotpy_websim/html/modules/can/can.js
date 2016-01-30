@@ -122,7 +122,7 @@
 	// Update config data when modal is saved
 	sim.events.on('configModalCategorySave', 'analog', function() {
 		sim.config.updateCategory('can', {
-			visible : $cache.config.find('[name=visible]').prop('checked')
+			visible : cache.$config.find('[name=visible]').prop('checked')
 		});
 		applyConfig();
 	});
@@ -132,9 +132,9 @@
 		sim.animation.queue('canApplyConfig', function() {
 			var data = sim.config.getCategory('can');
 			if(data.visible == 'y') {
-				$cache.element.removeClass('hidden');
+				cache.$element.removeClass('hidden');
 			} else {
-				$cache.element.addClass('hidden');
+				cache.$element.addClass('hidden');
 			}
 		});	
 	}

@@ -57,7 +57,7 @@
 	// Update config data when modal is saved
 	sim.events.on('configModalCategorySave', 'data-tree', function() {
 		sim.config.updateCategory('data-tree', {
-			visible : $cache.config.find('[name=visible]').prop('checked')
+			visible : cache.$config.find('[name=visible]').prop('checked')
 		});
 		applyConfig();
 	});
