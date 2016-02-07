@@ -15,13 +15,13 @@
 	SimConfig.prototype.setCategoryDefaults = function(category, data) {
 		this.config[category] || (this.config[category] = {});
 		this.config[category] = $.extend(true, data, this.config[category]);
-		sim.events.trigger(this.id + 'CategoryUpdated', category, [this.config[category]]);
+		sim.events.trigger(this.id + 'CategoryUpdated', category, [this.config[category], category]);
 	};
 
 	SimConfig.prototype.updateCategory = function(category, data) {
 		this.config[category] || (this.config[category] = {});
 		$.extend(true, this.config[category], data);
-		sim.events.trigger(this.id + 'CategoryUpdated', category, [this.config[category]]);
+		sim.events.trigger(this.id + 'CategoryUpdated', category, [this.config[category], category]);
 	};
 
 	SimConfig.prototype.getCategory = function(category) {

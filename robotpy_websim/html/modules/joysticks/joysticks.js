@@ -91,10 +91,9 @@
 		joysticks : []
 	};
 
-
 	for(var i = 0; i < 6; i++) {
 		var joystick = {
-			visible : true,
+			visible : 'y',
 			tooltips : {}
 		};
 
@@ -103,7 +102,7 @@
 		});
 
 		_.forEach(_.range(1, 13), function(button, i) {
-			joystick.tooltips['btn-' + button + '-tooltip'] = '';
+			joystick.tooltips[button + '-button'] = '';
 		});
 
 		defaults.joysticks.push(joystick);
@@ -111,51 +110,30 @@
 
 	sim.config.setCategoryDefaults('joystick', defaults);
 
-	// Add joystick to config modal
-	var configData = {
+
+	var configParams = {
+		tooltips : {},
+		bleh : Array(8).fill(''),
 		joystickChooser : {
 			id : 'joystick-chooser',
 			options : {
 				'0' : 'Joystick 0', '1' : 'Joystick 1', '2' : 'Joystick 2', 
 				'3' : 'Joystick 3', '4' : 'Joystick 4', '5' : 'Joystick 5'
 			}
-		},
-		joysticks : []
+		}
 	}
 
-	for(var i = 0; i < 6; i++) {
-		var joystick = {
-			visible : {
-				label : 'Visible:',
-				name : 'visible',
-				inline : true,
-				radios : [
-					{ "label" : "Yes", "value" : "y" },
-		            { "label" : "No", "value" : "n" }
-				]
-			},
-			tooltips : []
-		};
+	_.forEach(['x', 'y', 'z', 't'], function(axis) {
+		configParams.tooltips[axis] = axis + '-Axis';
+	});
 
-		_.forEach(['x', 'y', 'z', 't'], function(axis, i) {
-			joystick.tooltips.push({
-				name : 'tooltip-' + axis  + '-axis',
-				label : axis + '-Axis Tooltip:'
-			});
-		});
-		
-		_.forEach(_.range(1, 13), function(button, i) {
-			joystick.tooltips.push({
-				name : 'tooltip-' + button  + '-button',
-				label : 'Button ' + i + ' Tooltip:'
-			});
-			joystick.tooltips['btn-' + button + '-tooltip'] = 'Button ' + i + ' Tooltip:';
-		});
+	_.forEach(_.range(1, 13), function(button) {
+		configParams.tooltips[button] = 'Button ' + button;
+	});
 
-		configData.joysticks.push(joystick);
-	}
-	
-	cache.config.$element = $(sim.compileTemplate.handlebars(sim.templates.joysticks.config, configData));
+	cache.config.$element = $(sim.compileTemplate.handlebars(sim.templates.joysticks.config, configParams));
+
+	//console.log(cache.config.$element.html());
 	cache.config.$chooser = cache.config.$element.find('#joystick-chooser');
 	cache.config.$joysticks = cache.config.$element.find('[data-joystick]');
 	sim.configModal.addCategory(cache.config.$element);
@@ -168,26 +146,15 @@
 		cache.config.$element.find('[data-joystick=' + joystickNum + ']').addClass('selected-joystick');
 	});
 
-	sim.events.on('configCategoryUpdated', 'joystick', function(config) {
-		sim.animation.queue('joystickApplyConfig', function() {	
-			_.forEach(config.joysticks, function(joystickConfig, i) {
-				if(joystickConfig.visible == 'y') {
-					$cache.joysticks[i].$element.removeClass('hidden');
-				} else {
-					$cache.joysticks[i].$element.addClass('hidden');
-				}
-
-				_.forEach(['x', 'y', 'z', 't'], function(axis, i) {
-					var tooltip = joystickConfig.tooltips[axis + '-axis'];
-					cache.joysticks.axis[i].$element.attr('data-original-title', tooltip);
-				});
-				
-				_.forEach(_.range(1, 13), function(button, i) {
-					var tooltip = joystickConfig.tooltips['btn-' + button + '-tooltip'];
-					cache.joysticks.buttons[i].$element.attr('data-original-title', tooltip);
-				});
-
-			});
+	// Update module when config is updated
+	sim.events.on('configCategoryUpdated', 'joystick', function(config) {	
+		console.log(config);
+		config.joysticks.forEach(function(joystickConfig, i) {
+			if(joystickConfig.visible == 'y') {
+				cache.joysticks[i].$element.removeClass('hidden');
+			} else {
+				cache.joysticks[i].$element.addClass('hidden');
+			}
 		});
 	});
 

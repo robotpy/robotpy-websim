@@ -8,8 +8,17 @@
 
 		register : function(id, getInputHtml, setInputValue, getInputValue) {
 
-			Handlebars.registerHelper(id, function(configKey, params) {
-				var result = getInputHtml(configKey, params);
+			Handlebars.registerHelper(id, function(params) {
+
+				if(params.string) {
+					try { 
+						params = JSON.parse(params.string); 
+					} catch(e) {
+						return '';
+					}
+				}
+
+				var result = getInputHtml(params, params.configKey);
 				return new Handlebars.SafeString(result);
 			});
 
@@ -22,9 +31,11 @@
 
 		setInputValues : function($form) {
 
+
 			var categoryId = $form.data('category-id'),
 				config = $form.data('user-config') ? sim.userConfig : sim.config;
 				category = config.getCategory(categoryId);
+
 
 			$form.find('[data-config-input]').each(function() {
 
@@ -51,7 +62,8 @@
 					configKey = $input.data('config-key');
 
 				var configValue = configInputs[inputId].getInputValue($input, configValue);
-				_.set(category, configKey, configValue);				
+				_.set(category, configKey, configValue);
+				config.updateCategory(categoryId, category);		
 			});
 		}
 	};
@@ -66,9 +78,9 @@
 
 
 	function getInputHtml(params, configKey) {
-		var name = params.name,
 			label = params.label,
-			attrs = params.attrs || {};
+			attrs = params.attrs || {},
+			name = _.uniqueId('input');
 
 		var inputAttrs = ' ';
 		_.forEach(attrs, function(value, attr) {
@@ -109,9 +121,9 @@
 	function getInputHtml(params, configKey) {
 		
 		var label = params.label,
-			name = params.name, 
 			inline = params.inline,
-			checkboxes = params.checkboxes;
+			checkboxes = params.checkboxes,
+			name = _.uniqueId('input');
 
 		var result = '<div data-config-input="configCheckboxGroup" data-config-key="' + configKey + '">';
 		result += '<label for="' + name + '">' + label + '</label><br />';
@@ -173,9 +185,9 @@
 	function getInputHtml(params, configKey) {
 		
 		var label = params.label,
-			name = params.name, 
 			inline = params.inline,
-			radios = params.radios;
+			radios = params.radios,
+			name = _.uniqueId('input');
 
 		var result = '<div data-config-input="configRadioGroup" data-config-key="' + configKey + '">';
 		result += '<label for="' + name + '" style="margin-right: 10px;">' + label + '</label>';
@@ -204,11 +216,11 @@
 	}
 
 	function setInputValue($input, configValue) {
-		$input.find('input[name=' + configValue + ']').prop('checked', true);
+		$input.find('input[value=' + configValue + ']').prop('checked', true);
 	}
 
 	function getInputValue($input) {
-		return $input.find('input:checked').attr('name');
+		return $input.find('input:checked').attr('value');
 	}
 
 	sim.configInputs.register('configRadioGroup', getInputHtml, setInputValue, getInputValue);
@@ -232,4 +244,67 @@ Handlebars.registerHelper('configSelect', function(data) {
 				  '</div>';
 
 	return new Handlebars.SafeString(result);
+});
+
+
+Handlebars.registerHelper('configVisibleJson', function(configKey) {
+	configKey = configKey.toString();
+	var data = {
+		configKey : configKey.toString(),
+		label : 'Visible:',
+		inline : true,
+		radios : [
+			{ "label" : "Yes", "value" : "y" },
+            { "label" : "No", "value" : "n" }
+		]
+	};
+
+	return new Handlebars.SafeString(JSON.stringify(data));
+});
+
+Handlebars.registerHelper('configTooltipJson', function(categoryTitle, configKey, index) {
+	categoryTitle = categoryTitle.toString();
+	configKey = configKey.toString();
+	var data = {
+		configKey : configKey + '[' + index + ']',
+		label : categoryTitle + ' Tooltip:'
+	};
+
+	return new Handlebars.SafeString(JSON.stringify(data));
+});
+
+
+
+
+/*
+* Repeat given markup with given times
+* provides @index for the repeated iteraction
+*/
+Handlebars.registerHelper("repeat", function (times, opts) {
+    var out = "";
+    var i;
+    var data = {};
+
+    if ( times ) {
+        for ( i = 0; i < times; i += 1 ) {
+            data.index = i;
+            out += opts.fn(this, {
+                data: data
+            });
+        }
+    } else {
+
+        out = opts.inverse(this);
+    }
+
+    return out;
+});
+
+
+/*
+ * Concat helper
+ */
+Handlebars.registerHelper("concat", function() {
+	var strings = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+	return new Handlebars.SafeString(strings.join(''));
 });

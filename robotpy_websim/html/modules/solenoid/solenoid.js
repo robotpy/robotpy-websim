@@ -73,10 +73,14 @@
 		}
 	};
 
+	// Add config
+	sim.config.setCategoryDefaults('solenoid', {
+		visible : 'y',
+		tooltips : Array(8).fill('')
+	});
 
-	// Add to config
-	sim.configHelpers.setBasicConfig('solenoid', 'Solenoid', 8);
-
+	cache.$config = $(sim.compileTemplate.handlebars(sim.templates.solenoid.config));
+	sim.configModal.addCategory(cache.$config);
 
 	sim.events.on('configCategoryUpdated', 'solenoid', function(config) {	
 		if(config.visible == 'y') {
@@ -85,10 +89,9 @@
 			cache.$element.addClass('hidden');
 		}
 		
-		for(var i = 0; i < 8; i++) {
-			var tooltip = config['solenoid-' + i + '-tooltip'];
+		_.forEach(config.tooltips, function(tooltip, i) {
 			cache.solenoids[i].$element.attr('data-original-title', tooltip);
-		}
+		});
 	});
 
 	cache.$element.appendTo('.websim-modules');

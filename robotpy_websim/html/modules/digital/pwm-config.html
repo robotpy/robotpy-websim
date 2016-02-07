@@ -1,0 +1,6 @@
+<div data-category-id="pwm">
+ 	{{configRadioGroup (configVisibleJson 'visible')}}
+ 	{{#repeat 20}}
+ 		{{configInput (configTooltipJson (concat 'PWM ' @index) 'tooltip' @index)}}
+ 	{{/repeat}}
+ </div>

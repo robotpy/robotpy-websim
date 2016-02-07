@@ -39,7 +39,7 @@
 
 
 	// Initialize pwms
-	cache.pwms.$element = cache.$element.find('.pwms form');
+	cache.pwms.$element = cache.$element.find('.pwms');
 	cache.pwms.$element.find('.slide-holder').each(function() {
 		var $el = $(this);
 		$el.tooltip().sliderFacade({
@@ -52,7 +52,7 @@
 	});
 
 	// Initialize dios
-	cache.dios.$element = cache.$element.find('.dios form');
+	cache.dios.$element = cache.$element.find('.dios');
 	cache.dios.$element.find('.dio-holder').each(function() {
 		var $el = $(this).tooltip(),
 			$button = $el.find('.digital-io');
@@ -64,7 +64,7 @@
 	});
 
 	// Initialize relays
-	cache.relays.$element = cache.$element.find('.relays form');
+	cache.relays.$element = cache.$element.find('.relays');
 	cache.relays.$element.find('.relay-holder').each(function() {
 		var $el = $(this).tooltip(),
 			$button = $el.find('.relay');
@@ -177,52 +177,29 @@
 
 
 	// Add PWM, DIO, and Relay config
-	sim.configHelpers.setBasicConfig('pwm', 'PWM', 20);
-	sim.configHelpers.setBasicConfig('dio', 'Digital I/O', 26);
-	sim.configHelpers.setBasicConfig('relay', 'Relay', 8);
+	_.forEach({ pwm : 20, dio : 26, relay : 8 }, function(devices, module) {
 
-	sim.events.on('configCategoryUpdated', 'pwm', function(config) {	
-		if(config.visible == 'y') {
-			cache.pwms.$element.removeClass('hidden');
-		} else {
-			cache.pwms.$element.addClass('hidden');
-		}
-		
-		for(var i = 0; i < 20; i++) {
-			var tooltip = config['pwm-' + i + '-tooltip'];
-			cache.pwms.devices[i].$element.attr('data-original-title', tooltip);
-		}
-					
-		hideDigitalIfEmpty();
+		sim.config.setCategoryDefaults(module, {
+			visible : 'y',
+			tooltips : Array(devices).fill('')
+		});
+
+		var $config = $(sim.compileTemplate.handlebars(sim.templates.digital[module + '-config']));
+		sim.configModal.addCategory($config);
 	});
 
-	sim.events.on('configCategoryUpdated', 'dio', function(config) {	
-		if(config.visible == 'y') {
-			cache.dios.$element.removeClass('hidden');
-		} else {
-			cache.dios.$element.addClass('hidden');
-		}
-		
-		for(var i = 0; i < 26; i++) {
-			var tooltip = config['dio-' + i + '-tooltip'];
-			cache.dios.devices[i].$element.attr('data-original-title', tooltip);
-		}
-					
-		hideDigitalIfEmpty();
-	});
+	sim.events.on('configCategoryUpdated', function(config, category) {
+		if(_.indexOf(['pwm', 'dio', 'relay'], category) < 0) return;
 
-	sim.events.on('configCategoryUpdated', 'relay', function(config) {	
 		if(config.visible == 'y') {
-			cache.dios.$element.removeClass('hidden');
+			cache[category + 's'].$element.removeClass('hidden');
 		} else {
-			cache.dios.$element.addClass('hidden');
+			cache[category + 's'].$element.addClass('hidden');
 		}
 		
-		for(var i = 0; i < 8; i++) {
-			var tooltip = config['relay-' + i + '-tooltip'];
-			cache.relays.devices[i].$element.attr('data-original-title', tooltip);
-		}
-					
+		_.forEach(config.tooltips, function(tooltip, i) {
+			cache[category + 's'].devices[i].$element.attr('data-original-title', tooltip);
+		});		
 		hideDigitalIfEmpty();
 	});
 

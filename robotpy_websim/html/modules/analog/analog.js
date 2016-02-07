@@ -110,43 +110,28 @@
 		});
 	});
 
-	// Add analog to config
-	sim.configHelpers.setBasicConfig('analog', 'Analog', 8);
+	// Add config
+	sim.config.setCategoryDefaults('analog', {
+		visible : 'y',
+		tooltips : Array(8).fill('')
+	});
 
+	$cache.config = $(sim.compileTemplate.handlebars(sim.templates.analog.config));
+	sim.configModal.addCategory($cache.config);
 
 	sim.events.on('configCategoryUpdated', 'analog', function(config) {	
-		sim.animation.queue('analogApplyConfig', function() {
-			if(config.visible == 'y') {
-				$cache.element.removeClass('hidden');
-			} else {
-				$cache.element.addClass('hidden');
-			}
-			
-			for(var i = 0; i < 8; i++) {
-				var tooltip = config['analog-' + i + '-tooltip'];
-				$cache.analogs[i].element.attr('data-original-title', tooltip);
-			}	
-		});	
+		if(config.visible == 'y') {
+			$cache.element.removeClass('hidden');
+		} else {
+			$cache.element.addClass('hidden');
+		}
+		
+		_.forEach(config.tooltips, function(tooltip, i) {
+			$cache.analogs[i].element.attr('data-original-title', tooltip);
+		});
 	});
 
 	$cache.element.appendTo('.websim-modules');
 
 })(window.sim = window.sim || {});
 
-/*
-
-		
-		
-// Context menu
-context_menu.add(iomodule, {
-	config_key: 'analog',
-	oncreate: function(menu, data) {
-		menu.find('#hide-iomodule').on('click', function() {
-			data.visible = 'n';
-			iomodule.element.addClass('hidden');
-			config.save_config();
-		});
-	}
-});
-		
-*/

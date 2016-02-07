@@ -1,0 +1,6 @@
+<div data-category-id="solenoid">
+ 	{{configRadioGroup (configVisibleJson 'visible')}}
+ 	{{#repeat 8}}
+ 		{{configInput (configTooltipJson (concat 'Solenoid ' @index) 'tooltip' @index)}}
+ 	{{/repeat}}
+ </div>

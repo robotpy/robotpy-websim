@@ -29,49 +29,21 @@
 	});
 
 	// Add Data Tree to config
-	sim.config.setCategoryDefaults('can', {
+	sim.config.setCategoryDefaults('data-tree', {
 		visible : 'y'
 	});
 
-	// Add Data Tree to config modal
-	cache.$config = $(sim.compileTemplate.handlebars(sim.templates['data-tree'].config, {
-		visible : {
-			label : 'Visible:',
-			name : 'visible',
-			inline : true,
-			radios : [
-				{ "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			]
-		}
-	}));
-
+	cache.$config = $(sim.compileTemplate.handlebars(sim.templates['data-tree'].config));
 	sim.configModal.addCategory(cache.$config);
 
-	// Populate inputs when config modal is opened
-	sim.events.on('configModalCategoryShown', 'data-tree', function() {
-		var data = sim.config.getCategory('data-tree');
-		cache.$config.find('[name=visible]').prop('checked', data.visible == 'y');
+	// Update module when config is updated
+	sim.events.on('configCategoryUpdated', 'data-tree', function(config) {	
+		if(config.visible == 'y') {
+			cache.$element.removeClass('hidden');
+		} else {
+			cache.$element.addClass('hidden');
+		}			
 	});
-
-	// Update config data when modal is saved
-	sim.events.on('configModalCategorySave', 'data-tree', function() {
-		sim.config.updateCategory('data-tree', {
-			visible : cache.$config.find('[name=visible]').prop('checked')
-		});
-		applyConfig();
-	});
-
-	function applyConfig() {	
-		sim.animation.queue('dataTreeApplyConfig', function() {
-			var data = sim.config.getCategory('data-tree');
-			if(data.visible == 'y') {
-				cache.$element.removeClass('hidden');
-			} else {
-				cache.$element.addClass('hidden');
-			}	
-		});			
-	}
 
 	cache.$element.appendTo('.websim-modules');
 

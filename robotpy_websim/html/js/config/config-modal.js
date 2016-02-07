@@ -45,6 +45,7 @@
 		sim.events.trigger('configModalShown');
 
 		_.forEach($cache.categories, function(category, categoryName) {
+			sim.configInputs.setInputValues(category.inputs);
 			sim.events.trigger('configModalCategoryShown', categoryName, [category.inputs]);
 		});
 	});
@@ -61,6 +62,7 @@
 
 		sim.events.trigger('configModalSave');
 		_.forEach($cache.categories, function(category, categoryName) {
+			sim.configInputs.getInputValues(category.inputs);
 			sim.events.trigger('configModalCategorySave', categoryName, [category.inputs]);
 		});
 		sim.config.save();
@@ -77,6 +79,7 @@
 			$category = _.isString($category) ? $($category) : $category;
 
 			var categoryId = $category.data('category-id');
+
 			if(categoryId in $cache.categories) {
 				return false;
 			}

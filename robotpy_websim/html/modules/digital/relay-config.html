@@ -1,0 +1,6 @@
+<div data-category-id="relay">
+ 	{{configRadioGroup (configVisibleJson 'visible')}}
+ 	{{#repeat 8}}
+ 		{{configInput (configTooltipJson (concat 'Relay ' @index) 'tooltip' @index)}}
+ 	{{/repeat}}
+ </div>

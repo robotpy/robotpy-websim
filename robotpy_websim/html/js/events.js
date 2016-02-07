@@ -16,7 +16,7 @@
 			callback = arguments.length == 3 ? arguments[2] : arguments[1];
 
 		if(_.isString(event) && _.isFunction(callback)) {
-			this.events[event] || (this.events[event] = {});
+			this.events[event] || (this.events[event] = { '' : [] });
 			this.events[event][context] || (this.events[event][context] = []);
 			this.events[event][context].push(callback);
 		}
@@ -30,8 +30,12 @@
 			context = arguments.length == 3 ? arguments[1] : '',
 			args = arguments.length == 3 ? arguments[2] : (arguments.length == 2 ? arguments[1] : []);
 
-		if(event in this.events && context in this.events[event]) {
-			this.events[event][context].forEach(function(callback) {
+		if(event in this.events) {
+			var callbacks =  this.events[event][''];
+			if(context != '' && context in this.events[event]) {
+				callbacks = callbacks.concat(this.events[event][context]);
+			}
+			callbacks.forEach(function(callback) {
 				callback.apply(window, args);
 			});
 		}

@@ -92,53 +92,20 @@
 	});
 
 	// Add CAN to config
-	var defaults = {
-		visible : 'y'
-	};
-
-	sim.config.setCategoryDefaults('can', defaults);
+	sim.config.setCategoryDefaults('can', { visible : 'y' });
 
 	// Add CAN to config modal
-	cache.$config = $(sim.compileTemplate.handlebars(sim.templates.can.config, {
-		visible : {
-			label : 'Visible:',
-			name : 'visible',
-			inline : true,
-			radios : [
-				{ "label" : "Yes", "value" : "y" },
-	            { "label" : "No", "value" : "n" }
-			]
-		}
-	}));
-
+	cache.$config = $(sim.compileTemplate.handlebars(sim.templates.can.config));
 	sim.configModal.addCategory(cache.$config);
 	
-	// Populate inputs when config modal is opened
-	sim.events.on('configModalCategoryShown', 'can', function() {
-		var data = sim.config.getCategory('can');
-		cache.$config.find('[name=visible]').prop('checked', data.visible == 'y');
+	// Update module when config is updated
+	sim.events.on('configCategoryUpdated', 'can', function(config) {		
+		if(config.visible == 'y') {
+			cache.$element.removeClass('hidden');
+		} else {
+			cache.$element.addClass('hidden');
+		}
 	});
-
-	// Update config data when modal is saved
-	sim.events.on('configModalCategorySave', 'analog', function() {
-		sim.config.updateCategory('can', {
-			visible : cache.$config.find('[name=visible]').prop('checked')
-		});
-		applyConfig();
-	});
-
-
-	function applyConfig() {	
-		sim.animation.queue('canApplyConfig', function() {
-			var data = sim.config.getCategory('can');
-			if(data.visible == 'y') {
-				cache.$element.removeClass('hidden');
-			} else {
-				cache.$element.addClass('hidden');
-			}
-		});	
-	}
-
 
 	cache.$element.appendTo('.websim-modules');
 
