@@ -52,7 +52,7 @@
 		});
 
 		joystick.$element.find('.joystick-btn-container').each(function() {
-			var $holder = $(this),
+			var $holder = $(this).tooltip(),
 				$btn = $holder.find('.joystick-btn');
 
 			joystick.buttons.push({
@@ -76,7 +76,7 @@
 			}
 			
 			for(var b = 0; b < 12; b++) {
-				joystick.buttons[b] = cache.joysticks[i].buttons[b].$element.prop('checked');ki
+				joystick.buttons[b] = cache.joysticks[i].buttons[b].$element.prop('checked');
 			}
 		});
 	});
@@ -98,11 +98,11 @@
 		};
 
 		_.forEach(['x', 'y', 'z', 't'], function(axis, i) {
-			joystick.tooltips[axis + '-axis'] = '';
+			joystick.tooltips[axis] = '';
 		});
 
 		_.forEach(_.range(1, 13), function(button, i) {
-			joystick.tooltips[button + '-button'] = '';
+			joystick.tooltips[button] = '';
 		});
 
 		defaults.joysticks.push(joystick);
@@ -148,13 +148,24 @@
 
 	// Update module when config is updated
 	sim.events.on('configCategoryUpdated', 'joystick', function(config) {	
-		console.log(config);
 		config.joysticks.forEach(function(joystickConfig, i) {
 			if(joystickConfig.visible == 'y') {
 				cache.joysticks[i].$element.removeClass('hidden');
 			} else {
 				cache.joysticks[i].$element.addClass('hidden');
 			}
+
+			console.log(joystickConfig);
+
+			_.forEach(['x', 'y', 'z', 't'], function(axis, j) {
+				var tooltip = joystickConfig.tooltips[axis];
+				cache.joysticks[i].axis[j].$element.attr('data-original-title', tooltip);
+			});
+
+			_.forEach(_.range(1, 13), function(button, j) {
+				var tooltip = joystickConfig.tooltips[button];
+				cache.joysticks[i].buttons[j].$holder.attr('data-original-title', tooltip);
+			});
 		});
 	});
 

@@ -4,7 +4,7 @@
 		<div data-joystick="{{@index}}">
 			{{configRadioGroup (configVisibleJson (concat 'joysticks[' @index '].visible'))}}
 			{{#each tooltips as |label key|}}
-				{{configInput (configTooltipJson label (concat 'joysticks[' @../index '].tooltip') key)}}
+				{{configInput (configTooltipJson label (concat 'joysticks[' @../index '].tooltips') key)}}
 			{{/each}}
 		</div>
 	{{/repeat}}
