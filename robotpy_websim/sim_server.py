@@ -21,7 +21,7 @@ from tornado.websocket import WebSocketHandler
 
 from hal_impl import mode_helpers
 from hal_impl.data import hal_data, hal_in_data, update_hal_data
-from hal import TalonSRXConst as tsrxc
+#from hal import TalonSRXConst as tsrxc
 
 import logging
 logger = logging.getLogger('websim')
@@ -147,7 +147,7 @@ class ApiHandler(tornado.web.RequestHandler):
             
             :param param: The matching parameter for /api/(.*)
         '''
-        
+        '''
         if param == 'can_mode_map':
             can_mode_map = {
                         tsrxc.kMode_CurrentCloseLoop: 'PercentVbus',
@@ -160,8 +160,8 @@ class ApiHandler(tornado.web.RequestHandler):
                      }
             
             self.write(can_mode_map)
-
-        elif param =='modules_and_config':
+        '''
+        if param =='modules_and_config': #elif param =='modules_and_config':
 
             module_paths = [{'path' : self.builtin_module_path, 'to_web_path' : self._builtin_to_web_path}]
 
