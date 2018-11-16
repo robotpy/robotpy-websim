@@ -54,6 +54,10 @@ class SimulationWebSocket(WebSocketHandler):
     def initialize(self, sim_period):
         self.connected = False
         self.sim_period = sim_period
+
+    def check_origin(self, origin):
+        '''Allow CORS requests from websim running on a different port in webpack'''
+        return True
     
     def open(self):
         if SimulationWebSocket.has_connection:
@@ -141,6 +145,12 @@ class ApiHandler(tornado.web.RequestHandler):
 
         self.builtin_module_path = join(self.root_path, 'modules')
         self.user_module_path = join(self.sim_path, 'modules')
+
+    def set_default_headers(self):
+        '''Allow CORS requests from websim running on a different port in webpack'''
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
 
     def _builtin_to_web_path(self, path):
         return path[len(self.root_path):]
