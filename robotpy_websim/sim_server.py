@@ -14,6 +14,7 @@ try:
 except ImportError:
     import json
 
+import asyncio
 import tornado.gen
 import tornado.web
 from tornado.ioloop import IOLoop, PeriodicCallback
@@ -29,6 +30,15 @@ logger = logging.getLogger('websim')
 def pretty_json(d):
     return json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
 
+
+class SetEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        elif type(obj).__name__ is 'AnalogInputHandle':
+            return {}
+        return json.JSONEncoder.default(self, obj)
 
 class SimulationWebSocket(WebSocketHandler):
     """
@@ -73,14 +83,14 @@ class SimulationWebSocket(WebSocketHandler):
             'in':  hal_in_data
         }
         
-        self.write_message(json.dumps(msg, allow_nan=False), False)
+        self.write_message(json.dumps(msg, allow_nan=False, cls=SetEncoder), False)
         self.sim_initialized = True
     
     def _on_timer(self):
         '''Called every N ms'''
         
         if self.sim_initialized:
-            self.write_message(json.dumps(hal_data, allow_nan=False), False)
+            self.write_message(json.dumps(hal_data, allow_nan=False, cls=SetEncoder), False)
         elif hal_data['user_program_state'] is not None:
             self.init_sim()
     
@@ -307,6 +317,7 @@ class Main:
     
     def server_thread(self):
         
+        asyncio.set_event_loop(asyncio.new_event_loop())
         app = tornado.web.Application([
             (r'/api/(.*)', ApiHandler, {'root_path': self.root_path, 'sim_path': self.sim_path}),
             (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period}),
