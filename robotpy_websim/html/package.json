@@ -1,0 +1,67 @@
+{
+  "name": "robotpy-websim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -d --config webpack.config.js",
+    "build:prod": "webpack -p --config webpack.config.js",
+    "watch": "webpack --watch -d --config webpack.config.js",
+    "dev": "webpack-dev-server -d --config webpack.config.js --env.socket_port=8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robotpy/robotpy-websim.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robotpy/robotpy-websim/issues"
+  },
+  "homepage": "https://github.com/robotpy/robotpy-websim#readme",
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/types": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015-riot": "^1.1.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "copy-webpack-plugin": "^4.5.2",
+    "css-loader": "^0.28.11",
+    "dotenv": "^6.1.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^1.1.11",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.9.0",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "riot": "^3.12.0",
+    "riot-hot-reload": "^1.0.0",
+    "riot-tag-loader": "^2.1.0",
+    "sass-loader": "^7.0.3",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bootstrap": "^4.1.3",
+    "golden-layout": "^1.5.9",
+    "jquery": "^3.3.1",
+    "lodash": "^4.17.11",
+    "popper.js": "^1.14.4",
+    "riot-redux-connect": "^1.1.8"
+  }
+}
