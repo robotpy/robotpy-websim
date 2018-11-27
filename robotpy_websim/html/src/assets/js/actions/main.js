@@ -67,3 +67,39 @@ export function updateRobotMode(mode) {
     }
   };
 }
+
+export function registerToLayout(tagName) {
+  return {
+    type: ActionTypes.REGISTER_TO_LAYOUT,
+    payload: {
+      tagName
+    }
+  };
+}
+
+export function addedToLayout(tagName) {
+  return {
+    type: ActionTypes.ADDED_TO_LAYOUT,
+    payload: {
+      tagName
+    }
+  };
+}
+
+export function removeFromLayout(tagName) {
+  return {
+    type: ActionTypes.REMOVED_FROM_LAYOUT,
+    payload: {
+      tagName
+    }
+  };
+}
+
+export function moduleMenuUpdated(menuItems) {
+  return {
+    type: ActionTypes.MODULE_MENU_UPDATED,
+    payload: {
+      menuItems
+    }
+  };
+}

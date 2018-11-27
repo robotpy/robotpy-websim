@@ -3,10 +3,14 @@ import riot from 'riot';
 import riotReduxConnect from 'riot-redux-connect';
 import SimSocket from './assets/js/sim-socket';
 import "assets/js/tags/app.tag";
+import * as actions from  'assets/js/actions/main';
 
 window.sim = {
   riot,
-  store
+  store,
+  registerToLayout: function(tagName) {
+    store.dispatch(actions.registerToLayout(tagName));
+  }
 };
 
 riotReduxConnect(riot, store);

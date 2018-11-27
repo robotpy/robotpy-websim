@@ -8,7 +8,12 @@ const initialState = {
   },
   robotMode: null,
   isRunning: false,
-  simSocket: null
+  simSocket: null,
+  layout: {
+    registered: [],
+    added: [],
+    menuItems: []
+  }
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -65,6 +70,43 @@ const rootReducer = (state = initialState, action) => {
           out: {},
           in: {},
           initialized: false
+        }
+      };
+    case ActionTypes.ADDED_TO_LAYOUT:
+      return {
+        ...state,
+        layout: {
+          ...state.layout,
+          added: [...state.layout.added, action.payload.tagName]
+        }
+      };
+    case ActionTypes.REMOVED_FROM_LAYOUT:
+      let added = [...state.layout.added];
+      var index = added.indexOf(action.payload.tagName);
+      if (index !== -1) 
+        added.splice(index, 1);
+
+      return {
+        ...state,
+        layout: {
+          ...state.layout,
+          added
+        }
+      };
+    case ActionTypes.REGISTER_TO_LAYOUT:
+      return {
+        ...state,
+        layout: {
+          ...state.layout,
+          registered: [...state.layout.registered, action.payload.tagName]
+        }
+      };
+    case ActionTypes.MODULE_MENU_UPDATED:
+      return {
+        ...state,
+        layout: {
+          ...state.layout,
+          menuItems: action.payload.menuItems
         }
       };
     default:
