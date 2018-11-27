@@ -1,4 +1,5 @@
 import * as ActionTypes from "../constants/action-types";
+import { set } from 'lodash';
 
 const initialState = {
   halData: {
