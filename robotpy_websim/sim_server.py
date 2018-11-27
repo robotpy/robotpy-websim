@@ -147,7 +147,7 @@ class ApiHandler(tornado.web.RequestHandler):
         self.user_module_path = join(self.sim_path, 'modules')
 
     def set_default_headers(self):
-        '''Allow CORS requests from websim running on a different port in webpack'''
+        
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "x-requested-with")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')

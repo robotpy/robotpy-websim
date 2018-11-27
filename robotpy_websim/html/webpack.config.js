@@ -114,7 +114,7 @@ module.exports = (env = {}) => {
       contentBase: path.resolve(__dirname, "dist/assets/media"),
       stats: 'errors-only',
       open: true,
-      port: 13000,
+      port: 12000,
       compress: true,
       headers: {
         "Access-Control-Allow-Origin": "*",
