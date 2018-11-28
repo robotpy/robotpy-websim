@@ -1,0 +1,55 @@
+slider, slider * {
+  tap-highlight-color: transparent;
+}
+
+slider .wrapper {
+  width: 100%;
+  height: 15px;
+  position: relative;
+}
+
+slider .slider-bar {
+  position: absolute;
+  width: 100%;
+  top: 5px;
+  height: 5px;
+}
+
+slider .dragger {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  height: 15px;
+}
+
+slider .background {
+  background: #ccc;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+slider .disabled .forground-and-button {
+  opacity: .3;
+}
+
+slider .foreground {
+  background: green;
+  position: absolute;
+  height: 100%;
+}
+
+slider .button {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  top: -5px;
+  background: gray;
+  border-radius: 50%;
+}
+
+slider label {
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+}

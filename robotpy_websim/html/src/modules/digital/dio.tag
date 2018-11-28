@@ -14,35 +14,6 @@
     </div>
   </div>
 
-  <style>
-    dio {
-      width: 150px;
-    }
-
-    .dios {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dio {
-      display: flex;
-      padding: 0 6px;
-      height: 32px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .dio .label {
-      margin-right: 6px;
-    }
-
-    .dio toggle-button {
-      padding-top: 3px;
-    }
-
-  </style>
-
-
   <script>
     let dios = [];
 

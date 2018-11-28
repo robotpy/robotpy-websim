@@ -7,35 +7,6 @@
     </div>
   </div>
 
-  <style>
-
-    relay {
-      width: 150px;
-    }
-
-    .relays {
-      display: flex;
-      justify-content: center;
-    }
-
-    .relay {
-      display: flex;
-      padding: 0 6px;
-      height: 32px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .relay .channel {
-      margin-right: 6px;
-    }
-
-    .relay toggle-button {
-      padding-top: 3px;
-    }
-
-  </style>
-
-
   <script>
     let relays = [];
 

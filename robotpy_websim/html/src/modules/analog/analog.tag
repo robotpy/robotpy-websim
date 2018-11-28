@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import './analog.css';
 
 <analog>
   <div class="wrapper">
@@ -21,18 +22,6 @@ import * as _ from 'lodash';
       </virtual>
     </p>
   </div>
-
-    <style>
-      .analog-slider {
-        width: 200px;
-        margin-bottom: 10px;
-      }
-
-      analog > .wrapper {
-        padding: 10px;
-      }
-      
-    </style>
 
     <script>
 

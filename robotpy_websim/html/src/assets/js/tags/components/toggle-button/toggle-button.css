@@ -1,0 +1,19 @@
+toggle-button .btn-circle {
+  width: 18px;
+  height: 18px;
+  padding: 6px 0px;
+  border-radius: 9px;
+}
+
+toggle-button .btn-circle:focus {
+  box-shadow: none;
+}
+
+toggle-button .btn.btn-circle:not(:disabled):not(:disabled):active {
+  box-shadow: none;
+}
+
+toggle-button .btn-circle:disabled {
+  background: gray;
+  border-color: gray;
+}

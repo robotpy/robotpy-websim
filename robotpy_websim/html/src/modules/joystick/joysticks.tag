@@ -1,4 +1,5 @@
 import './joystick.tag';
+import './joystick.css';
 import * as _ from 'lodash';
 
 <joysticks>
@@ -16,20 +17,6 @@ import * as _ from 'lodash';
       </div>
     </div>
   </div>
-
-
-  <style>
-
-    joysticks {
-      display: block;
-      padding: 20px 15px 15px;
-    }
-
-    joysticks joystick:first-of-type {
-      margin-left: 6px;
-    }
-    
-  </style>
 
   <script>
 

@@ -1,3 +1,5 @@
+import './solenoid.css';
+
 <solenoid>
   <div class="wrapper">
     <div class="solenoid" each={solenoid in opts.solenoids}>
@@ -5,32 +7,6 @@
       <toggle-button disabled={!solenoid.initialized} toggled={solenoid.value} />
     </div>
   </div>
-
-  <style>
-
-    solenoid > .wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      max-width: 210px;
-      padding: 10px;
-    }
-
-    .solenoid {
-      display: flex;
-      padding: 0 6px;
-      height: 32px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .solenoid .channel {
-      margin-right: 6px;
-    }
-
-    .solenoid toggle-button {
-      padding-top: 3px;
-    }
-
-  </style>
 
   <script>
     let tag = this;

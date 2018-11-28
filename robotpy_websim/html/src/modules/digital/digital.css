@@ -1,0 +1,63 @@
+digital {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* DIO */
+dio {
+  width: 150px;
+}
+
+.dios {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dio {
+  display: flex;
+  padding: 0 6px;
+  height: 32px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dio .label {
+  margin-right: 6px;
+}
+
+.dio toggle-button {
+  padding-top: 3px;
+}
+
+/* PWM */
+pwm {
+  width: 200px;
+}
+
+/* RELAY */
+relay {
+  width: 150px;
+}
+
+.relays {
+  display: flex;
+  justify-content: center;
+}
+
+.relay {
+  display: flex;
+  padding: 0 6px;
+  height: 32px;
+  font-variant-numeric: tabular-nums;
+}
+
+.relay .channel {
+  margin-right: 6px;
+}
+
+.relay toggle-button {
+  padding-top: 3px;
+}
+
+

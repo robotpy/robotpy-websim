@@ -1,3 +1,4 @@
+import './control.css';
 
 <control>
   <div class="wrapper">
@@ -35,28 +36,6 @@
       {opts.connected ? 'Connected!' : 'Disconnected!'}
     </div>
   </div>
-
-  <style>
-    control > .wrapper {
-      padding: 10px;
-    }
-
-    control .form-group {
-      margin-bottom: 5px;
-    }
-
-    control .form {
-      margin-bottom: 0;
-    }
-
-    .connection-notification.disconnected {
-      color: red;
-    }
-
-    .connection-notification.connected {
-      color: green;
-    }
-  </style>
 
   <script>
 

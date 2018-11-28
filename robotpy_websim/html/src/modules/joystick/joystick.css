@@ -1,0 +1,30 @@
+joysticks {
+  display: block;
+  padding: 20px 15px 15px;
+}
+
+joysticks joystick:first-of-type {
+  margin-left: 6px;
+}
+
+joystick {
+  width: 190px;
+  display: block;
+}
+
+joystick .form-horizontal {
+  width: 170px;
+}
+
+joystick .axis, joystick .pov {
+  margin-bottom: 5px;
+}
+
+joystick .form-check-inline {
+  font-variant-numeric: tabular-nums;
+}
+
+joystick .buttons {
+  margin-left: 4px;
+  margin-top: 15px;
+}

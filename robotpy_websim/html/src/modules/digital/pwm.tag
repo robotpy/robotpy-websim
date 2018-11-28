@@ -10,14 +10,6 @@ import * as _ from 'lodash';
       disabled={false} />
   </virtual>
 
-  <style>
-    pwm {
-      width: 200px;
-    }
-  </style>
-
-
-
   <script>  
     let tag = this;
     let pwms = [];

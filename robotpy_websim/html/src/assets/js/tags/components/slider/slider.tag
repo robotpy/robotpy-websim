@@ -1,4 +1,4 @@
-
+import './slider.css';
 
 <slider>
   <label if={opts.label !== undefined}>
@@ -22,67 +22,7 @@
     </div>
   </div>
 
-
-  <style>
-    slider, slider * {
-      tap-highlight-color: transparent;
-    }
-
-    .wrapper {
-      width: 100%;
-      height: 15px;
-      position: relative;
-    }
-
-    .slider-bar {
-      position: absolute;
-      width: 100%;
-      top: 5px;
-      height: 5px;
-    }
-
-    .dragger {
-      position: absolute;
-      z-index: 10;
-      width: 100%;
-      height: 15px;
-    }
-
-    .background {
-      background: #ccc;
-      height: 100%;
-      width: 100%;
-      position: absolute;
-    }
-
-    .disabled .forground-and-button {
-      opacity: .3;
-    }
-
-    .foreground {
-      background: green;
-      position: absolute;
-      height: 100%;
-    }
-
-    .button {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      top: -5px;
-      background: gray;
-      border-radius: 50%;
-    }
-
-    label {
-      margin-bottom: 0;
-      display: flex;
-      justify-content: space-between;
-    }
-
-  </style>
-
-  <script type="es6">
+  <script>
     
     this.min = parseFloat(this.opts.min);
     this.max = parseFloat(this.opts.max);

@@ -28,30 +28,6 @@
     </div>
   </form>
 
-  <style>
-    joystick {
-      width: 190px;
-      display: block;
-    }
-
-    joystick .form-horizontal {
-      width: 170px;
-    }
-
-    joystick .axis, joystick .pov {
-      margin-bottom: 5px;
-    }
-
-    joystick .form-check-inline {
-      font-variant-numeric: tabular-nums;
-    }
-
-    joystick .buttons {
-      margin-left: 4px;
-      margin-top: 15px;
-    }
-  </style>
-
   <script>
     this.onSliderUpdate = (value, opts) => {
       this.opts.axes[opts.axisIndex].value = value;
