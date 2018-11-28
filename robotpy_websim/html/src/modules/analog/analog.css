@@ -1,8 +1,9 @@
+analog {
+  padding: 10px;
+  display: block;
+}
+
 analog .analog-slider {
   width: 200px;
   margin-bottom: 10px;
-}
-
-analog > .wrapper {
-  padding: 10px;
 }

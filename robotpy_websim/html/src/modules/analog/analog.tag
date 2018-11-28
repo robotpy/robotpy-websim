@@ -2,25 +2,23 @@ import * as _ from 'lodash';
 import './analog.css';
 
 <analog>
-  <div class="wrapper">
-    <p class="analog-slider" if="{analog.initialized}" each="{analog in opts.analogs}">
-      <virtual if={analog.type === 'output'}>
-        <slider 
-          label={analog.label} 
-          min="-1" 
-          max="1" 
-          val={analog.value}
-          disabled={true} />
-      </virtual>
-      <virtual if={analog.type === 'input'}>
-        <slider 
-          label={analog.label} 
-          min="-1" 
-          max="1" 
-          initial-val={analog.value}
-          onchange={analog.onChange} />
-      </virtual>
-    </p>
+  <p class="analog-slider" if={analog.initialized} each={analog in opts.analogs}>
+    <virtual if={analog.type === 'output'}>
+      <slider 
+        label={analog.label} 
+        min="-1" 
+        max="1" 
+        val={analog.value}
+        disabled={true} />
+    </virtual>
+    <virtual if={analog.type === 'input'}>
+      <slider 
+        label={analog.label} 
+        min="-1" 
+        max="1" 
+        initial-val={analog.value}
+        onchange={analog.onChange} />
+    </virtual>
   </div>
 
     <script>

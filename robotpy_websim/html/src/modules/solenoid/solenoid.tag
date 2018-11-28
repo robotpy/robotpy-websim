@@ -1,11 +1,9 @@
 import './solenoid.css';
 
 <solenoid>
-  <div class="wrapper">
-    <div class="solenoid" each={solenoid in opts.solenoids}>
-      <p class="channel">{solenoid.channel}</p>
-      <toggle-button disabled={!solenoid.initialized} toggled={solenoid.value} />
-    </div>
+  <div class="solenoid" each={solenoid in opts.solenoids}>
+    <p class="channel">{solenoid.channel}</p>
+    <toggle-button disabled={!solenoid.initialized} toggled={solenoid.value} />
   </div>
 
   <script>

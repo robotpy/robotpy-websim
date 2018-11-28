@@ -1,4 +1,4 @@
-solenoid > .wrapper {
+solenoid {
   display: flex;
   flex-wrap: wrap;
   max-width: 210px;

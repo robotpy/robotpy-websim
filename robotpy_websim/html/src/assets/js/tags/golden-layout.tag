@@ -8,10 +8,9 @@ import "./module-menu.tag";
 import * as drag from './drag.js';
 import './components';
 
-<golden-layout style="position: relative">
+<golden-layout>
 
   <div class="golden-layout" style="height:100%;"></div>
-  <test/>
 
   <script>
     let tag = this;

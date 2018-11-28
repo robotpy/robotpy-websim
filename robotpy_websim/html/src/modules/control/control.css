@@ -1,4 +1,5 @@
-control > .wrapper {
+control {
+  display: block;
   padding: 10px;
 }
 

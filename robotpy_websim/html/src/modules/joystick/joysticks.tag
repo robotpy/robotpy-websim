@@ -3,18 +3,16 @@ import './joystick.css';
 import * as _ from 'lodash';
 
 <joysticks>
-  <div class="wrapper">
-    <div class="row">
-      <div class="col-xs-4 joystick" each={joystick in opts.joysticks}>
-        <virtual if={joystick.visible}>
-          <joystick 
-            index={joystick.index}
-            axes={joystick.axes}
-            povs={joystick.povs}
-            buttons={joystick.buttons} 
-            onupdate={joystick.onUpdate} />
-        </virtual>
-      </div>
+  <div class="row">
+    <div class="col-xs-4 joystick" each={joystick in opts.joysticks}>
+      <virtual if={joystick.visible}>
+        <joystick 
+          index={joystick.index}
+          axes={joystick.axes}
+          povs={joystick.povs}
+          buttons={joystick.buttons} 
+          onupdate={joystick.onUpdate} />
+      </virtual>
     </div>
   </div>
 
