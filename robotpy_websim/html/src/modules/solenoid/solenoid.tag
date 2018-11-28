@@ -7,31 +7,27 @@ import './solenoid.css';
   </div>
 
   <script>
-    let tag = this;
-    let solenoids = null;
+    let solenoids = [];
 
-    const initialize = _.once(() => {
-      solenoids = _.range(8)
-        .map(channel => {
-          return {
-            channel,
-            initialized: false,
-            value: false
-          };
-        });
+    const initialize = _.once((dataOut) => {
+      solenoids = dataOut.solenoid.map((solenoid, channel) => {
+        return {
+          channel,
+          initialized: solenoid.initialized,
+          value: solenoid.value
+        };
+      });
     });
 
     const mapStateToOpts = (state) => {
 
-      initialize();
-
       const dataOut = state.halData.out;
-      const dataIn = state.halData.in;
-      
-      for (let i = 0; i < solenoids.length; i++) {
-        solenoids[i].initialized = dataOut.solenoid[i].initialized;
-        solenoids[i].value = dataOut.solenoid[i].value;
-      }
+
+      initialize(dataOut);
+
+      solenoids.forEach((solenoid, channel) => {
+        solenoid.value = dataOut.solenoid[channel].value;
+      });
 
       this.update();
 
