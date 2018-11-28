@@ -1,3 +1,3 @@
 import './analog.tag';
 
-sim.registerToLayout('analog');
+sim.registerWithLayout('analog');

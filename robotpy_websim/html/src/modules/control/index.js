@@ -1,3 +1,3 @@
 import './control.tag';
 
-sim.registerToLayout('control');
+sim.registerWithLayout('control');

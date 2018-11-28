@@ -94,7 +94,7 @@ const rootReducer = (state = initialState, action) => {
           added
         }
       };
-    case ActionTypes.REGISTER_TO_LAYOUT:
+    case ActionTypes.REGISTER_WITH_LAYOUT:
       return {
         ...state,
         layout: {

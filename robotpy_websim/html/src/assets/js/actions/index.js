@@ -68,9 +68,9 @@ export function updateRobotMode(mode) {
   };
 }
 
-export function registerToLayout(tagName) {
+export function registerWithLayout(tagName) {
   return {
-    type: ActionTypes.REGISTER_TO_LAYOUT,
+    type: ActionTypes.REGISTER_WITH_LAYOUT,
     payload: {
       tagName
     }

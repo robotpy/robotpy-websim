@@ -6,11 +6,10 @@ import "assets/js/tags/app.tag";
 import * as actions from  'assets/js/actions';
 
 window.sim = {
-  riot,
   store,
   actions,
-  registerToLayout: function(tagName) {
-    store.dispatch(actions.registerToLayout(tagName));
+  registerWithLayout: function(tagName) {
+    store.dispatch(actions.registerWithLayout(tagName));
   }
 };
 

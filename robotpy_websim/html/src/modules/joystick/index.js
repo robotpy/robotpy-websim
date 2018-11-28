@@ -1,3 +1,3 @@
 import "./joysticks.tag";
 
-sim.registerToLayout('joysticks');
+sim.registerWithLayout('joysticks');

@@ -1,3 +1,3 @@
 import './solenoid.tag';
 
-sim.registerToLayout('solenoid');
+sim.registerWithLayout('solenoid');
