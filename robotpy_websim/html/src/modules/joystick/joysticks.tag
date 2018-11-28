@@ -1,4 +1,3 @@
-import * as actions from 'assets/js/actions/main.js';
 import './joystick.tag';
 import * as _ from 'lodash';
 
@@ -106,7 +105,7 @@ import * as _ from 'lodash';
     };
 
     const mapDispatchToMethods = {
-      updateHalDataIn: actions.updateHalDataIn
+      updateHalDataIn: sim.actions.updateHalDataIn
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

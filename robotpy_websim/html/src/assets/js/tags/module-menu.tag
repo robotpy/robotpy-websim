@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import uuidv1 from "uuid";
-import * as actions from 'assets/js/actions/main.js';
+import * as actions from 'assets/js/actions';
 
 <module-menu>
   <div class="dropdown">

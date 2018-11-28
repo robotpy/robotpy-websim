@@ -1,4 +1,3 @@
-import * as actions from 'assets/js/actions/main.js';
 
 <control>
   <div class="wrapper">
@@ -96,7 +95,7 @@ import * as actions from 'assets/js/actions/main.js';
     };
 
     const mapDispatchToMethods = {
-      updateRobotMode: actions.updateRobotMode
+      updateRobotMode: sim.actions.updateRobotMode
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

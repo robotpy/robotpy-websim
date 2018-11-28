@@ -1,7 +1,4 @@
-import * as actions from 'assets/js/actions/main.js';
-
 <solenoid>
-
   <div class="wrapper">
     <div class="solenoid" each={solenoid in opts.solenoids}>
       <p class="channel">{solenoid.channel}</p>
@@ -70,7 +67,7 @@ import * as actions from 'assets/js/actions/main.js';
     };
 
     const mapDispatchToMethods = {
-      updateHalDataIn: actions.updateHalDataIn
+      updateHalDataIn: sim.actions.updateHalDataIn
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

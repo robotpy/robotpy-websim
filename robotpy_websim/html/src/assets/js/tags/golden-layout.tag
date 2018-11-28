@@ -3,7 +3,7 @@ import '../../scss/goldenlayout-base.css';
 import '../../scss/goldenlayout-light-theme.css';
 import * as _ from 'lodash';
 import uuidv1 from "uuid";
-import * as actions from 'assets/js/actions/main.js';
+import * as actions from 'assets/js/actions';
 import "./module-menu.tag";
 import * as drag from './drag.js';
 import './components';

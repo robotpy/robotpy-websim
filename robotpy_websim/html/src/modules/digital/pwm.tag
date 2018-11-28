@@ -1,6 +1,4 @@
-
 import * as _ from 'lodash';
-import * as actions from 'assets/js/actions/main.js';
 
 <pwm>
   <h6 class="text-center">PWM</h6>
@@ -53,7 +51,7 @@ import * as actions from 'assets/js/actions/main.js';
     };
 
     const mapDispatchToMethods = {
-      updateHalDataIn: actions.updateHalDataIn
+      updateHalDataIn: sim.actions.updateHalDataIn
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

@@ -1,5 +1,3 @@
-import * as actions from 'assets/js/actions/main.js';
-
 <relay>
   <h6 class="text-center">Relay</h6>
   <div class="relays">
@@ -72,7 +70,7 @@ import * as actions from 'assets/js/actions/main.js';
     };
 
     const mapDispatchToMethods = {
-      updateHalDataIn: actions.updateHalDataIn
+      updateHalDataIn: sim.actions.updateHalDataIn
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

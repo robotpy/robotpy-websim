@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as actions from 'assets/js/actions/main.js';
 
 <analog>
   <div class="wrapper">
@@ -100,7 +99,7 @@ import * as actions from 'assets/js/actions/main.js';
       };
 
       const mapDispatchToMethods = {
-        updateHalDataIn: actions.updateHalDataIn
+        updateHalDataIn: sim.actions.updateHalDataIn
       };
 
       this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

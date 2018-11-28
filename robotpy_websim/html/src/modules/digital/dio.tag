@@ -1,4 +1,3 @@
-import * as actions from 'assets/js/actions/main.js';
 
 <dio>
   <h6 class="text-center">Digital I/O</h6>
@@ -78,7 +77,7 @@ import * as actions from 'assets/js/actions/main.js';
     };
 
     const mapDispatchToMethods = {
-      updateHalDataIn: actions.updateHalDataIn
+      updateHalDataIn: sim.actions.updateHalDataIn
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

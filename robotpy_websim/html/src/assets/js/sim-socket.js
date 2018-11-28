@@ -1,4 +1,4 @@
-import * as actions from './actions/main';
+import * as actions from './actions';
 
 export default class SimSocket {
 
