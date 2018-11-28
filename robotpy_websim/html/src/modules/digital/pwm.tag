@@ -9,7 +9,7 @@ import * as actions from 'assets/js/actions/main.js';
       label={pwm.index} 
       min="-1" max="1" 
       val={pwm.value}
-      disabled={true} />
+      disabled={false} />
   </virtual>
 
   <style>
@@ -44,6 +44,8 @@ import * as actions from 'assets/js/actions/main.js';
         pwms[index].initialized = halPwm.initialized;
         pwms[index].value = halPwm.value;
       });
+
+      this.update();
 
       return {
         pwms

@@ -86,7 +86,7 @@
     
     this.min = parseFloat(this.opts.min);
     this.max = parseFloat(this.opts.max);
-    this.value = Math.clamp(this.opts.val || 0, this.min, this.max);
+    this.value = 0;
     this.dragging = false;
 
     this.foregroundStyles = {};
@@ -94,34 +94,46 @@
 
     this.on('mount', () => {
       setTimeout(() => {
-        this.setValue(this.getPosition(this.value));
+        if (this.opts.initialVal !== undefined) {
+          this.setValue(this.opts.initialVal);
+        }
+        else {
+          this.setValue(this.opts.val || 0);
+        }
         this.update();
       });
     });
 
-    this.getPosition = (value) => {
+    this.on('update', () => {
+      if (this.opts.val !== undefined && this.opts.val !== this.value) {
+        this.setValue(this.opts.val);
+      }
+    });
+
+    this.dragPositionToValue = (dragPosition) => {
+      const widthPercent = Math.max(0, Math.min(1, dragPosition / this.getWidth()));
+      return this.min + widthPercent * (this.max - this.min);
+    }
+
+    this.valueToSliderPosition = (value) => {
       return this.getWidth() * (value - this.min) / (this.max - this.min);
-    };
+    }
 
-    this.setValue = (position) => {
-      const widthPercent = Math.max(0, Math.min(1, position / this.getWidth()));
-      this.value = this.min + widthPercent * (this.max - this.min);
-
-      const boundedPosition = Math.clamp(position, 0, this.getWidth());
-      this.styleBar(boundedPosition);
+    this.setValue = (value) => {
+      this.value = Math.clamp(value || 0, this.min, this.max);
+      const sliderPosition = this.valueToSliderPosition(this.value);
+      this.setSliderPosition(sliderPosition);
 
       if (this.opts.onchange) {
         this.opts.onchange(this.value, this.opts);
       }
-    }
+    };
 
-    this.styleBar = (boundry1) => {
-      const boundry2 = this.getBoundry2();
-      const leftBoundry = Math.min(boundry1, boundry2);
-      const rightBoundry = Math.max(boundry1, boundry2);
-      this.foregroundStyles.left = leftBoundry + 'px';
-      this.foregroundStyles.right = (this.getWidth() - rightBoundry) + 'px';
-      this.buttonStyles.left = boundry1 + 'px';
+    this.setSliderPosition = (sliderPosition) => {
+      const boundries = this.getSliderBoundries(sliderPosition);
+      this.foregroundStyles.left = boundries[0] + 'px';
+      this.foregroundStyles.right = (this.getWidth() - boundries[1]) + 'px';
+      this.buttonStyles.left = sliderPosition + 'px';
 
       let barColor = 'gray';
 
@@ -134,19 +146,26 @@
 
       this.foregroundStyles.background = barColor;
       this.buttonStyles.background = barColor;
-    }
+    };
 
-    this.getBoundry2 = () => {
+    this.getSliderBoundries = (boundry1) => {
+      let boundry2;
+      
       if (this.max <= 0) {
-        return this.getWidth();
+        boundry2 = his.getWidth();
       }
       else if (this.min >= 0) {
-        return 0;
+        boundry2 = 0;
       }
       else {
-        return this.getPosition(0);
+        boundry2 = this.valueToSliderPosition(0);
       }
-    }
+
+      const leftBoundry = Math.min(boundry1, boundry2);
+      const rightBoundry = Math.max(boundry1, boundry2);
+
+      return [leftBoundry, rightBoundry];
+    };
 
     this.getWidth = () => {
       return this.refs.bar.offsetWidth;
@@ -157,7 +176,7 @@
     }
 
     this.dragStartHandler = (ev) => {
-      if (!this.opts.disabled) {
+      if (!this.opts.disabled && this.opts.val === undefined) {
         this.dragging = true;
       }
     }
@@ -168,7 +187,8 @@
       }
       let rect = ev.target.getBoundingClientRect();
       let x = ev.clientX - rect.left;
-      this.setValue(x);
+      const value = this.dragPositionToValue(x);
+      this.setValue(value);
     }
 
     this.dragEndHandler = (ev) => {
@@ -181,7 +201,8 @@
       this.dragging = false;
       let rect = ev.target.getBoundingClientRect();
       let x = ev.clientX - rect.left;
-      this.setValue(x);
+      const value = this.dragPositionToValue(x);
+      this.setValue(value);
     }
   </script>
 

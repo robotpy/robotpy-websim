@@ -4,7 +4,22 @@ import * as actions from 'assets/js/actions/main.js';
 <analog>
   <div class="wrapper">
     <p class="analog-slider" if="{analog.initialized}" each="{analog in opts.analogs}">
-      <slider label={analog.label} min="-1" max="1" val="{analog.value}" disabled={analog.type === 'output'} onchange={analog.onChange} />
+      <virtual if={analog.type === 'output'}>
+        <slider 
+          label={analog.label} 
+          min="-1" 
+          max="1" 
+          val={analog.value}
+          disabled={true} />
+      </virtual>
+      <virtual if={analog.type === 'input'}>
+        <slider 
+          label={analog.label} 
+          min="-1" 
+          max="1" 
+          initial-val={analog.value}
+          onchange={analog.onChange} />
+      </virtual>
     </p>
   </div>
 
@@ -25,47 +40,59 @@ import * as actions from 'assets/js/actions/main.js';
       let tag = this;
       let analogs = [];
 
-      const initialize = _.once(() => {
+      const initialize = _.once((dataOut, dataIn) => {
         analogs = _.range(8)
-          .map(index => {
+        .map(index => {
+          const analogIn = {
+            ...dataOut.analog_in[index],
+            value: dataIn.analog_in[index].value
+          };
+          const analogOut = dataOut.analog_out[index];
+
+          if (analogIn.initialized) {
+            const initValue = analogIn.value || 0;
             return {
-              index,
-              initialized: false,
-              value: 0,
-              label: '',
-              onChange: (value) => {}
+              initialized: true,
+              value: Math.round(initValue * 100) / 100,
+              type: 'input',
+              label: `${index} (input)`,
+              onChange: value => {
+                // update HAL data sent to server
+                tag.updateHalDataIn(`analog_in[${index}].value`, value);
+              }
             };
-          });
+
+          }
+          else if (analogOut.initialized) {
+            return {
+              initialized: true,
+              type: 'output',
+              value: analogOut.value,
+              label: `${index} (output)`
+            };
+          }
+          else {
+            return {
+              initialized: false,
+              type: null
+            }
+          }
+        });
       });
     
       const mapStateToOpts = (state) => {
 
-        initialize();
-
         const dataOut = state.halData.out;
         const dataIn = state.halData.in;
+
+        initialize(dataOut, dataIn);
         
-        for (let i = 0; i < analogs.length; i++) {
-          if (dataOut.analog_in[i].initialized) {
-            const initValue = dataIn.analog_in[i].value || 0;
-            analogs[i].initialized = true;
-            analogs[i].value = Math.round(initValue * 100) / 100;
-            analogs[i].label = `${analogs[i].index} (input)`;
-            analogs[i].onChange = value => {
-              analogs[i].value = Math.round(value * 100) / 100;
-              tag.update();
-
-              // update HAL data sent to server
-              tag.updateHalDataIn(`analog_in[${i}].value`, value);
-            };
-
+        analogs.forEach((analog, index) => {
+          if (analog.type === 'output') {
+            analog.value = dataOut.analog_out[index].value;
+            this.update();
           }
-          else if (dataOut.analog_out[i].initialized) {
-            analogs[i].initialized = true;
-            analogs[i].value = dataOut.analog_out[i].value;
-            analogs[i].label = `${analogs[i].index} (output)`;
-          }
-        }
+        });
 
         return {
           analogs
