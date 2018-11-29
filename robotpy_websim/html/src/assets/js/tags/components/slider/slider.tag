@@ -125,6 +125,14 @@ import './slider.css';
       if (!this.dragging) {
         return;
       }
+
+        // When user releases, clientX, screenX, x, etc. are always 0, which
+        // causes the dragger to jump. If both screenX and screenY are 0, 
+        // likely the user just released. https://stackoverflow.com/a/47241403
+        if (!ev.screenX && !ev.screenY) {
+          return;
+        }
+
       let rect = ev.target.getBoundingClientRect();
       let x = ev.clientX - rect.left;
       const value = this.dragPositionToValue(x);
