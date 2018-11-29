@@ -2,11 +2,12 @@ digital {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  padding-top: 10px;
 }
 
 /* DIO */
 dio {
-  width: 150px;
+  margin: 0 20px 30px;
 }
 
 .dios {
@@ -33,11 +34,13 @@ dio {
 /* PWM */
 pwm {
   width: 200px;
+  min-width: 200px;
+  margin: 0 20px 30px;
 }
 
 /* RELAY */
 relay {
-  width: 150px;
+  margin: 0 20px 30px;
 }
 
 .relays {

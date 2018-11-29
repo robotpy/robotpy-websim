@@ -1,6 +1,8 @@
 joysticks {
-  display: block;
-  padding: 20px 15px 15px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 15px 0 25px;
+  justify-content: center;
 }
 
 joysticks joystick:first-of-type {

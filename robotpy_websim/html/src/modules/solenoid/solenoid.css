@@ -3,6 +3,7 @@ solenoid {
   flex-wrap: wrap;
   max-width: 210px;
   padding: 10px;
+  margin: 0 auto;
 }
 
 .solenoid {

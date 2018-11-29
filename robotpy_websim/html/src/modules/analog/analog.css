@@ -1,6 +1,8 @@
 analog {
   padding: 10px;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 analog .analog-slider {
