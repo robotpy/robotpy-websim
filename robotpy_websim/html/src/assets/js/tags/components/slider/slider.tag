@@ -73,7 +73,8 @@ import './slider.css';
       const boundries = this.getSliderBoundries(sliderPosition);
       this.foregroundStyles.left = boundries[0] + 'px';
       this.foregroundStyles.right = (this.getWidth() - boundries[1]) + 'px';
-      this.buttonStyles.left = sliderPosition + 'px';
+      // Button is 15px wide so subtract 8 from position to center it
+      this.buttonStyles.left = (sliderPosition - 8) + 'px';
 
       let barColor = 'gray';
 
