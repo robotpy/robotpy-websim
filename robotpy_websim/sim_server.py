@@ -24,6 +24,9 @@ from hal_impl import mode_helpers
 from hal_impl.data import hal_data, hal_in_data, update_hal_data
 #from hal import TalonSRXConst as tsrxc
 
+from networktables import NetworkTables
+from pynetworktables2js import get_handlers as get_pynt2js_handlers
+
 import logging
 logger = logging.getLogger('websim')
 
@@ -314,6 +317,16 @@ class MyStaticFileHandler(tornado.web.StaticFileHandler):
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
 
+
+def init_networktables():
+    NetworkTables.setNetworkIdentity("pynetworktables2js")
+
+    logger.info("Connecting to networktables at %s", "127.0.0.1")
+    NetworkTables.initialize(server="127.0.0.1")
+
+    logger.info("Networktables Initialized")
+
+
 class Main:
     '''Entrypoint called from wpilib.run'''
     
@@ -327,9 +340,11 @@ class Main:
                             help="Don't automatically launch web browser")
     
     def server_thread(self):
+
+        init_networktables()
         
         asyncio.set_event_loop(asyncio.new_event_loop())
-        app = tornado.web.Application([
+        app = tornado.web.Application(get_pynt2js_handlers() + [
             (r'/api/(.*)', ApiHandler, {'root_path': self.root_path, 'sim_path': self.sim_path}),
             (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period}),
             (r'/user/(.*)', MyStaticFileHandler, {'path': self.sim_path }),

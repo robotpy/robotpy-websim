@@ -7,6 +7,12 @@ const initialState = {
     out: {},
     in: {}
   },
+  networktables: {
+    values: {},
+    rawValues: {},
+    wsConnected: false,
+    robotConnected: false
+  },
   robotMode: null,
   isRunning: false,
   simSocket: null,
@@ -108,6 +114,48 @@ const rootReducer = (state = initialState, action) => {
         layout: {
           ...state.layout,
           menuItems: action.payload.menuItems
+        }
+      };
+    case ActionTypes.NT_ROBOT_CONNECTION_CHANGED:
+      return {
+        ...state,
+        networktables: {
+          ...state.networktables,
+          robotConnected: action.payload.connected
+        }
+      };
+    case ActionTypes.NT_WEBSOCKET_CONNECTION_CHANGED:
+      return {
+        ...state,
+        networktables: {
+          ...state.networktables,
+          wsConnected: action.payload.connected
+        }
+      };
+    case ActionTypes.NT_VALUE_CHANGED:
+
+      let values = { ...state.networktables.values };
+      
+      let path = action.payload.key.split('/')
+        .filter(segment => {
+          return segment !== '';
+        })
+        .map(segment => {
+          return `['${segment}']`;
+        })
+        .join('');
+
+      set(values, path, action.payload.value);
+
+      return {
+        ...state,
+        networktables: {
+          ...state.networktables,
+          values,
+          rawValues: {
+            ...state.networktables.rawValues,
+            [action.payload.key]: action.payload.value
+          }
         }
       };
     default:

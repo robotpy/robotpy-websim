@@ -68,7 +68,9 @@ setup(
     install_requires=[
         'tornado>=4.0',
         'wpilib>=2015.0.13',
-        'robotpy-hal-sim>=2015.0.13'
+        'robotpy-hal-sim>=2015.0.13',
+        'pynetworktables>=2018.2.0',
+        #'pynetworktables2js>=2018.1.0'
     ],
     license="BSD License",
     classifiers=[

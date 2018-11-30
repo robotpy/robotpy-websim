@@ -103,3 +103,35 @@ export function moduleMenuUpdated(menuItems) {
     }
   };
 }
+
+/**
+ * NetworkTables actions
+ */
+
+export function ntRobotConnectionChanged(connected) {
+  return {
+    type: ActionTypes.NT_ROBOT_CONNECTION_CHANGED,
+    payload: {
+      connected
+    }
+  };
+}
+
+export function ntWsConnectionChanged(connected) {
+  return {
+    type: ActionTypes.NT_WEBSOCKET_CONNECTION_CHANGED,
+    payload: {
+      connected
+    }
+  };
+}
+
+export function ntValueChanged(key, value) {
+  return {
+    type: ActionTypes.NT_VALUE_CHANGED,
+    payload: {
+      key,
+      value
+    }
+  };
+}

@@ -102,7 +102,6 @@ import './components';
 
     this.on('update', () => {
 
-      //myLayout.updateSize();
       _.forEach(this.opts.layout.registered, (tagName) => {
         
         // Used to initialize the tag
