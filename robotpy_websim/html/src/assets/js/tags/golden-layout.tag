@@ -10,7 +10,7 @@ import './components';
 
 <golden-layout>
 
-  <div class="golden-layout" style="height:100%;"></div>
+  <div class="golden-layout"></div>
 
   <script>
     let tag = this;
@@ -42,9 +42,6 @@ import './components';
     function getRegisteredComponentNames(layoutManager) {
       return Object.keys(layoutManager._components);
     }
-
-
-    console.log(myLayout);
 
     this.mapStateToOpts = (state) => {
 
@@ -97,7 +94,15 @@ import './components';
     });
 
 
+    this.on('mount', () => {
+      window.addEventListener("resize", () => {
+        myLayout.updateSize();
+      });
+    });
+
     this.on('update', () => {
+
+      //myLayout.updateSize();
       _.forEach(this.opts.layout.registered, (tagName) => {
         
         // Used to initialize the tag

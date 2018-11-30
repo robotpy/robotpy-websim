@@ -4,6 +4,7 @@ import riotReduxConnect from 'riot-redux-connect';
 import SimSocket from './assets/js/sim-socket';
 import "assets/js/tags/app.tag";
 import * as actions from  'assets/js/actions';
+import 'assets/scss/app.scss';
 
 window.sim = {
   store,
