@@ -3,7 +3,11 @@ import './slider.css';
 <slider>
   <label if={opts.label !== undefined}>
     <span class="label">{opts.label}</span> 
-    <span class="value">{value.toFixed(2)}</span>
+    <span class="value">
+      {this.opts.getValueLabel ?
+        this.opts.getValueLabel(value) :
+        this.getValueLabel(value)}
+      </span>
   </label>
   <div draggable="false" class="wrapper {opts.disabled ? 'disabled': ''}">
     <div ref="bar" draggable="false" class="slider-bar">
@@ -51,13 +55,16 @@ import './slider.css';
     });
 
     this.dragPositionToValue = (dragPosition) => {
-      const widthPercent = Math.max(0, Math.min(1, dragPosition / this.getWidth()));
-      return this.min + widthPercent * (this.max - this.min);
-    }
+      return this.min + dragPosition * (this.max - this.min);
+    };
 
     this.valueToSliderPosition = (value) => {
       return this.getWidth() * (value - this.min) / (this.max - this.min);
-    }
+    };
+
+    this.getValueLabel = (value) => {
+      return value.toFixed(2);
+    };
 
     this.setValue = (value) => {
       this.value = Math.clamp(value || 0, this.min, this.max);
@@ -127,16 +134,18 @@ import './slider.css';
         return;
       }
 
-        // When user releases, clientX, screenX, x, etc. are always 0, which
-        // causes the dragger to jump. If both screenX and screenY are 0, 
-        // likely the user just released. https://stackoverflow.com/a/47241403
-        if (!ev.screenX && !ev.screenY) {
-          return;
-        }
+      // When user releases, clientX, screenX, x, etc. are always 0, which
+      // causes the dragger to jump. If both screenX and screenY are 0, 
+      // likely the user just released. https://stackoverflow.com/a/47241403
+      if (!ev.screenX && !ev.screenY) {
+        return;
+      }
 
-      let rect = ev.target.getBoundingClientRect();
-      let x = ev.clientX - rect.left;
-      const value = this.dragPositionToValue(x);
+      const rect = ev.target.getBoundingClientRect();
+      const x = ev.clientX - rect.left;
+      const dragPosition = Math.clamp(x / this.getWidth(), 0, 1);
+      const dragPositionToValue = this.opts.dragPositionToValue || this.dragPositionToValue;
+      const value = dragPositionToValue(dragPosition);
       this.setValue(value);
     }
 
@@ -148,9 +157,11 @@ import './slider.css';
       }
 
       this.dragging = false;
-      let rect = ev.target.getBoundingClientRect();
-      let x = ev.clientX - rect.left;
-      const value = this.dragPositionToValue(x);
+      const rect = ev.target.getBoundingClientRect();
+      const x = ev.clientX - rect.left;
+      const dragPosition = Math.clamp(x / this.getWidth(), 0, 1);
+      const dragPositionToValue = this.opts.dragPositionToValue || this.dragPositionToValue;
+      const value = dragPositionToValue(dragPosition);
       this.setValue(value);
     }
   </script>

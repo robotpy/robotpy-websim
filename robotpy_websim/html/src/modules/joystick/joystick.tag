@@ -18,7 +18,9 @@
          max="360" 
          initial-val={pov.value} 
          pov-index={pov.index}
-         onchange={onPovUpdate} />
+         onchange={onPovUpdate} 
+         get-value-label={getValueLabel} 
+         drag-position-to-value={dragPositionToValue} />
     </p>
     <div class="buttons">
       <div class="form-check form-check-inline" if={button.visible} each={button in opts.buttons}>
@@ -45,6 +47,29 @@
       this.opts.onupdate('button', ev.target.value, ev.target.checked);
     }
 
+    this.getValueLabel = (value) => {
+      return value.toFixed(0);
+    };
+
+    this.dragPositionToValue = (dragPosition) => {
+      const values = [-1, 0, 45, 90, 135, 180, 225, 270, 315, 360];
+      return getClosest(dragPosition * 361 - 1, values);
+    };
+
+    const getClosest = (value, values) => {
+      if (values.length === 0) {
+        return null;
+      }
+
+      return values.reduce((closest, next) => {
+        if (Math.abs(next - value) < Math.abs(closest - value)) {
+          return next;
+        }
+        else {
+          return closest;
+        }
+      });
+    };
 
   </script>
 
