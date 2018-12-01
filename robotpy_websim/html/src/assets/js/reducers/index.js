@@ -136,10 +136,16 @@ const rootReducer = (state = initialState, action) => {
 
       let values = { ...state.networktables.values };
       
-      let path = action.payload.key.split('/')
+      let segments = action.payload.key.split('/')
         .filter(segment => {
           return segment !== '';
-        })
+        });
+
+      if (segments.length > 0) {
+        segments[segments.length - 1] += '/';
+      }
+
+      let path = segments
         .map(segment => {
           return `['${segment}']`;
         })

@@ -21,7 +21,7 @@ import * as _ from 'lodash';
         <div class="table-row">
           <span class="row-item key">
           <span class="level-space" each={value in _.range(level + 1)}></span>
-            {key}
+            {key.replace('/', '')}
           </span>
           <span class="row-item type">{typeof value}</span>
           <span class="row-item value">{value}</span>
