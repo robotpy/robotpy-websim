@@ -7,24 +7,47 @@ import * as _ from 'lodash';
       <span class="row-item key">
         <span class="level-space" each={value in _.range(level)}></span>
           <span class="caret" onclick={toggleExpand}></span>
-          {opts.key}
+          {opts.keyLabel}
         </span>
       <span class="row-item type"></span>
       <span class="row-item value"></span>
     </div>
     <virtual each={value, key in opts.values}>
       <virtual if={typeof value === 'object'}>
-        <subtable level={level + 1} key={key} values={value} />
+        <subtable 
+          level={level + 1} 
+          nt-key={opts.ntKey + key + '/'}
+          key-label={key} 
+          values={value} />
       </virtual>
 
       <virtual if={typeof value !== 'object'}>
-        <div class="table-row">
+        <div class="table-row" data-nt-key={opts.ntKey + key.replace('/', '')}>
           <span class="row-item key">
           <span class="level-space" each={value in _.range(level + 1)}></span>
             {key.replace('/', '')}
           </span>
           <span class="row-item type">{typeof value}</span>
-          <span class="row-item value">{value}</span>
+          <span class="row-item value">
+            
+            <virtual if={typeof value === 'boolean'}>
+              <div class="form-check">
+                <input class="form-check-input" onchange={onValueChange} type="checkbox" checked={value} value={opts.ntKey + key.replace('/', '')} id={opts.ntKey + key.replace('/', '')}>
+                <label class="form-check-label" for={opts.ntKey + key.replace('/', '')}>
+                  {value.toString()}
+                </label>
+              </div>
+            </virtual>
+
+            <virtual if={typeof value === 'string'}>
+              <input type="text" class="form-control" onchange={onValueChange} id={opts.ntKey + key.replace('/', '')} value={value}>
+            </virtual>
+
+            <virtual if={typeof value === 'number'}>
+              <input type="number" class="form-control" onchange={onValueChange} id={opts.ntKey + key.replace('/', '')} value={value}>
+            </virtual>
+
+          </span>
         </div>
       </virtual>
     </virtual>
@@ -48,6 +71,19 @@ import * as _ from 'lodash';
     .wrapper.collapsed > .subtable-header .caret:after {
       content: "▸";
     }
+
+    input[type=text], input[type=number]  {
+      border: none;
+      background: transparent;
+      padding: 3px 5px;
+      line-height: normal;
+      height: auto;
+    }
+
+    input[type=text]:focus, input[type=number]:focus {
+      border: none;
+      box-shadow: none;
+    }
   </style>
   
   <script>
@@ -55,11 +91,32 @@ import * as _ from 'lodash';
     this.expanded = false;
 
     this.toggleExpand = (ev) => {
-      //console.log('dsffdfd', ev);
       let $el = $(ev.target);
       $el.closest('.wrapper')
         .toggleClass('expanded')
         .toggleClass('collapsed');
+    };
+
+    this.onValueChange = (ev) => {
+      
+      const target = ev.target;
+      const type = target.type;
+
+      if (type === 'checkbox') {
+        const key = target.value;
+        const value = target.checked;
+        NetworkTables.putValue(key, value);
+      }
+      else if (type === 'text') {
+        const key = target.id;
+        const value = target.value;
+        NetworkTables.putValue(key, value);
+      }
+      else if (type === 'number') {
+        const key = target.id;
+        const value = target.value;
+        NetworkTables.putValue(key, parseFloat(value));
+      }
     };
 
   </script>

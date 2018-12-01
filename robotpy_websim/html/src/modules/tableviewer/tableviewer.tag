@@ -7,7 +7,7 @@ import './subtable.tag';
       <span class="row-item type">Type</span>
       <span class="row-item value">Value</span>
     </div>
-    <subtable key={"root"} values={opts.values} />
+    <subtable nt-key="/" key-label="root" values={opts.values} />
   </table>
 
 
