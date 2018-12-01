@@ -20,7 +20,8 @@ module.exports = (env = {}) => {
       'control': './modules/control/index.js',
       'solenoid': './modules/solenoid/index.js',
       'joystick': './modules/joystick/index.js',
-      'digital': './modules/digital/index.js'
+      'digital': './modules/digital/index.js',
+      'tableviewer': './modules/tableviewer/index.js',
     },
     output: {
       filename: "[name].bundle.js",
