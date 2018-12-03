@@ -13,7 +13,7 @@ import * as _ from 'lodash';
       <span class="row-item value"></span>
     </div>
     <virtual each={value, key in opts.values}>
-      <virtual if={typeof value === 'object'}>
+      <virtual if={_.isPlainObject(value)}>
         <subtable 
           level={level + 1} 
           nt-key={opts.ntKey + key + '/'}
@@ -21,10 +21,26 @@ import * as _ from 'lodash';
           values={value} />
       </virtual>
 
+      <virtual if={_.isArray(value)}>
+        <div class="table-row" data-nt-key={opts.ntKey + key.replace('/', '')}>
+          <span class="row-item key">
+            <span class="level-space" each={value in _.range(level + 1)}></span>
+            {key.replace('/', '')}
+          </span>
+          <span class="row-item type">
+            Array
+          </span>
+          <span class="row-item value">
+            [{value.join(', ')}]
+          </span>
+        </div>
+
+      </virtual>
+
       <virtual if={typeof value !== 'object'}>
         <div class="table-row" data-nt-key={opts.ntKey + key.replace('/', '')}>
           <span class="row-item key">
-          <span class="level-space" each={value in _.range(level + 1)}></span>
+            <span class="level-space" each={value in _.range(level + 1)}></span>
             {key.replace('/', '')}
           </span>
           <span class="row-item type">{typeof value}</span>
