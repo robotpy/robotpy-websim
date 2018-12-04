@@ -1,7 +1,6 @@
 
 import "./golden-layout.tag";
 import "./module-menu.tag";
-import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 <app>
