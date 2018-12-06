@@ -1,0 +1,13 @@
+.select2-results__options li:first-child {
+  display: none;
+}
+
+.game-data-form {
+  padding: 20px;
+}
+
+.game-data-form .select2-selection {
+    border-color: auto;
+    box-shadow: none;
+    background: white;
+}

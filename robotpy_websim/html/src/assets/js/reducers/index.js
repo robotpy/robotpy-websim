@@ -14,6 +14,7 @@ const initialState = {
     robotConnected: false
   },
   robotMode: null,
+  gameSpecificMessage: '',
   isRunning: false,
   simSocket: null,
   layout: {
@@ -64,6 +65,8 @@ const rootReducer = (state = initialState, action) => {
       };
     case ActionTypes.ROBOT_MODE_UPDATE:
       return { ...state, robotMode: action.payload.robotMode };
+    case ActionTypes.UPDATE_GAME_SPECIFIC_MESSAGE:
+      return { ...state, gameSpecificMessage: action.payload.message}
     case ActionTypes.SIM_STOPPED:
       return { 
         ...state, 

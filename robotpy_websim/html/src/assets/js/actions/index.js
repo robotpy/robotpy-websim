@@ -68,6 +68,15 @@ export function updateRobotMode(mode) {
   };
 }
 
+export function updateGameSpecificMessage(message) {
+  return {
+    type: ActionTypes.UPDATE_GAME_SPECIFIC_MESSAGE,
+    payload: {
+      message
+    }
+  };
+}
+
 export function registerWithLayout(tagName) {
   return {
     type: ActionTypes.REGISTER_WITH_LAYOUT,

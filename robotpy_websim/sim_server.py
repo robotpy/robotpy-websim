@@ -120,6 +120,8 @@ class SimulationWebSocket(WebSocketHandler):
             update_hal_data(msg['data'])
         elif msgtype == 'mode':
             mode_helpers.set_mode(msg['mode'], msg['enabled'])
+        elif msgtype == 'set_autonomous':
+            mode_helpers.set_autonomous(True, msg['game_specific_message'])
         
         # ignore other types for now... 
     

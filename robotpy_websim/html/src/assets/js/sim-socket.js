@@ -34,12 +34,19 @@ export default class SimSocket {
     this.store.dispatch(actions.simSocketInitialized(this));
 
     this.store.subscribe(() => {
-      const { robotMode } = this.store.getState();
-      if (this.robotMode !== robotMode) {
-        this.robotMode = robotMode;
-        const mode = robotMode === 'disabled' ? 'teleop' : robotMode;
-        const enabled = robotMode !== 'disabled';
-        this.sendRobotMode(mode, enabled);
+      const { robotMode, gameSpecificMessage } = this.store.getState();
+      if (this.robotMode === robotMode) {
+        return;
+      }
+
+      if (robotMode === 'disabled') {
+        this.sendRobotMode('teleop', false)
+      }
+      else if (robotMode === 'auto') {
+        this.setAutonomous(gameSpecificMessage);
+      }
+      else {
+        this.sendRobotMode(robotMode, true);
       }
     });
   }
@@ -57,6 +64,14 @@ export default class SimSocket {
       msgtype: 'mode',
       mode,
       enabled
+    };
+    this.socket.send(JSON.stringify(msg));
+  }
+
+  setAutonomous(gameSpecificMessage) {
+    const msg = {
+      msgtype: 'set_autonomous',
+      game_specific_message: gameSpecificMessage
     };
     this.socket.send(JSON.stringify(msg));
   }
