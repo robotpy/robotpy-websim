@@ -23,6 +23,7 @@ module.exports = (env = {}) => {
       'digital': './modules/digital/index.js',
       'tableviewer': './modules/tableviewer/index.js',
       'game-data': './modules/game-data/index.js',
+      'can': './modules/can/index.js'
     },
     output: {
       filename: "[name].bundle.js",

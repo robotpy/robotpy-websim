@@ -1,0 +1,17 @@
+can {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 10px;
+  flex-direction: column;
+}
+
+can .can-device {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+
+can .device-number {
+  margin-right: 7px;
+}
