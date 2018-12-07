@@ -29,6 +29,8 @@ export default class SimSocket {
       else {
         this.store.dispatch(actions.updateHalDataOut(data));
       }
+
+      this.sendHalData();
     };
 
     this.store.dispatch(actions.simSocketInitialized(this));
