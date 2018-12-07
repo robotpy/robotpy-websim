@@ -180,79 +180,14 @@ class ApiHandler(tornado.web.RequestHandler):
         
         if param == 'can_mode_map':
             self.write(can_mode_map)
-        elif param =='modules_and_config': #elif param =='modules_and_config':
+        elif param == 'modules':
+            modules = []
+            for root, dirs, files in os.walk(self.user_module_path):
+                modules.extend(dirs)
 
-            module_paths = [{'path' : self.builtin_module_path, 'to_web_path' : self._builtin_to_web_path}]
-
-            if exists(self.user_module_path):
-                module_paths.append({'path' : self.user_module_path, 'to_web_path' : self._user_to_web_path})
-
-            #print(module_paths)
-            # Get modules and module paths
-            modules = {};
-            for m in module_paths:
-                # Get all module folders in the the module path
-                module_names = [f for f in os.listdir(m['path']) if os.path.isdir(join(m['path'], f))]
-                for name in module_names:
-                    modules[name] = {'path' : join(m['path'], name), 'to_web_path' : m['to_web_path']}
-
-            module_data = {}
-            # Sort the js, css, and template files in the module
-            html_pattern = re.compile(r"\.html$", re.I)
-            js_pattern = re.compile(r"\.js$", re.I)
-            css_pattern = re.compile(r"\.css$", re.I)
-            tabs_line_pattern = re.compile(r"\r\n|\n|\r|\t")
-            for module, p in modules.items():
-                data = {'js': [], 'css': [], 'templates': {} }
-                files = [f for f in os.listdir(p['path']) if os.path.isfile(join(p['path'], f))]
-                for file in files:
-                    if html_pattern.search(file):
-                        # Get content from file and add template
-                        with open(join(p['path'], file), 'r') as content_file:
-                            content = content_file.read()
-
-                            data['templates'][file[:-5]] = tabs_line_pattern.sub('', content)
-                    elif js_pattern.search(file):
-                        data['js'].append(join(p['to_web_path'](p['path']), file))
-                    elif css_pattern.search(file):
-                        data['css'].append(join(p['to_web_path'](p['path']), file))
-                module_data[module] = data
-
-            # Get config files
-            config = user_config = {}
-            if exists(join(self.sim_path, 'config.json')):
-                 with open(join(self.sim_path, 'config.json'), 'r') as content_file:
-                    content = content_file.read()
-                    config = json.loads(tabs_line_pattern.sub('', content))
-
-            if exists(join(self.sim_path, 'user-config.json')):
-                 with open(join(self.sim_path, 'user-config.json'), 'r') as content_file:
-                    content = content_file.read()
-                    user_config = json.loads(tabs_line_pattern.sub('', content))
-
-            self.write({'modules' : module_data, 'config' : config, 'user_config' : user_config})
-
-
-        elif param == 'module_list':
-
-            # Not sure if there should be a distinction between these...
-            modules = {'builtin': [], 'user': []}
-
-            # Builtin modules
-            for path in sorted(os.listdir(self.builtin_module_path)):
-                js_path = join(self.builtin_module_path, path, path + '.js')
-                if exists(js_path):
-                    modules['builtin'].append(self._builtin_to_web_path(js_path))
-
-            # User modules
-            if exists(self.user_module_path):
-                for path in sorted(os.listdir(self.user_module_path)):
-                    js_path = join(self.user_module_path, path, path + '.js')
-                    if exists(js_path):
-                        modules['user'].append(self._user_to_web_path(js_path))
-
-            self.write(modules)
-                
+            self.write({
+                'modules': modules
+            })
         else:
             raise tornado.web.HTTPError(404)
 
@@ -343,7 +278,6 @@ class Main:
             (r'/api/(.*)', ApiHandler, {'root_path': self.root_path, 'sim_path': self.sim_path}),
             (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period}),
             (r'/user/(.*)', MyStaticFileHandler, {'path': self.sim_path }),
-            (r'/bower/(.*)', MyStaticFileHandler, {'path': self.bower_path }),
             (r"/()", MyStaticFileHandler, {"path": join(self.root_path, 'index.html')}),
             (r"/(.*)", MyStaticFileHandler, {'path': self.root_path })
         ])
@@ -390,14 +324,11 @@ class Main:
         self.options = options
             
         # Path where files are served from
-        self.root_path = abspath(join(dirname(__file__), 'html'))
+        self.root_path = abspath(join(dirname(__file__), 'html', 'dist'))
         
         # Path where user files are served from
         robot_file = abspath(inspect.getfile(robot_class))
         robot_path = dirname(robot_file)
-
-        # Path where bower components are stored
-        self.bower_path = join(self.root_path, 'bower_components')
 
         self.sim_path = join(robot_path, 'sim')
         if not exists(self.sim_path):

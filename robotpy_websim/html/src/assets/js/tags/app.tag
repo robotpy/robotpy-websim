@@ -2,6 +2,7 @@
 import "./golden-layout.tag";
 import "./module-menu.tag";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './user-modules.tag';
 
 <app>
   <module-menu />
@@ -10,4 +11,5 @@ import 'bootstrap/dist/css/bootstrap.min.css';
   </button>
 
   <golden-layout />
+  <user-modules />
 </app>
