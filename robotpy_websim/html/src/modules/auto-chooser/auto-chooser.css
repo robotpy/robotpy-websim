@@ -1,9 +1,8 @@
-
-.game-data-form {
+.auto-chooser-form {
   padding: 20px;
 }
 
-.game-data-form .select2-selection {
+.auto-chooser-form .select2-selection {
     border-color: auto;
     box-shadow: none;
     background: white;

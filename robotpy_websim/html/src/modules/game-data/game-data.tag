@@ -4,7 +4,6 @@ import './game-data.css';
   <form class="game-data-form">
     <div class="form-group">
       <select ref="select" class="form-control">
-        <option class="stuff" style="display: none"></option>
         <option>RRR</option>
         <option>RLR</option>
         <option>LRL</option>
