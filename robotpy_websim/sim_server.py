@@ -34,6 +34,8 @@ can_mode_map = {
     v: k for k,v in ControlMode.__members__.items()
 }
 
+from .fake_time import fake_time
+
 def pretty_json(d):
     return json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
 
@@ -187,6 +189,20 @@ class ApiHandler(tornado.web.RequestHandler):
 
             self.write({
                 'modules': modules
+            })
+        elif param == 'pause_sim':
+            fake_time.pause()
+            self.write({
+                'time': fake_time.get()
+            })
+        elif param == 'resume_sim':
+            fake_time.resume()
+            self.write({
+                'time': fake_time.get()
+            })
+        elif param == 'get_time':
+            self.write({
+                'time': fake_time.get()
             })
         else:
             raise tornado.web.HTTPError(404)
