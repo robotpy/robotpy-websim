@@ -1,0 +1,24 @@
+time {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  align-items: center;
+}
+
+time form {
+  margin-bottom: 7px;
+}
+
+time .time {
+  font-variant-numeric: tabular-nums;
+}
+
+time .time p, time .time h5 {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 5px;
+}
+
+time .time p span {
+  display: block;
+}

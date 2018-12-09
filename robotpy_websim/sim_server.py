@@ -35,6 +35,7 @@ can_mode_map = {
 }
 
 from .fake_time import fake_time
+fake_time.mode_start_tm = fake_time.get()
 
 def pretty_json(d):
     return json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
@@ -93,7 +94,10 @@ class SimulationWebSocket(WebSocketHandler):
         # send it the initial seed data
         msg = {
             'out': hal_data,
-            'in':  hal_in_data
+            'in':  hal_in_data,
+            'total_time': fake_time.get(),
+            'mode_time': fake_time.get() - fake_time.mode_start_tm,
+            'paused': fake_time.paused
         }
         
         self.write_message(json.dumps(msg, allow_nan=False, cls=SetEncoder), False)
@@ -103,7 +107,13 @@ class SimulationWebSocket(WebSocketHandler):
         '''Called every N ms'''
         
         if self.sim_initialized:
-            self.write_message(json.dumps(hal_data, allow_nan=False, cls=SetEncoder), False)
+            msg = {
+                'hal_data': hal_data,
+                'total_time': fake_time.get(),
+                'mode_time': fake_time.get() - fake_time.mode_start_tm,
+                'paused': fake_time.paused
+            }
+            self.write_message(json.dumps(msg, allow_nan=False, cls=SetEncoder), False)
         elif hal_data['user_program_state'] is not None:
             self.init_sim()
     
@@ -125,11 +135,40 @@ class SimulationWebSocket(WebSocketHandler):
         if msgtype == 'input':
             update_hal_data(msg['data'])
         elif msgtype == 'mode':
-            mode_helpers.set_mode(msg['mode'], msg['enabled'])
+            if self.is_mode_the_same(msg['mode'], msg['enabled']) is False:
+                fake_time.mode_start_tm = fake_time.get()
+                mode_helpers.set_mode(msg['mode'], msg['enabled'])
         elif msgtype == 'set_autonomous':
-            mode_helpers.set_autonomous(True, msg['game_specific_message'])
+            if self.is_mode_the_same('auto', True) is False:
+                fake_time.mode_start_tm = fake_time.get()
+                mode_helpers.set_autonomous(True, msg['game_specific_message'])
+        elif msgtype == 'pause_sim':
+            fake_time.pause()
+        elif msgtype == 'resume_sim':
+            fake_time.resume()
+        elif msgtype == 'step_time':
+            try:
+                tm = float(msg['time'])
+                if tm > 0:
+                    fake_time.resume(tm)
+            except ValueError:
+                logger.exception("Invalid step time", "'%s' is not a valid number" % msg['time'])
+                
         
         # ignore other types for now... 
+
+    def is_mode_the_same(self, new_mode, new_enabled):
+        ctrl = hal_data['control']
+
+        old_enabled = ctrl['enabled']
+        if ctrl['autonomous']:
+            old_mode = 'auto'
+        elif ctrl['test']:
+            old_mode = 'test'
+        else:
+            old_mode = 'teleop'
+
+        return old_enabled == new_enabled and old_mode == new_mode
     
     def on_close(self):
         logger.info("Simulation websocket closed")
@@ -189,20 +228,6 @@ class ApiHandler(tornado.web.RequestHandler):
 
             self.write({
                 'modules': modules
-            })
-        elif param == 'pause_sim':
-            fake_time.pause()
-            self.write({
-                'time': fake_time.get()
-            })
-        elif param == 'resume_sim':
-            fake_time.resume()
-            self.write({
-                'time': fake_time.get()
-            })
-        elif param == 'get_time':
-            self.write({
-                'time': fake_time.get()
             })
         else:
             raise tornado.web.HTTPError(404)

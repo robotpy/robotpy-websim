@@ -34,7 +34,45 @@ export function initializeHalData(dataOut, dataIn) {
 export function updateHalDataOut(data) {
   return {
     type: ActionTypes.UPDATE_HAL_DATA_OUT,
-    payload: data
+    payload: data,
+    meta: {
+      //throttle: 100
+    }
+  };
+}
+
+export function updateTime(totalTime, modeTime, paused) {
+  return {
+    type: ActionTypes.UPDATE_TIME,
+    payload: {
+      totalTime,
+      modeTime,
+      paused
+    },
+    meta: {
+      //throttle: 100
+    }
+  };
+}
+
+export function pauseSim() {
+  return {
+    type: ActionTypes.PAUSE_SIM
+  };
+}
+
+export function resumeSim() {
+  return {
+    type: ActionTypes.RESUME_SIM
+  };
+}
+
+export function stepTime(time) {
+  return {
+    type: ActionTypes.STEP_TIME,
+    payload: {
+      time
+    }
   };
 }
 

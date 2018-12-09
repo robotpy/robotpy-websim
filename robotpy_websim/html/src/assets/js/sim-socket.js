@@ -25,9 +25,11 @@ export default class SimSocket {
       // -> TODO: support message types
       if (!state.halData.initialized) {
         this.store.dispatch(actions.initializeHalData(data.out, data.in));
+        this.store.dispatch(actions.updateTime(data.total_time, data.mode_time, data.paused));
       } 
       else {
-        this.store.dispatch(actions.updateHalDataOut(data));
+        this.store.dispatch(actions.updateHalDataOut(data.hal_data));
+        this.store.dispatch(actions.updateTime(data.total_time, data.mode_time, data.paused));
       }
 
       this.sendHalData();
@@ -74,6 +76,28 @@ export default class SimSocket {
     const msg = {
       msgtype: 'set_autonomous',
       game_specific_message: gameSpecificMessage
+    };
+    this.socket.send(JSON.stringify(msg));
+  }
+
+  pauseSim() {
+    const msg = {
+      msgtype: 'pause_sim'
+    };
+    this.socket.send(JSON.stringify(msg));
+  }
+
+  resumeSim() {
+    const msg = {
+      msgtype: 'resume_sim'
+    };
+    this.socket.send(JSON.stringify(msg));
+  }
+  
+  stepTime(time) {
+    const msg = {
+      msgtype: 'step_time',
+      time
     };
     this.socket.send(JSON.stringify(msg));
   }

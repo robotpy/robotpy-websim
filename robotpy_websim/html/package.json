@@ -62,6 +62,7 @@
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
     "popper.js": "^1.14.4",
+    "redux-throttle": "^0.1.1",
     "riot-redux-connect": "^1.1.8"
   }
 }

@@ -24,7 +24,8 @@ module.exports = (env = {}) => {
       'tableviewer': './modules/tableviewer/index.js',
       'game-data': './modules/game-data/index.js',
       'can': './modules/can/index.js',
-      'auto-chooser': './modules/auto-chooser/index.js'
+      'auto-chooser': './modules/auto-chooser/index.js',
+      'time': './modules/time/index.js'
     },
     output: {
       filename: "[name].bundle.js",

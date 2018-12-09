@@ -7,6 +7,11 @@ const initialState = {
     out: {},
     in: {}
   },
+  time: {
+    mode: 0,
+    total: 0,
+    paused: false
+  },
   networktables: {
     values: {},
     rawValues: {},
@@ -61,6 +66,15 @@ const rootReducer = (state = initialState, action) => {
         halData: {
           ...state.halData,
           in: dataIn
+        }
+      };
+    case ActionTypes.UPDATE_TIME:
+      return {
+        ...state,
+        time: {
+          total: action.payload.totalTime,
+          mode: action.payload.modeTime,
+          paused: action.payload.paused
         }
       };
     case ActionTypes.ROBOT_MODE_UPDATE:

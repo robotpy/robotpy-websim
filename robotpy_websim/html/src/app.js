@@ -16,7 +16,7 @@ window.sim = {
 };
 
 riotReduxConnect(riot, store);
-const simSocket = new SimSocket(store);
+const simSocket = window.sim.socket = new SimSocket(store);
 const ntWrapper = new NetworkTablesWrapper(store);
 
 riot.mount('app');
