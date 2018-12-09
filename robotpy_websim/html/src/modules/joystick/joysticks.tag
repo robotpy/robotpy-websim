@@ -81,10 +81,40 @@ import * as _ from 'lodash';
       const gamepads = state.gamepads;
 
       initialize(dataOut.joysticks, gamepads);
+
+      let changes = false;
       
       for (let i = 0; i < joysticks.length; i++) {
-        joysticks[i].gamepad = gamepads[i] || { connected: false };
+        const gamepad = gamepads[i];
+        if (!gamepad) {
+          joysticks[i].gamepad = {
+            connected: false
+          };
+        }
+        else {
+          const oldGamepad = joysticks[i].gamepad;
+          const newGamepad = {
+            connected: gamepad.connected,
+            buttons: gamepad.buttons.map(button => {
+              return button.pressed;
+            }),
+            axes: [...gamepad.axes]
+          };
+          joysticks[i].gamepad = newGamepad;
+          
+          // check if there are differences in the objects. If there are,
+          // then update
+          if (!changes) {
+            changes = !_.isEqual(newGamepad, oldGamepad);
+          }
+        }
 
+        if (changes) {
+          console.log("CHANGES:", changes);
+          setTimeout(() => {
+            this.update();
+          });
+        }
         // Set visibility of joysticks
       }
 

@@ -32,7 +32,7 @@
             class="form-check-input" type="checkbox" 
             id="{opts.index}-button-{button.index}" 
             value="{button.index}" onchange={onButtonUpdate}
-            checked={opts.gamepad.buttons[button.index].pressed}
+            checked={opts.gamepad.buttons[button.index - 1]}
             disabled={true}
             />
         </virtual>
