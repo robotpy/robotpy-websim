@@ -18,6 +18,7 @@ const initialState = {
     wsConnected: false,
     robotConnected: false
   },
+  gamepads: [],
   robotMode: null,
   gameSpecificMessage: '',
   isRunning: false,
@@ -45,17 +46,6 @@ const rootReducer = (state = initialState, action) => {
           initialized: true
         }
       };
-    case ActionTypes.UPDATE_HAL_DATA_OUT:
-      return { 
-        ...state, 
-        halData: {
-          ...state.halData,
-          out: {
-            ...state.halData.out,
-            ...action.payload
-          }
-        }
-      };
     case ActionTypes.UPDATE_HAL_DATA_IN:
       let dataIn = { ...state.halData.in };
       _.forEach(action.payload.updates, (value, key) => {
@@ -66,15 +56,6 @@ const rootReducer = (state = initialState, action) => {
         halData: {
           ...state.halData,
           in: dataIn
-        }
-      };
-    case ActionTypes.UPDATE_TIME:
-      return {
-        ...state,
-        time: {
-          total: action.payload.totalTime,
-          mode: action.payload.modeTime,
-          paused: action.payload.paused
         }
       };
     case ActionTypes.ROBOT_MODE_UPDATE:
@@ -133,6 +114,25 @@ const rootReducer = (state = initialState, action) => {
           menuItems: action.payload.menuItems
         }
       };
+    case ActionTypes.PERIODIC_UPDATE:
+      const newState = { ...state };
+
+      if (action.payload.gamepads) {
+        newState.gamepads = action.payload.gamepads;
+      }
+
+      if (action.payload.halDataOut) {
+        newState.halData.out = {
+          ...newState.halData.out,
+          ...action.payload.halDataOut
+        }
+      }
+
+      if (action.payload.time) {
+        newState.time = action.payload.time;
+      }
+
+      return newState;
     case ActionTypes.NT_ROBOT_CONNECTION_CHANGED:
       return {
         ...state,

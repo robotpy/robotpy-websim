@@ -31,30 +31,6 @@ export function initializeHalData(dataOut, dataIn) {
   };
 }
 
-export function updateHalDataOut(data) {
-  return {
-    type: ActionTypes.UPDATE_HAL_DATA_OUT,
-    payload: data,
-    meta: {
-      //throttle: 100
-    }
-  };
-}
-
-export function updateTime(totalTime, modeTime, paused) {
-  return {
-    type: ActionTypes.UPDATE_TIME,
-    payload: {
-      totalTime,
-      modeTime,
-      paused
-    },
-    meta: {
-      //throttle: 100
-    }
-  };
-}
-
 export function pauseSim() {
   return {
     type: ActionTypes.PAUSE_SIM
@@ -149,6 +125,13 @@ export function moduleMenuUpdated(menuItems) {
       menuItems
     }
   };
+}
+
+export function periodicUpdate(updates) {
+  return {
+    type: ActionTypes.PERIODIC_UPDATE,
+    payload: updates
+  }
 }
 
 /**

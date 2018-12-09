@@ -25,11 +25,19 @@ export default class SimSocket {
       // -> TODO: support message types
       if (!state.halData.initialized) {
         this.store.dispatch(actions.initializeHalData(data.out, data.in));
-        this.store.dispatch(actions.updateTime(data.total_time, data.mode_time, data.paused));
       } 
       else {
-        this.store.dispatch(actions.updateHalDataOut(data.hal_data));
-        this.store.dispatch(actions.updateTime(data.total_time, data.mode_time, data.paused));
+        window.sim.periodicUpdater.addUpdates((updates) => {
+          return {
+            ...updates,
+            halDataOut: data.hal_data,
+            time: {
+              total: data.total_time,
+              mode: data.mode_time,
+              paused: data.paused
+            }
+          };
+        });
       }
 
       this.sendHalData();
