@@ -3,7 +3,10 @@ import './solenoid.css';
 <solenoid>
   <div class="solenoid" each={solenoid in opts.solenoids}>
     <p class="channel">{solenoid.channel}</p>
-    <toggle-button disabled={!solenoid.initialized} toggled={solenoid.value} />
+    <toggle-button 
+      disabled={!solenoid.initialized} 
+      toggled={solenoid.value} 
+      set-programmatically={true} />
   </div>
 
   <script>

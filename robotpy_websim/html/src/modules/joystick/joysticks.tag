@@ -7,6 +7,7 @@ import * as _ from 'lodash';
     <virtual if={joystick.visible}>
       <joystick 
         index={joystick.index}
+        gamepad={joystick.gamepad}
         axes={joystick.axes}
         povs={joystick.povs}
         buttons={joystick.buttons} 
@@ -27,11 +28,12 @@ import * as _ from 'lodash';
       return index;
     };
 
-    const initialize = _.once((sticks) => {
+    const initialize = _.once((sticks, gamepads) => {
   
       joysticks = sticks.map((stick, stickIndex) => {
         return {
           index: stickIndex,
+          gamepad: gamepads[stickIndex] || { connected: false },
           visible: stickIndex <= 1,
           axes: stick.axes.map((value, index) => {
             return {
@@ -76,11 +78,17 @@ import * as _ from 'lodash';
       const dataOut = state.halData.out;
       const dataIn = state.halData.in;
 
-      initialize(dataOut.joysticks);
+      const gamepads = state.gamepads;
+
+      initialize(dataOut.joysticks, gamepads);
       
       for (let i = 0; i < joysticks.length; i++) {
+        joysticks[i].gamepad = gamepads[i] || { connected: false };
+
         // Set visibility of joysticks
       }
+
+      this.update();
 
       return {
         joysticks

@@ -4,7 +4,11 @@ import * as _ from 'lodash';
 <ctre-device>
   <div class="device">
     <div class="can-value">
-      <slider label={''} min="-1" max="1" val={opts.can.value} disabled={false} />
+      <slider 
+        label={''} min="-1" max="1" 
+        val={opts.can.value} 
+        set-programmatically={true}
+        disabled={false} />
     </div>
 
     <div class="form-check-inline">

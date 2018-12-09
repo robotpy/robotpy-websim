@@ -17,7 +17,7 @@ import './toggle-button.css';
     };
 
     this.isToggled = () => {
-      if (this.opts.toggled !== undefined) {
+      if (this.opts.setProgrammatically) {
         return this.opts.toggled;
       }
 

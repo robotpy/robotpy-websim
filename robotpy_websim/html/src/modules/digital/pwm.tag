@@ -7,7 +7,8 @@ import * as _ from 'lodash';
       label={pwm.index} 
       min="-1" max="1" 
       val={pwm.value}
-      disabled={false} />
+      disabled={false}
+      set-programmatically={true} />
   </virtual>
 
   <script>  

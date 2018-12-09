@@ -3,7 +3,10 @@
   <div class="relays">
     <div class="relay" if={relay.initialized} each={relay in opts.relays}>
       <p class="channel">{relay.channel}</p>
-      <toggle-button disabled={!relay.fwd && !relay.rev} toggled={relay.fwd} />
+      <toggle-button 
+        disabled={!relay.fwd && !relay.rev} 
+        toggled={relay.fwd} 
+        set-programmatically={true} />
     </div>
   </div>
 

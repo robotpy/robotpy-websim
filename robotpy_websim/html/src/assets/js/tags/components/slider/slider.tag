@@ -49,7 +49,8 @@ import './slider.css';
     });
 
     this.on('update', () => {
-      if (this.opts.val !== undefined && this.opts.val !== this.value) {
+      //return;
+      if (this.opts.setProgrammatically && this.opts.val !== undefined && this.opts.val !== this.value) {
         this.setValue(this.opts.val);
       }
     });
@@ -124,7 +125,7 @@ import './slider.css';
     }
 
     this.dragStartHandler = (ev) => {
-      if (!this.opts.disabled && this.opts.val === undefined) {
+      if (!this.opts.disabled && !this.opts.setProgrammatically) {
         this.dragging = true;
       }
     }

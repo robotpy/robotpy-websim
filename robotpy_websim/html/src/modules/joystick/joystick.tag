@@ -3,13 +3,16 @@
 <joystick>
   <h6 class="text-center">Joystick {opts.index}</h6>
   <form class="form-horizontal" action="">
-    <p class="axis" data-axis={axis.label} if={axis.visible} each={axis in opts.axes}>
+    <p class="axis" data-axis={axis.label} if={axis.visible} each={axis, index in opts.axes}>
       <slider 
         label={axis.label} 
         min="-1" 
         max="1" initial-val={axis.value}
         axis-index={axis.index} 
-        onchange={onSliderUpdate} />
+        onchange={onSliderUpdate}
+        set-programmatically={opts.gamepad.connected} 
+        val={opts.gamepad.axes ? opts.gamepad.axes[index] : 0}
+        />
     </p>
     <p class="pov" data-axis={pov.label} if={pov.visible} each={pov in opts.povs}>
       <slider 
@@ -24,7 +27,18 @@
     </p>
     <div class="buttons">
       <div class="form-check form-check-inline" if={button.visible} each={button in opts.buttons}>
-        <input class="form-check-input" type="checkbox" id="{opts.index}-button-{button.index}" value="{button.index}" onclick={onButtonUpdate}>
+        <virtual if={opts.gamepad.connected}>
+          <input 
+            class="form-check-input" type="checkbox" 
+            id="{opts.index}-button-{button.index}" 
+            value="{button.index}" onchange={onButtonUpdate}
+            checked={opts.gamepad.buttons[button.index].pressed}
+            disabled={true}
+            />
+        </virtual>
+        <virtual if={!opts.gamepad.connected}>
+          <input class="form-check-input" type="checkbox" id="{opts.index}-button-{button.index}" value="{button.index}" onchange={onButtonUpdate}>
+        </virtual>
         <label class="form-check-label" for="{opts.index}-button-{button.index}">{button.index}</label>
       </div>
     </div>
