@@ -101,7 +101,7 @@ import * as _ from 'lodash';
             axes: [...gamepad.axes]
           };
           joysticks[i].gamepad = newGamepad;
-          
+
           // check if there are differences in the objects. If there are,
           // then update
           if (!changes) {
@@ -110,7 +110,6 @@ import * as _ from 'lodash';
         }
 
         if (changes) {
-          console.log("CHANGES:", changes);
           setTimeout(() => {
             this.update();
           });
