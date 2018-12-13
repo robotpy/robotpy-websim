@@ -22,14 +22,14 @@
   "homepage": "https://github.com/robotpy/robotpy-websim#readme",
   "devDependencies": {
     "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/types": "^7.0.0",
     "babel-loader": "^8.0.4",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/plugin-transform-regenerator": "^7.0.0",
-    "@babel/plugin-transform-runtime": "^7.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015-riot": "^1.1.0",
     "babel-preset-stage-0": "^6.24.1",
@@ -53,7 +53,8 @@
     "style-loader": "^0.21.0",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.4",
+    "worker-loader": "^2.0.0"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -61,6 +62,7 @@
     "golden-layout": "^1.5.9",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
+    "matter-js": "^0.14.2",
     "popper.js": "^1.14.4",
     "redux-throttle": "^0.1.1",
     "riot-redux-connect": "^1.1.8"

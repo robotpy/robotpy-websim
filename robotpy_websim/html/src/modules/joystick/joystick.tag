@@ -1,4 +1,4 @@
-
+import * as _ from 'lodash';
 
 <joystick>
   <h6 class="text-center">Joystick {opts.index}</h6>
@@ -45,16 +45,22 @@
   </form>
 
   <script>
+
+    this.onupdate = _.throttle((type, index, value) => {
+      this.opts.onupdate(type, index, value);
+    }, 1);
+
     this.onSliderUpdate = (value, opts) => {
       this.opts.axes[opts.axisIndex].value = value;
-      this.opts.onupdate('axis', opts.axisIndex, value);
-      this.update();
+
+      this.onupdate('axis', opts.axisIndex, value);
+      //this.update();
     }
 
     this.onPovUpdate = (value, opts) => {
       this.opts.povs[opts.povIndex].value = value;
-      this.opts.onupdate('pov', opts.povIndex, value);
-      this.update();
+      this.onupdate('pov', opts.povIndex, value);
+      //this.update();
     }
 
     this.onButtonUpdate = (ev) => {

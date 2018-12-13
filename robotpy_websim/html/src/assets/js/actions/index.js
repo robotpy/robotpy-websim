@@ -69,6 +69,11 @@ export function updateHalDataIn(key, value) {
     type: ActionTypes.UPDATE_HAL_DATA_IN,
     payload: {
       updates
+    },
+    meta: {
+      debounce: {
+        time: 300
+      }
     }
   };
 }

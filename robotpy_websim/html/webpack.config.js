@@ -25,7 +25,8 @@ module.exports = (env = {}) => {
       'game-data': './modules/game-data/index.js',
       'can': './modules/can/index.js',
       'auto-chooser': './modules/auto-chooser/index.js',
-      'time': './modules/time/index.js'
+      'time': './modules/time/index.js',
+      'field': './modules/field/index.js'
     },
     output: {
       filename: "[name].bundle.js",
@@ -39,6 +40,10 @@ module.exports = (env = {}) => {
     },
     module: {
       rules: [
+        {
+          test: /\.worker\.js$/,
+          use: { loader: 'worker-loader' }
+        },
         {
           test: /\.js$/,
           include: /src/,
@@ -133,7 +138,8 @@ module.exports = (env = {}) => {
       }
     },
     externals: {
-      riot: 'riot'
+      riot: 'riot',
+      'matter-js': 'Matter'
     },
     devtool: 'inline-source-map'
   };

@@ -1,6 +1,8 @@
 import './slider.css';
+import * as _ from 'lodash';
 
 <slider>
+
   <label if={opts.label !== undefined}>
     <span class="label">{opts.label}</span> 
     <span class="value">
@@ -48,6 +50,7 @@ import './slider.css';
       });
     });
 
+
     this.on('update', () => {
       //return;
       if (this.opts.setProgrammatically && this.opts.val !== undefined && this.opts.val !== this.value) {
@@ -68,13 +71,16 @@ import './slider.css';
     };
 
     this.setValue = (value) => {
+      
       this.value = Math.clamp(value || 0, this.min, this.max);
       const sliderPosition = this.valueToSliderPosition(this.value);
       this.setSliderPosition(sliderPosition);
 
+    
       if (this.opts.onchange) {
         this.opts.onchange(this.value, this.opts);
       }
+    
     };
 
     this.setSliderPosition = (sliderPosition) => {
