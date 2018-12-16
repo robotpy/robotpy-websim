@@ -50,9 +50,7 @@ import * as _ from 'lodash';
       });
     });
 
-
     this.on('update', () => {
-      //return;
       if (this.opts.setProgrammatically && this.opts.val !== undefined && this.opts.val !== this.value) {
         this.setValue(this.opts.val);
       }
@@ -135,8 +133,11 @@ import * as _ from 'lodash';
         this.dragging = true;
       }
     }
+    
+    this.dragHandler = _.throttle((ev) => {
 
-    this.dragHandler = (ev) => {
+      let start = performance.now();
+
       if (!this.dragging) {
         return;
       }
@@ -154,7 +155,7 @@ import * as _ from 'lodash';
       const dragPositionToValue = this.opts.dragPositionToValue || this.dragPositionToValue;
       const value = dragPositionToValue(dragPosition);
       this.setValue(value);
-    }
+    }, 50);
 
     this.dragEndHandler = (ev) => {
       ev.preventDefault();

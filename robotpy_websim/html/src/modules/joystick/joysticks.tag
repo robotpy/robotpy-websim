@@ -72,9 +72,8 @@ import * as _ from 'lodash';
         };
       });
     });
-    
-    const mapStateToOpts = (state) => {
 
+    this.updateJoysticks = _.throttle((state) => {
       const dataOut = state.halData.out;
       const dataIn = state.halData.in;
 
@@ -117,7 +116,11 @@ import * as _ from 'lodash';
         // Set visibility of joysticks
       }
 
-      this.update();
+    }, 50);
+    
+    const mapStateToOpts = (state) => {
+
+      this.updateJoysticks(state);
 
       return {
         joysticks
