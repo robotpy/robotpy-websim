@@ -1,0 +1,15 @@
+{
+  "robot": {
+    "width": 2,
+    "height": 3,
+    "startingX": 10, 
+    "startingY": 10,
+    "startingAngle": 0
+  },
+  "field": {
+    "pxPerFt": 10,
+    "width": 25,
+    "height": 27,
+    "objects": []
+  }
+}

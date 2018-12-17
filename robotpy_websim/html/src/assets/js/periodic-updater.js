@@ -8,6 +8,7 @@ export default class PeriodicUpdater {
     this.listeners = [];
     
     const update = () => {
+
       this.listeners.forEach((listener) => {
         this.updates = listener(this.updates);
       });

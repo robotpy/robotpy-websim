@@ -135,9 +135,7 @@ import * as _ from 'lodash';
     }
     
     this.dragHandler = _.throttle((ev) => {
-
-      let start = performance.now();
-
+      
       if (!this.dragging) {
         return;
       }

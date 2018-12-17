@@ -55,7 +55,7 @@ export const linearDeadzone = (deadzone) => {
  *  @note: WPILib RobotDrive assumes that to make the robot go forward,
  *  the left motor must be set to -1, and the right to +1
  */
-export class TwoMotorDrivetrain {
+export class TwoMotor {
 
   /**
    * 

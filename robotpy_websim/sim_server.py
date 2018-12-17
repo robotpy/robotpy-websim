@@ -282,10 +282,16 @@ class MyStaticFileHandler(tornado.web.StaticFileHandler):
     # This is broken in tornado, disable it
     def check_etag_header(self):
         return False
-    
+        
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
+        '''Allow CORS requests from websim running on a different port in webpack'''
+        
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
 
 
 

@@ -6,8 +6,15 @@ import Worker from './matter.worker.js';
 
 
   <div ref="field" class="field">
-    <canvas ref="canvas" width="200" height="200"></canvas>
+    <canvas ref="canvas"></canvas>
   </div>
+
+  <style>
+    canvas {
+      width: 100%;
+    }
+
+  </style>
 
   <script>
 
@@ -25,7 +32,11 @@ import Worker from './matter.worker.js';
     const mapStateToOpts = (state) => {
 
       // send hal data to physics web worker
-      worker.postMessage({ type: 'halUpdate', halData: state.halData });
+      worker.postMessage({ 
+        type: 'data', 
+        halData: state.halData,
+        time: state.time
+      });
 
       return {};
     };
