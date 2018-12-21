@@ -1,18 +1,26 @@
-import { Bodies, Body} from 'matter-js';
+import * as OriginalMatter from 'matter-js';
 
-export function simple(x, y, width=40, height=65, wheelRadius=3, wheelPadding=5, options={}) {
+let Matter = OriginalMatter;
+
+export function setMatterWrapper(wrapper) {
+  Matter = wrapper;
+}  
+
+export function simple(x, y, width=2, height=3, wheelRadius=.25, wheelPadding=.25, options={}) {
+
+  const { Body, Bodies } = Matter;
 
   let defaultOptions = {
     render: {
       'fillStyle': 'none',
       strokeStyle: 'white',
-      lineWidth: 1,
+      lineWidth: 1/24,
     }
   };
 
   options = { ...defaultOptions, ...options };
   
-  let wheelWidth = wheelRadius;
+  let wheelWidth = 1/6;
   let wheelHeight = wheelRadius * 2;
 
   let topWheelsX = x - height / 2 + wheelHeight / 2 + wheelPadding;

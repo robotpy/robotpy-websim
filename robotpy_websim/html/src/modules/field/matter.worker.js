@@ -1,9 +1,10 @@
-import * as Matter from 'matter-js';
+import * as OriginalMatter from 'matter-js';
+import { wrapMatter } from './wrapper/matter-wrapper';
 import * as Physics from '../../assets/js/physics';
 import axios from 'axios';
 import { defaultsDeep } from 'lodash';
 
-import { fixMatter } from './fix-matter';
+let Matter = null;
 
 // create an engine
 let engine = null;
@@ -16,8 +17,9 @@ self.onmessage = function(e) {
 
   if (type === 'init') {
     getConfig().then((config) => {
+      Matter = wrapMatter(OriginalMatter, config.field.pxPerFt, 60);
+      Physics.setMatterWrapper(Matter);
       initialize(e.data.canvas, config);
-      fixMatter(Matter);
     }); 
   }
   else if (type === 'data') {
@@ -33,6 +35,8 @@ self.onmessage = function(e) {
 function initialize(canvas, config) {
   
   engine = Matter.Engine.create();
+
+  console.log('engine:', engine);
         
   // create a renderer
   var render = Matter.Render.create({
@@ -41,8 +45,8 @@ function initialize(canvas, config) {
     engine: engine,
     options: {
       showAngleIndicator: true,
-      width: config.field.width * config.field.pxPerFt, // 400
-      height: config.field.height * config.field.pxPerFt, // 400
+      width: config.field.width,
+      height: config.field.height,
       wireframes: false
     }
   });

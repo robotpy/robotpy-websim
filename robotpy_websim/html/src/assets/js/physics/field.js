@@ -1,24 +1,29 @@
-import { Bodies, Body } from 'matter-js';
+import * as OriginalMatter from 'matter-js';
 
-export function rectangle(x, y, width, height, thickness = 5, options = {}) {
+let Matter = OriginalMatter;
+
+export function setMatterWrapper(wrapper) {
+  Matter = wrapper;
+}  
+export function rectangle(x, y, width, height, thickness = .25, options = {}) {
+
+  const { Bodies, Body } = Matter;
 
   let defaultOptions = {
     isStatic: true,
     render: {
       fillStyle: 'gray',
       strokeStyle: 'gray',
-      lineWidth: 1,
+      lineWidth: 1/24,
     }
   };
 
   options = { ...defaultOptions, ...options };
 
-  let thicknessMiddle = thickness % 2 === 0 ? thickness / 2 : (thickness + 1) / 2;
-
-  let top = Bodies.rectangle(x, thicknessMiddle, width, thickness, options);
-  let bottom = Bodies.rectangle(x, y + height / 2 - thicknessMiddle, width, thickness, options);
-  let left = Bodies.rectangle(thicknessMiddle, y, thickness, height, options);
-  let right = Bodies.rectangle(x + width / 2 - thicknessMiddle, y, thickness, height, options);
+  let top = Bodies.rectangle(x, y - (height + thickness) / 2, width, thickness, options);
+  let bottom = Bodies.rectangle(x, y + (height + thickness) / 2, width, thickness, options);
+  let left = Bodies.rectangle(x - (width + thickness) / 2, y, thickness, height, options);
+  let right = Bodies.rectangle(x + (width + thickness) / 2, y, thickness, height, options);
   
   let bounds = Body.create({
     parts: [top, bottom, left, right],
