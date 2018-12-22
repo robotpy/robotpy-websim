@@ -26,7 +26,10 @@ import './components';
     myLayout.init();
 
     function getComponents(item) {
-      if (item.isComponent) {
+      if (!item) {
+        return [];
+      }
+      else if (item.isComponent) {
         return [item];
       }
       return _.flatMap(item.contentItems, getComponents);
