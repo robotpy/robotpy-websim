@@ -6,7 +6,10 @@ import * as _ from 'lodash';
     <div class="table-row subtable-header">
       <span class="row-item key">
         <span class="level-space" each={value in _.range(level)}></span>
-          <span class="caret" onclick={toggleExpand}></span>
+          <span class="caret" onclick={toggleExpand}>
+            <span class="oi oi-caret-right"></span>
+            <span class="oi oi-caret-bottom"></span>
+          </span>
           {opts.keyLabel}
         </span>
       <span class="row-item type"></span>
@@ -75,17 +78,17 @@ import * as _ from 'lodash';
       display: none;
     }
 
-    .wrapper > .subtable-header .caret:after {
-      font-size: 30px;
-      line-height: 7px;
+    .wrapper > .subtable-header .caret .oi {
+      font-size: 12px;
+      display: none;
     }
 
-    .wrapper.expanded > .subtable-header .caret:after {
-      content: "▾";
+    .wrapper.expanded > .subtable-header .caret .oi-caret-bottom {
+      display: inline-block;
     }
 
-    .wrapper.collapsed > .subtable-header .caret:after {
-      content: "▸";
+    .wrapper.collapsed > .subtable-header .caret .oi-caret-right {
+      display: inline-block;
     }
 
     input[type=text], input[type=number]  {
