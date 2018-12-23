@@ -1,3 +1,6 @@
 import './can.tag';
 
-sim.registerWithLayout('can');
+sim.registerWithLayout('can', {
+  label: 'CAN',
+  category: 'IO'
+});

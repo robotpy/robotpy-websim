@@ -1,3 +1,6 @@
 import "./joysticks.tag";
 
-sim.registerWithLayout('joysticks');
+sim.registerWithLayout('joysticks', {
+  label: 'Joystick',
+  category: 'IO'
+});

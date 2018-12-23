@@ -19,8 +19,8 @@ window.sim = {
   physics: {
     drivetrains
   },
-  registerWithLayout: function(tagName) {
-    store.dispatch(actions.registerWithLayout(tagName));
+  registerWithLayout: function(tagName, config) {
+    store.dispatch(actions.registerWithLayout(tagName, config));
   }
 };
 

@@ -1,3 +1,6 @@
 import './digital.tag';
 
-sim.registerWithLayout('digital');
+sim.registerWithLayout('digital', {
+  label: 'Digital',
+  category: 'IO'
+});

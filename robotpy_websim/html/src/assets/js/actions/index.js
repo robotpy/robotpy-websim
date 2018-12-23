@@ -96,11 +96,17 @@ export function updateGameSpecificMessage(message) {
   };
 }
 
-export function registerWithLayout(tagName) {
+export function registerWithLayout(tagName, config = {}) {
+  config = { 
+    label: tagName,
+    category: 'Unknown',
+    ...config
+  };
   return {
     type: ActionTypes.REGISTER_WITH_LAYOUT,
     payload: {
-      tagName
+      tagName,
+      config
     }
   };
 }

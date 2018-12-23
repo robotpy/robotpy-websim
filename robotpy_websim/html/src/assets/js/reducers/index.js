@@ -24,7 +24,8 @@ const initialState = {
   isRunning: false,
   simSocket: null,
   layout: {
-    registered: [],
+    categories: ['Unknown'],
+    registered: {},
     added: [],
     menuItems: []
   }
@@ -99,11 +100,23 @@ const rootReducer = (state = initialState, action) => {
         }
       };
     case ActionTypes.REGISTER_WITH_LAYOUT:
+
+      let categories = state.layout.categories;
+      let category = action.payload.config.category;
+
+      if (categories.indexOf(category) < 0) {
+        categories.push(category);
+      }
+
       return {
         ...state,
         layout: {
           ...state.layout,
-          registered: [...state.layout.registered, action.payload.tagName]
+          categories,
+          registered: {
+            ...state.layout.registered,
+            [action.payload.tagName]: action.payload.config
+          }
         }
       };
     case ActionTypes.MODULE_MENU_UPDATED:

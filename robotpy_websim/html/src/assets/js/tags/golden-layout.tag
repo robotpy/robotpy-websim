@@ -105,7 +105,7 @@ import './components';
 
     this.on('update', () => {
 
-      _.forEach(this.opts.layout.registered, (tagName) => {
+      _.forEach(this.opts.layout.registered, (config, tagName) => {
         
         // Used to initialize the tag
         let registeredComponents = getRegisteredComponentNames(myLayout);

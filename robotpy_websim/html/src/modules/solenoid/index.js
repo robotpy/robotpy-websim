@@ -1,3 +1,6 @@
 import './solenoid.tag';
 
-sim.registerWithLayout('solenoid');
+sim.registerWithLayout('solenoid', {
+  label: 'Solenoid',
+  category: 'IO'
+});

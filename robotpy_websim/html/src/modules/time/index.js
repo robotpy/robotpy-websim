@@ -1,3 +1,6 @@
 import './time.tag';
 
-sim.registerWithLayout('time');
+sim.registerWithLayout('time', {
+  label: 'Time',
+  category: 'Control'
+});

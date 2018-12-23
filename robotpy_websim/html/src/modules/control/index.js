@@ -1,3 +1,6 @@
 import './control.tag';
 
-sim.registerWithLayout('control');
+sim.registerWithLayout('control', {
+  label: 'Mode Picker',
+  category: 'Control'
+});
