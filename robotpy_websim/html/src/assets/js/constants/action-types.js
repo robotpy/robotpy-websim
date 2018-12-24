@@ -1,5 +1,7 @@
 export const INITIALIZE_HAL_DATA = "INITIALIZE_HAL_DATA";
 export const UPDATE_HAL_DATA_IN = "UPDATE_HAL_DATA_IN";
+export const UPDATE_CONFIG = "UPDATE_CONFIG";
+export const UPDATE_USER_CONFIG = "UPDATE_USER_CONFIG";
 export const PAUSE_SIM = "PAUSE_SIM";
 export const RESUME_SIM = "RESUME_SIM";
 export const STEP_TIME = "STEP_TIME";

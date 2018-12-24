@@ -14,16 +14,19 @@ import './components';
 
   <script>
     let tag = this;
-
+    let myLayout = null;
     this.onMenuUpdate = this.opts.onmenuupdate;
 
-    var config = {
-      content: []
-    };
+    initLayout();
 
-    var myLayout = new GoldenLayout( config, '.golden-layout' );
+    function initLayout() {
+      let config = JSON.parse(localStorage.getItem('savedState')) || {
+        content: []
+      };
+      myLayout = new GoldenLayout( config, '.golden-layout' );
+      myLayout.init();
+    }
 
-    myLayout.init();
 
     function getComponents(item) {
       if (!item) {
@@ -89,11 +92,24 @@ import './components';
       addedToLayout: actions.addedToLayout
     };
 
+    myLayout.on('itemCreated', (item) => {
+      let tagName = item.componentName;
+
+      if (tagName) {
+        tag.addedToLayout(tagName);
+      }
+    });
+
     myLayout.on('itemDestroyed', (item) => {
       if (!item.isComponent) {
         return;
       }
       this.removeFromLayout(item.componentName)
+    });
+
+    myLayout.on( 'stateChanged', function(){
+      var state = JSON.stringify( myLayout.toConfig() );
+      localStorage.setItem( 'savedState', state );
     });
 
 

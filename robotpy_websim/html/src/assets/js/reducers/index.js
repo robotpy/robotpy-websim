@@ -28,7 +28,9 @@ const initialState = {
     registered: {},
     added: [],
     menuItems: []
-  }
+  },
+  config: {},
+  userConfig: {}
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -46,6 +48,16 @@ const rootReducer = (state = initialState, action) => {
           in: action.payload.dataIn,
           initialized: true
         }
+      };
+    case ActionTypes.UPDATE_CONFIG:
+      return {
+        ...state,
+        config: action.payload.config
+      };
+    case ActionTypes.UPDATE_USER_CONFIG:
+      return {
+        ...state,
+        userConfifg: action.payload.userConfig
       };
     case ActionTypes.UPDATE_HAL_DATA_IN:
       let dataIn = { ...state.halData.in };

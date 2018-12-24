@@ -79,6 +79,7 @@ import * as _ from 'lodash';
     }
 
     .wrapper > .subtable-header .caret .oi {
+      cursor: pointer;
       font-size: 12px;
       display: none;
     }

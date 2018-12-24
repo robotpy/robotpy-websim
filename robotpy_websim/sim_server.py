@@ -15,6 +15,7 @@ except ImportError:
     import json
 
 import asyncio
+from asgiref.sync import async_to_sync, sync_to_async
 import tornado.gen
 import tornado.web
 from tornado.ioloop import IOLoop, PeriodicCallback
@@ -61,9 +62,10 @@ class SimulationWebSocket(WebSocketHandler):
     
     has_connection = False
     
-    def initialize(self, sim_period):
+    def initialize(self, sim_period, sim_path):
         self.connected = False
         self.sim_period = sim_period
+        self.sim_path = sim_path
 
     def check_origin(self, origin):
         '''Allow CORS requests from websim running on a different port in webpack'''
@@ -90,6 +92,22 @@ class SimulationWebSocket(WebSocketHandler):
         mode_helpers.set_mode('teleop', False)
         hal_data['control']['ds_attached'] = True
         hal_in_data['control']['ds_attached'] = True
+
+        config = {}
+        user_config = {}
+
+        with open(join(self.sim_path, 'config.json'), 'r') as fp:
+            try:
+                config = json.loads(fp.read())
+            except:
+                logger.exception("Error reading config.json")
+
+        with open(join(self.sim_path, 'user-config.json'), 'r') as fp:
+            try:
+                user_config = json.loads(fp.read())
+            except:
+                logger.exception("Error reading user-config.json")
+
         
         # send it the initial seed data
         msg = {
@@ -97,7 +115,9 @@ class SimulationWebSocket(WebSocketHandler):
             'in':  hal_in_data,
             'total_time': fake_time.get(),
             'mode_time': fake_time.get() - fake_time.mode_start_tm,
-            'paused': fake_time.paused
+            'paused': fake_time.paused,
+            'config': config,
+            'user_config': user_config
         }
         
         self.write_message(json.dumps(msg, allow_nan=False, cls=SetEncoder), False)
@@ -323,7 +343,7 @@ class Main:
         asyncio.set_event_loop(asyncio.new_event_loop())
         app = tornado.web.Application(get_pynt2js_handlers() + [
             (r'/api/(.*)', ApiHandler, {'root_path': self.root_path, 'sim_path': self.sim_path}),
-            (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period}),
+            (r'/api', SimulationWebSocket, {'sim_period': self.options.sim_period, 'sim_path': self.sim_path}),
             (r'/user/(.*)', MyStaticFileHandler, {'path': self.sim_path }),
             (r"/()", MyStaticFileHandler, {"path": join(self.root_path, 'index.html')}),
             (r"/(.*)", MyStaticFileHandler, {'path': self.root_path })

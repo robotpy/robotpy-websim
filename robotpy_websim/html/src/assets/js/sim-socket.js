@@ -25,6 +25,8 @@ export default class SimSocket {
       // -> TODO: support message types
       if (!state.halData.initialized) {
         this.store.dispatch(actions.initializeHalData(data.out, data.in));
+        this.store.dispatch(actions.updateConfig(data.config));
+        this.store.dispatch(actions.updateUserConfig(data.userConfig));
       } 
       else {
         window.sim.periodicUpdater.addUpdates((updates) => {

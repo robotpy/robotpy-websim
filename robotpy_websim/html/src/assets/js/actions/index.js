@@ -31,6 +31,24 @@ export function initializeHalData(dataOut, dataIn) {
   };
 }
 
+export function updateConfig(config) {
+  return {
+    type: ActionTypes.UPDATE_CONFIG,
+    payload: {
+      config
+    }
+  };
+}
+
+export function updateUserConfig(userConfig) {
+  return {
+    type: ActionTypes.UPDATE_USER_CONFIG,
+    payload: {
+      userConfig
+    }
+  };
+}
+
 export function pauseSim() {
   return {
     type: ActionTypes.PAUSE_SIM
