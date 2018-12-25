@@ -1,12 +1,4 @@
 
-MOTOR_CFG_CIM = {
-  name: 'CIM', 
-  nominalVoltage: 12,
-  freeSpeed: 5310,
-  freeCurrent: 2.7,
-  stallTorque: 2.42,
-  stallCurrent: 133
-};
 
 
 class UserPhysics {
@@ -16,21 +8,31 @@ class UserPhysics {
     this.engine = engine;
     this.physics = Physics;
     this.config = config;
-    this.pxPerFt = this.config.field.pxPerFt;
+
+    let math = Physics.Math;
+
+    let MOTOR_CFG_CIM = {
+      name: 'CIM', 
+      nominalVoltage: math.unit(12, 'volt'),
+      freeSpeed: math.unit(5310, 'cpm'),
+      freeCurrent: math.unit(2.7, 'A'),
+      stallTorque: math.unit(2.42, 'Nm'),
+      stallCurrent: math.unit(133, 'A')
+    };
 
     //let deadzone = Physics.Drivetrains.linearDeadzone(0.2);
     //this.drivetrain = new Physics.Drivetrains.TwoMotor(2, 5, deadzone);
-    let bumperWidth = 3.25 / 12;
+    let bumperWidth = math.unit(3.25, 'inch');
 
     this.drivetrain = Physics.Tankmodel.TankModel.theory(
       MOTOR_CFG_CIM,
-      110,     
+      math.unit(50, 'kg'),     
       10.71,
       2,
-      22 / 12,
-      23 / 12 + bumperWidth * 2,
-      32 / 12 + bumperWidth * 2,
-      6 / 12
+      math.unit(22, 'inch'),
+      math.add(math.unit(23, 'inch'), math.multiply(bumperWidth, 2)),
+      math.add(math.unit(32, 'inch'), math.multiply(bumperWidth, 2)),
+      math.unit(6, 'inch')
     );
     
   
@@ -61,15 +63,15 @@ class UserPhysics {
     let rMotor = can[2].value;
 
     //let { fwd, rcw } = this.drivetrain.getVector(lMotor, rMotor);
-    let tmDiff = 1000 / 60;
+    let tmDiff = 1 / 60;
     
     let {rcw, fwd} = this.drivetrain.getVector(lMotor, rMotor, tmDiff);
 
-    let xSpeed = fwd / 100 * Math.cos(this.robot.angle);
-    let ySpeed = fwd / 100 * Math.sin(this.robot.angle);
+    let xSpeed = fwd * Math.cos(this.robot.angle);
+    let ySpeed = fwd * Math.sin(this.robot.angle);
   
     this.Matter.Body.setVelocity(this.robot, { x: xSpeed, y: ySpeed });
-    this.Matter.Body.setAngularVelocity(this.robot, rcw / 100);
+    this.Matter.Body.setAngularVelocity(this.robot, rcw);
   }
 
   createBalls() {

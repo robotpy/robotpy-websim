@@ -1,12 +1,20 @@
+import * as math from 'mathjs';
 
 // default parameters for a kitbot
-const _bumperLength = 3.25 / 12;
+const _bumperLength = math.unit(3.25, 'in');
 
-let _kitbotWheelbase = 21 / 12;
-let _kitbotWidth = _kitbotWheelbase + _bumperLength * 2;
-let _kitbotLength = 30 / 12 + _bumperLength * 2;
+let _kitbotWheelbase = math.unit(21, 'in');
+let _kitbotWidth = math.add(_kitbotWheelbase, math.multiply(_bumperLength, 2));
+let _kitbotLength = math.add(math.unit(30, 'in'), math.multiply(_bumperLength, 2));
 
+math.createUnit('inertia', '1 ft * ft * lb');
+math.createUnit('bm', '1 ft * lb');
 
+math.createUnit('tmkv', '1 volt / (foot / second)');
+math.createUnit('tmka', '1 volt / (foot / second^2)');
+math.createUnit('count', '1');
+math.createUnit('cpm', '1 count / minute');
+math.createUnit('Nm', '1 newton * meter');
 
 /**
  * Motor model used by the :class:`TankModel`. You should not need to create
@@ -24,8 +32,9 @@ export class MotorModel {
    *                         paper for more details)
    */
 
-  // @units.wraps(None, (None, None, "tm_kv", "tm_ka", "volts"))
+  
   constructor(motorConfig, kv, ka, vintercept) {
+
     // Current computed acceleration (in ft/s^2)
     this.acceleration = 0;
 
@@ -35,10 +44,10 @@ export class MotorModel {
     // Current computed position (in ft)
     this.position = 0;
 
-    this._nominalVoltage = motorConfig.nominalVoltage;
-    this._vintercept = vintercept;
-    this._kv = kv;
-    this._ka = ka;
+    this._nominalVoltage = motorConfig.nominalVoltage.toNumber('volt');
+    this._vintercept = vintercept.toNumber('volt');
+    this._kv = kv.toNumber('tmkv');
+    this._ka = ka.toNumber('tmka');
   }
 
   /**
@@ -133,7 +142,6 @@ export class TankModel {
    * @param {*} rKv - Right side ``kv``
    * @param {*} rKa - Right side ``ka``
    * @param {*} rVi - Right side ``Vintercept``
-   * @param {*} timestep - Model computation timestep
    */
   constructor(
     motorConfig,
@@ -146,19 +154,20 @@ export class TankModel {
     lVi,
     rKv,
     rKa,
-    rVi,
-    timestep = 5,
+    rVi
   ) {
 
-    this._lmotor = new MotorModel(motorConfig, lKv, lKa, lVi)
-    this._rmotor = new MotorModel(motorConfig, rKv, rKa, rVi)
+    this._lmotor = new MotorModel(motorConfig, lKv, lKa, lVi);
+    this._rmotor = new MotorModel(motorConfig, rKv, rKa, rVi);
 
-    this.inertia = (1 / 12.0) * robotMass * (Math.pow(robotLength, 2) + Math.pow(robotWidth, 2));
+    this.inertia = math.multiply(
+      (1 / 12.0),
+      robotMass,
+      math.add(math.pow(robotLength, 2), math.pow(robotWidth, 2))
+    );
 
     // This is used to compute the rotational velocity
-    this._bm = (xWheelbase / 2.0) * robotMass;
-
-    this._timestep = timestep * 100
+    this._bm = math.multiply(math.divide(xWheelbase, 2.0), robotMass).toNumber('bm');
   }
 
   // The velocity of the left side (in ft/s)
@@ -189,11 +198,11 @@ export class TankModel {
    * Units are ``[mass] * [length] ** 2``
    */
   get inertia() {
-    return this._inertia;
+    return math.unit(this._inertia, 'inertia');
   }
 
   set inertia(value) {
-    this._inertia = value;
+    this._inertia = value.toNumber('inertia');
   }
 
 
@@ -241,7 +250,6 @@ export class TankModel {
  * @param vintercept - The minimum voltage required to generate enough
  *                     torque to overcome steady-state friction (see the
  *                     paper for more details)
- * @param timestep - Model computation timestep
  * 
  * :math:`\omega_{free}` is the free speed of the motor
  * :math:`\tau_{stall}` is the stall torque of the motor
@@ -268,21 +276,24 @@ TankModel.theory = function(
   xWheelbase = _kitbotWheelbase,
   robotWidth = _kitbotWidth,
   robotLength = _kitbotLength,
-  wheelDiameter = 6 / 12,
-  vintercept = 1.3,
-  timestep = 5
+  wheelDiameter = math.unit(6, 'inch'),
+  vintercept = math.unit(1.3, 'volt')
 ) {
-  let maxVelocity = (motorConfig.freeSpeed * Math.PI * wheelDiameter) / gearing;
-  let maxAcceleration = (2.0 * nmotors * motorConfig.stallTorque * gearing) / (wheelDiameter * robotMass);
+
+  let maxVelocity = math.multiply(motorConfig.freeSpeed, Math.PI, wheelDiameter, 1 / gearing);
   
-  let kv = motorConfig.nominalVoltage / maxVelocity;
-  let ka = motorConfig.nominalVoltage / maxAcceleration;
+  let maxAcceleration = math.divide(
+    math.multiply(2.0, nmotors, motorConfig.stallTorque, gearing),
+    math.multiply(wheelDiameter, robotMass)
+  );
+
+  let kv = math.divide(motorConfig.nominalVoltage, maxVelocity);
+  let ka = math.divide(motorConfig.nominalVoltage, maxAcceleration);
 
   return new TankModel(motorConfig,
              robotMass, xWheelbase,
              robotWidth, robotLength,
              kv, ka, vintercept,
-             kv, ka, vintercept,
-             timestep)
+             kv, ka, vintercept)
 }
 
