@@ -41,7 +41,11 @@ import './nt-boolean-input.tag';
 
     this.add = (ev) => {
       const key = this.refs.keyInput.value;
-      const value = this.refs.valueInput.value;
+      let value = this.refs.valueInput.value;
+
+      if (opts.menuAction === 'addNumber') {
+        value = parseFloat(value);
+      }
       
       NetworkTables.putValue(this.opts.parentKey + key, value);
       this.opts.modal.close();

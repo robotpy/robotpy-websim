@@ -1,10 +1,18 @@
 import './subtable.tag';
-import './context-menu.tag';
 import './tableviewer.css';
 import './modal/nt-modal.tag';
 
-<tableviewer>
-  <table-context-menu onmenuclick={onContextMenuClick} show={contextMenu.show} x={contextMenu.x} y={contextMenu.y} />
+<tableviewer>  
+  <context-menu onclick={onContextMenuClick} container={root}>
+    <a class="dropdown-item" href="#" data-action="addString">Add string</a>
+    <a class="dropdown-item" href="#" data-action="addNumber">Add number</a>
+    <a class="dropdown-item" href="#" data-action="addBoolean">Add boolean</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#" data-action="addStringArray">Add string array</a>
+    <a class="dropdown-item" href="#" data-action="addNumberArray">Add number array</a>
+    <a class="dropdown-item" href="#" data-action="addBooleanArray">Add boolean array</a>
+  </context-menu>
+  
   <modal ref="modal" menu-action={this.contextMenu.action} parent-key={parentKey}>
     <nt-modal modal={this} menu-action={opts.menuAction} parent-key={opts.parentKey} />
   </modal>
@@ -21,31 +29,10 @@ import './modal/nt-modal.tag';
   <script>
 
     this.contextMenu = {
-      x: 0,
-      y: 0,
-      show: false,
       action: null
     };
 
     this.parentKey = '/';
-
-    this.onLeftClick = (ev) => {
-      let isLeftClick = this.isLeftClick(ev);
-
-      if (isLeftClick) {
-        this.contextMenu.show = false;
-        this.update();
-      }
-    }
-
-    this.isLeftClick = (ev) => {
-      // https://stackoverflow.com/a/3944291
-      if ("buttons" in ev) {
-          return ev.buttons == 0;
-      }
-      let button = ev.which || ev.button;
-      return button == 0;
-    }
 
     this.onContextMenu = (ev) => {
       ev.preventDefault();
@@ -57,20 +44,20 @@ import './modal/nt-modal.tag';
         return;
       }
 
-      this.contextMenu.show = true;
-      this.contextMenu.x = ev.x;
-      this.contextMenu.y = ev.y;
-
       const ntKey = $ntKey.attr('data-nt-key') || $ntKey.attr('nt-key');
       this.parentKey = ntKey;
 
       this.update();
     };
 
-    this.onContextMenuClick = (action) => {
-      this.contextMenu.action = action;
-      this.update();
-      this.refs.modal.open();
+    this.onContextMenuClick = (ev) => {
+      const $el = $(ev.target);
+      const action = $el.attr('data-action');
+      if (action) {
+        this.contextMenu.action = action;
+        this.update();
+        this.refs.modal.open();
+      }
     };
 
     const mapStateToOpts = (state) => {
