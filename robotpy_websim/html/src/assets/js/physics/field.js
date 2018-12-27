@@ -1,34 +1,37 @@
-import * as OriginalMatter from 'matter-js';
 
-let Matter = OriginalMatter;
 
-export function setMatterWrapper(wrapper) {
-  Matter = wrapper;
-}  
-export function rectangle(x, y, width, height, thickness = .25, options = {}) {
+export default class Field {
 
-  const { Bodies, Body } = Matter;
+  constructor(Matter) {
+    this.Matter = Matter;
+  }
 
-  let defaultOptions = {
-    isStatic: true,
-    render: {
-      fillStyle: 'gray',
-      strokeStyle: 'gray',
-      lineWidth: 1/24,
-    }
-  };
+  rectangle(x, y, width, height, thickness = .25, options = {}) {
 
-  options = { ...defaultOptions, ...options };
+    const { Bodies, Body } = this.Matter;
 
-  let top = Bodies.rectangle(x, y - (height + thickness) / 2, width, thickness, options);
-  let bottom = Bodies.rectangle(x, y + (height + thickness) / 2, width, thickness, options);
-  let left = Bodies.rectangle(x - (width + thickness) / 2, y, thickness, height, options);
-  let right = Bodies.rectangle(x + (width + thickness) / 2, y, thickness, height, options);
-  
-  let bounds = Body.create({
-    parts: [top, bottom, left, right],
-    isStatic: true
-  });
+    let defaultOptions = {
+      isStatic: true,
+      render: {
+        fillStyle: 'gray',
+        strokeStyle: 'gray',
+        lineWidth: 1/24,
+      }
+    };
 
-  return bounds;
+    options = { ...defaultOptions, ...options };
+
+    let top = Bodies.rectangle(x, y - (height + thickness) / 2, width, thickness, options);
+    let bottom = Bodies.rectangle(x, y + (height + thickness) / 2, width, thickness, options);
+    let left = Bodies.rectangle(x - (width + thickness) / 2, y, thickness, height, options);
+    let right = Bodies.rectangle(x + (width + thickness) / 2, y, thickness, height, options);
+    
+    let bounds = Body.create({
+      parts: [top, bottom, left, right],
+      isStatic: true
+    });
+
+    return bounds;
+  }
+
 }

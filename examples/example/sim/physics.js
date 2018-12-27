@@ -1,15 +1,11 @@
 
 
 
-class UserPhysics {
+class MyUserPhysics extends UserPhysics {
 
-  constructor(Matter, Physics, engine, config) {
-    this.Matter = Matter;
-    this.engine = engine;
-    this.physics = Physics;
-    this.config = config;
+  init() {
 
-    let math = Physics.Math;
+    let math = this.Math;
 
     let MOTOR_CFG_CIM = {
       name: 'CIM', 
@@ -24,7 +20,7 @@ class UserPhysics {
     //this.drivetrain = new Physics.Drivetrains.TwoMotor(2, 5, deadzone);
     let bumperWidth = math.unit(3.25, 'inch');
 
-    this.drivetrain = Physics.Tankmodel.TankModel.theory(
+    this.drivetrain = this.Models.TankModel.theory(
       MOTOR_CFG_CIM,
       math.unit(50, 'kg'),     
       10.71,
@@ -36,21 +32,23 @@ class UserPhysics {
     );
     
   
-    let field = Physics.Field.rectangle(
-      config.field.width / 2,
-      config.field.height / 2, 
-      config.field.width,
-      config.field.height
+    let field = this.Field.rectangle(
+      this.config.field.width / 2,
+      this.config.field.height / 2, 
+      this.config.field.width,
+      this.config.field.height
     );
 
-    this.robot = Physics.Robot.simple(
-      config.robot.startingX,
-      config.robot.startingY,
-      config.robot.width, 
-      config.robot.height,
+    this.robot = this.Robot.simple(
+      this.config.robot.startingX,
+      this.config.robot.startingY,
+      this.config.robot.width, 
+      this.config.robot.height,
     );
 
-    Matter.World.add(engine.world, [this.robot, field]);
+    let grid = this.createGrid(0, 0, this.config.field.width, this.config.field.height, 1, 1);
+
+    this.Matter.World.add(this.engine.world, [this.robot, field, grid]);
     this.createBalls();
   }
 
@@ -72,6 +70,64 @@ class UserPhysics {
   
     this.Matter.Body.setVelocity(this.robot, { x: xSpeed, y: ySpeed });
     this.Matter.Body.setAngularVelocity(this.robot, rcw);
+  }
+
+  createGrid(left, top, width, height, unitWidth, unitHeight) {
+
+
+    console.log("GRID:", arguments);
+
+    const { Bodies, Body } = this.Matter;
+
+    let parts = [];
+    
+    // draw vertical lines
+    let verticalLineCount = Math.ceil(width / unitWidth);
+
+    for (let i = 0; i < verticalLineCount; i++) {
+      let x = i * unitWidth;
+      let y = top + height / 2;
+      let w = 1 / this.config.pxPerFt;
+      let h = height;
+
+      parts.push(Bodies.rectangle(x, y, w, h, {
+        render: {
+          strokeStyle: 'white',
+          fillStyle: 'white',
+          opacity: .5
+        }
+      }))
+    }
+    
+
+    // draw horizontal lines
+    let horizontalLineCount = Math.ceil(height / unitHeight);
+
+    for (let i = 0; i < horizontalLineCount; i++) {
+      let x = left + width / 2;
+      let y = i * unitHeight;
+      let w = width;
+      let h = 1 / this.config.pxPerFt;
+      parts.push(Bodies.rectangle(x, y, w, h, {
+        render: {
+          strokeStyle: 'white',
+          fillStyle: 'white',
+          opacity: .5
+        }
+      }))
+    }
+
+    return Body.create({
+      parts,
+      isStatic: true,
+      render: {
+        zIndex: -1,
+        hideAxes: true
+      },
+      collisionFilter: {
+        mask: 0
+      },
+    });
   }
 
   createBalls() {

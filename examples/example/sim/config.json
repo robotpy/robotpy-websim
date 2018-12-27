@@ -1,7 +1,11 @@
 {
   "websim": {
+    "pxPerFt": 20,
     "field": {
-      "pxPerFt": 20
+
+    },
+    "robot": {
+
     }
   }
 }

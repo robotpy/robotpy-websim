@@ -1,8 +1,12 @@
 import * as OriginalMatter from 'matter-js';
 import { wrapMatter } from './wrapper/matter-wrapper';
-import * as Physics from '../../assets/js/physics';
+import Render from '../../assets/js/physics/render';
+import UserPhysics from '../../assets/js/physics/user-physics';
+import configDefaults from '../../assets/js/physics/config-defaults.json';
 import axios from 'axios';
 import { defaultsDeep } from 'lodash';
+
+global.UserPhysics = UserPhysics;
 
 let Matter = null;
 
@@ -17,9 +21,12 @@ self.onmessage = function(e) {
 
   if (type === 'init') {
     getConfig().then((config) => {
-      Matter = wrapMatter(OriginalMatter, config.field.pxPerFt, 60);
-      Physics.setMatterWrapper(Matter);
-      initialize(e.data.canvas, config);
+      console.log("CONFIG:", config);
+      let canvas = e.data.canvas;
+      canvas.style = {};
+      OriginalMatter.Render = Render;
+      Matter = wrapMatter(OriginalMatter, config.pxPerFt, 60);
+      initialize(canvas, config);
     }); 
   }
   else if (type === 'data') {
@@ -44,7 +51,7 @@ function initialize(canvas, config) {
     canvas: canvas,
     engine: engine,
     options: {
-      showAngleIndicator: true,
+      hideAxes: true,
       width: config.field.width,
       height: config.field.height,
       wireframes: false
@@ -67,18 +74,19 @@ function initialize(canvas, config) {
       Matter.Engine.update(engine, 1000 / 60);
       nextUpdate += 1 / 60;
     }
+    
   }, 1000 / 100);
 
   // run the renderer
   Matter.Render.run(render);
 
-  let UserPhysics = loadPhysics();
-  userPhysics = new UserPhysics(Matter, Physics, engine, config);
+  let MyUserPhysics = loadPhysics();
+  userPhysics = new MyUserPhysics(Matter, engine, config);
 }
 
 function loadPhysics() {
   self.importScripts('http://localhost:8000/user/physics.js');
-  return UserPhysics;
+  return MyUserPhysics;
 }
 
 function getConfig() {
@@ -87,7 +95,7 @@ function getConfig() {
   let url = "http://" + l.hostname + ":" + port + "/user/config.json";
   return axios.get(url)
     .then(function(response) {
-      return defaultsDeep(response.data.websim, Physics.ConfigDefaults);
+      return defaultsDeep(response.data.websim, configDefaults);
     })
     .catch(function(error) {
       return {};
