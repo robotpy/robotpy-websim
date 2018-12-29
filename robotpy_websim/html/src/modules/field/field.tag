@@ -41,15 +41,6 @@ import Worker from './matter.worker.js';
 
       this.refs.canvas.style.background = '#0f0f13';
       this.refs.canvas.style.backgroundSize = "contain";
-
-      worker.onmessage = function(e) {
-        const type = e.data.type;
-
-        if (type === 'robotFieldList') {
-          console.log('robots:', e.data.robots);
-          console.log('fields:', e.data.fields);
-        }
-      };
     });
   
     const mapStateToOpts = (state) => {

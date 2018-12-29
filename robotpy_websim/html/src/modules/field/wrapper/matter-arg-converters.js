@@ -1,34 +1,46 @@
+import * as math from 'mathjs';
+import { once } from 'lodash';
+import { toUnit } from 'assets/js/physics/units';
+
+let createUnits = _.once((pxPerFt, updatesPerSec) => {
+  let ftPerPx = 1 / pxPerFt;
+  let secPerUpdate = 1 / updatesPerSec;
+  math.createUnit('px', `${ftPerPx} ft`);
+  math.createUnit('update', `${secPerUpdate} second`);
+});
 
 export function addArgConverters(wrapper, pxPerFt, updatesPerSec) {
 
+  createUnits(pxPerFt, updatesPerSec);
+
   wrapper.addArgConverter('toPx', (ft) => {
-    return ft * pxPerFt;
+    return toUnit(ft, 'ft').toNumber('px');
   });
   
   wrapper.addArgConverter('toPxVector', (ftVector) => {
     return {
-      x: ftVector.x * pxPerFt,
-      y: ftVector.y * pxPerFt
-    };
+      x: toUnit(ftVector.x, 'ft').toNumber('px'),
+      y: toUnit(ftVector.y, 'ft').toNumber('px')
+    }
   });
   
   wrapper.addArgConverter('toRadPerUpdate', (radPerSec) => {
-    return radPerSec / updatesPerSec;
+    return toUnit(radPerSec, 'rad / second').toNumber('rad / update');
   });
   
-  wrapper.addArgConverter('toPxPerUpdateVector', (ftVectorPerTimeStep) => {
+  wrapper.addArgConverter('toPxPerUpdateVector', (ftVectorPerSec) => {
     return {
-      x: ftVectorPerTimeStep.x / updatesPerSec * pxPerFt,
-      y: ftVectorPerTimeStep.y / updatesPerSec * pxPerFt
-    };
+      x: toUnit(ftVectorPerSec.x, 'ft / second').toNumber('px / update'),
+      y: toUnit(ftVectorPerSec.y, 'ft / second').toNumber('px / update')
+    }
   });
   
   wrapper.addArgConverter('toPxVertices', (ftVertices) => {
     return ftVertices.map(ftVertex => {
       return {
-        x: ftVertex.x * pxPerFt,
-        y: ftVertex.y * pxPerFt
-      }
+        x: toUnit(ftVertex.x, 'ft').toNumber('px'),
+        y: toUnit(ftVertex.y, 'ft').toNumber('px'),
+      };
     });
   });
   
@@ -43,20 +55,20 @@ export function addArgConverters(wrapper, pxPerFt, updatesPerSec) {
 
     if (options.position) {
       newOptions.position = {
-        x: options.position.x * pxPerFt,
-        y: options.position.y * pxPerFt
+        x: toUnit(options.position.x, 'ft').toNumber('px'),
+        y: toUnit(options.position.y, 'ft').toNumber('px')
       };
     }
   
     if (options.render && options.render.lineWidth) {
-      newOptions.render.lineWidth = options.render.lineWidth * pxPerFt;
+      newOptions.render.lineWidth = toUnit(options.render.lineWidth, 'ft').toNumber('px');
     }
   
     if (options.vertices) {
       newOptions.vertices = options.vertices.map((vertex) => {
         return {
-          x: vertex.x * pxPerFt,
-          y: vertex.y * pxPerFt
+          x: toUnit(vertex.x, 'ft').toNumber('px'),
+          y: toUnit(vertex.y, 'ft').toNumber('px')
         }
       });
     }
@@ -75,20 +87,20 @@ export function addArgConverters(wrapper, pxPerFt, updatesPerSec) {
 
     if (options.pointA) {
       newOptions.pointA = {
-        x: options.pointA.x * pxPerFt,
-        y: options.pointA.y * pxPerFt
+        x: toUnit(options.pointA.x, 'ft').toNumber('px'),
+        y: toUnit(options.pointA.y, 'ft').toNumber('px'),
       };
     }
 
     if (options.pointB) {
       newOptions.pointB = {
-        x: options.pointB.x * pxPerFt,
-        y: options.pointB.y * pxPerFt
+        x: toUnit(options.pointB.x, 'ft').toNumber('px'),
+        y: toUnit(options.pointB.y, 'ft').toNumber('px'),
       };
     }    
 
     if (options.render && options.render.lineWidth) {
-      newOptions.render.lineWidth = options.render.lineWidth * pxPerFt;
+      newOptions.render.lineWidth = toUnit(options.render.lineWidth, 'ft').toNumber('px');
     }
 
     return newOptions;
@@ -101,11 +113,11 @@ export function addArgConverters(wrapper, pxPerFt, updatesPerSec) {
     };
 
     if (options.bucketHeight) {
-      newOptions.bucketHeight = options.bucketHeight * pxPerFt;
+      newOptions.bucketHeight = toUnit(options.bucketHeight, 'ft').toNumber('px');
     }
 
     if (options.bucketWidth) {
-      newOptions.bucketWidth = options.bucketWidth * pxPerFt;
+      newOptions.bucketWidth = toUnit(options.bucketWidth, 'ft').toNumber('px');
     }
 
     return newOptions;
@@ -118,24 +130,24 @@ export function addArgConverters(wrapper, pxPerFt, updatesPerSec) {
       let newObject = {};
 
       if (object.position) {
-        newObject.position.x = object.position.x * pxPerFt;
-        newObject.position.y = object.position.y * pxPerFt;
+        newObject.position.x = toUnit(object.position.x, 'ft').toNumber('px');
+        newObject.position.y = toUnit(object.position.y, 'ft').toNumber('px');
       }
   
       if (object.min) {
-        newObject.min = object.min * pxPerFt;
+        newObject.min = toUnit(object.min, 'ft').toNumber('px');
       }
   
       if (object.max) {
-        newObject.max = object.max * pxPerFt;
+        newObject.max = toUnit(object.max, 'ft').toNumber('px');
       }
   
       if (object.x) {
-        newObject.x = object.x * pxPerFt;
+        newObject.x = toUnit(object.x, 'ft').toNumber('px');
       }
   
       if (object.y) {
-        newObject.y = object.y * pxPerFt;
+        newObject.y = toUnit(object.y, 'ft').toNumber('px');
       }
 
       return newObject;
@@ -154,11 +166,11 @@ export function addArgConverters(wrapper, pxPerFt, updatesPerSec) {
     if (options.options) {
 
       if (options.options.height) {
-        newOptions.options.height = options.options.height * pxPerFt;
+        newOptions.options.height = toUnit(options.options.height, 'ft').toNumber('px');
       }
 
       if (options.options.width) {
-        newOptions.options.width = options.options.width * pxPerFt;
+        newOptions.options.width = toUnit(options.options.width, 'ft').toNumber('px');
       }
     }
     

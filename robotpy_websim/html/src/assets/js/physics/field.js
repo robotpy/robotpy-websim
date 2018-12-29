@@ -1,4 +1,4 @@
-
+import { toUnit } from 'assets/js/physics/units';
 
 export default class Field {
 
@@ -8,6 +8,12 @@ export default class Field {
   }
 
   rectangle(x, y, width, height, thickness = .25, options = {}) {
+
+    x = toUnit(x, 'ft').toNumber('ft');
+    y = toUnit(y, 'ft').toNumber('ft');
+    width = toUnit(width, 'ft').toNumber('ft');
+    height = toUnit(height, 'ft').toNumber('ft');
+    thickness = toUnit(thickness, 'ft').toNumber('ft');
 
     const { Bodies, Body, Composite } = this.Matter;
 

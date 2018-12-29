@@ -2,9 +2,9 @@
 import Field from './field';
 import Robot from './robot';
 import models from './models';
-import configDefaults from './config-defaults.json';
 import * as math from 'mathjs';
-import { forEach } from 'lodash';
+import { toUnit } from 'assets/js/physics/units';
+
 
 export default class UserPhysics {
 
@@ -72,8 +72,8 @@ export default class UserPhysics {
   // Override this if you want to create a custom field
   createField(fieldConfig) {
     let field = this.Field.rectangle(
-      fieldConfig.width / 2,
-      fieldConfig.height / 2, 
+      toUnit(fieldConfig.width).toNumber('ft') / 2,
+      toUnit(fieldConfig.height).toNumber('ft') / 2,
       fieldConfig.width,
       fieldConfig.height
     );

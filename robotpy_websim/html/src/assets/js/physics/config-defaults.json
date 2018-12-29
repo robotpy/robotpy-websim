@@ -1,15 +1,15 @@
 {
   "pxPerFt": 10,
   "robot": {
-    "width": 2,
-    "height": 3,
-    "startingX": 10, 
-    "startingY": 10,
+    "width": "2ft",
+    "height": "3ft",
+    "startingX": "10ft",
+    "startingY": "10ft",
     "startingAngle": 0
   },
   "field": {
-    "width": 25,
-    "height": 27,
+    "width": "25ft",
+    "height": "27ft",
     "objects": []
   }
 }

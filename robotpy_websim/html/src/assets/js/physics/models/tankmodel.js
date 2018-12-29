@@ -1,4 +1,5 @@
 import * as math from 'mathjs';
+require('../units');
 
 // default parameters for a kitbot
 const _bumperLength = math.unit(3.25, 'in');
@@ -7,14 +8,7 @@ let _kitbotWheelbase = math.unit(21, 'in');
 let _kitbotWidth = math.add(_kitbotWheelbase, math.multiply(_bumperLength, 2));
 let _kitbotLength = math.add(math.unit(30, 'in'), math.multiply(_bumperLength, 2));
 
-math.createUnit('inertia', '1 ft * ft * lb');
-math.createUnit('bm', '1 ft * lb');
 
-math.createUnit('tmkv', '1 volt / (foot / second)');
-math.createUnit('tmka', '1 volt / (foot / second^2)');
-math.createUnit('count', '1');
-math.createUnit('cpm', '1 count / minute');
-math.createUnit('Nm', '1 newton * meter');
 
 /**
  * Motor model used by the :class:`TankModel`. You should not need to create

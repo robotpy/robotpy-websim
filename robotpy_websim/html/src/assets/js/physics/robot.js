@@ -1,13 +1,23 @@
+import { toUnit } from 'assets/js/physics/units';
 
 export default class Robot {
 
-  constructor(Matter) {
+  constructor(Matter, config) {
     this.Matter = Matter;
+    this.config = config;
   }
 
   simple(x, y, width=2, height=3, wheelRadius=.25, wheelPadding=.25, options={}) {
 
     const { Body, Bodies } = this.Matter;
+
+
+    x = toUnit(x, 'ft').toNumber('ft');
+    y = toUnit(y, 'ft').toNumber('ft');
+    width = toUnit(width, 'ft').toNumber('ft');
+    height = toUnit(height, 'ft').toNumber('ft');
+    wheelRadius = toUnit(wheelRadius, 'ft').toNumber('ft');
+    wheelPadding = toUnit(wheelPadding, 'ft').toNumber('ft');
 
     let defaultOptions = {
       render: {
