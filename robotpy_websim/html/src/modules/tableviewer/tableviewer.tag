@@ -13,7 +13,7 @@ import './modal/nt-modal.tag';
     <a class="dropdown-item" href="#" data-action="addBooleanArray">Add boolean array</a>
   </context-menu>
   
-  <modal ref="modal" menu-action={this.contextMenu.action} parent-key={parentKey}>
+  <modal ref="modal" title="Add Value" menu-action={this.contextMenu.action} parent-key={parentKey}>
     <nt-modal modal={this} menu-action={opts.menuAction} parent-key={opts.parentKey} />
   </modal>
   <div class="table" oncontextmenu={onContextMenu} onclick={onLeftClick}>

@@ -21,9 +21,6 @@
 
   <script>
 
-    console.log("THIS:", this);
-
-
     this._show = false;
 
     this.show = (x, y) => {

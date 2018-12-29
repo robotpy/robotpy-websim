@@ -7,6 +7,9 @@ import Worker from './matter.worker.js';
 
   <div ref="field" class="field">
     <canvas ref="canvas"></canvas>
+    <context-menu onclick={onContextMenuClick} container={root}>
+      <a class="dropdown-item" href="#" data-action="reset">Reset</a>
+    </context-menu>
   </div>
 
   <style>
@@ -18,7 +21,18 @@ import Worker from './matter.worker.js';
 
   <script>
 
+    let robots = [];
+    let fields = [];
+
     const worker = new Worker();
+
+    this.onContextMenuClick = (ev) => {
+      const $el = $(ev.target);
+      const action = $el.attr('data-action');
+      if (action === 'reset') {
+        worker.postMessage({ type: 'reset' });
+      }
+    };
 
     this.on('mount', () => {
       
@@ -27,6 +41,15 @@ import Worker from './matter.worker.js';
 
       this.refs.canvas.style.background = '#0f0f13';
       this.refs.canvas.style.backgroundSize = "contain";
+
+      worker.onmessage = function(e) {
+        const type = e.data.type;
+
+        if (type === 'robotFieldList') {
+          console.log('robots:', e.data.robots);
+          console.log('fields:', e.data.fields);
+        }
+      };
     });
   
     const mapStateToOpts = (state) => {

@@ -15,13 +15,13 @@ let engine = null;
 let time = null;
 let nextUpdate = null;
 let userPhysics = null;
+let halData = {};
 
 self.onmessage = function(e) {
   const type = e.data.type;
 
   if (type === 'init') {
     getConfig().then((config) => {
-      console.log("CONFIG:", config);
       let canvas = e.data.canvas;
       canvas.style = {};
       OriginalMatter.Render = Render;
@@ -34,7 +34,10 @@ self.onmessage = function(e) {
       return;
     }
     time = e.data.time.total;
-    userPhysics.updateSim(e.data.halData);
+    halData = e.data.halData;
+  }
+  else if (type === 'reset') {
+    userPhysics.reset();
   }
 };
 
@@ -43,24 +46,8 @@ function initialize(canvas, config) {
   
   engine = Matter.Engine.create();
 
-  console.log('engine:', engine);
-        
-  // create a renderer
-  var render = Matter.Render.create({
-    element: null,
-    canvas: canvas,
-    engine: engine,
-    options: {
-      hideAxes: true,
-      width: config.field.width,
-      height: config.field.height,
-      wireframes: false
-    }
-  });
-
   // set gravity
   engine.world.gravity.y = 0;
-
 
   // run the engine
   setInterval(function() {
@@ -71,17 +58,15 @@ function initialize(canvas, config) {
       nextUpdate = time + 1 / 60;
     }
     else if (time > nextUpdate) {
+      userPhysics.updateSim(halData, 1/60);
       Matter.Engine.update(engine, 1000 / 60);
       nextUpdate += 1 / 60;
     }
     
   }, 1000 / 100);
 
-  // run the renderer
-  Matter.Render.run(render);
-
   let MyUserPhysics = loadPhysics();
-  userPhysics = new MyUserPhysics(Matter, engine, config);
+  userPhysics = new MyUserPhysics(Matter, engine, canvas, config);
 }
 
 function loadPhysics() {
