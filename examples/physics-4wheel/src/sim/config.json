@@ -1,0 +1,17 @@
+{
+  "websim": {
+    "pxPerFt": 20,
+    "robot": {
+      "width": "2ft",
+      "height": "3ft",
+      "startingX": "2ft",
+      "startingY": "20ft",
+      "startingAngle": 0
+    },
+    "field": {
+      "width": "25ft",
+      "height": "27ft",
+      "objects": []
+    }
+  }
+}
