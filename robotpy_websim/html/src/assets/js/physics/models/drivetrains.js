@@ -250,9 +250,9 @@ export class MecanumDrivetrain {
     let k = Math.abs(this.xWheelbase / 2.0) + Math.abs(this.yWheelbase / 2.0);
 
     // Calculate resulting motion
-    let Vy = 0.25 * (lf + lr + rr + rf);
-    let Vx = 0.25 * (lf + -lr + rr + -rf);
-    let Vw = (0.25 / k) * (lf + lr + -rr + -rf);
+    let vy = 0.25 * (lf + lr + rr + rf);
+    let vx = 0.25 * (lf + -lr + rr + -rf);
+    let vw = (0.25 / k) * (lf + lr + -rr + -rf);
 
     this.lrSpeed = lr;
     this.rrSpeed = rr;
@@ -260,9 +260,9 @@ export class MecanumDrivetrain {
     this.rfSpeed = rf;
 
     return {
-      Vx,
-      Vy, 
-      Vw
+      vx,
+      vy, 
+      vw
     };
   }
 }
