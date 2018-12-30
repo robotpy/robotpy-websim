@@ -86,9 +86,12 @@ import * as _ from 'lodash';
       for (let i = 0; i < joysticks.length; i++) {
         const gamepad = gamepads[i];
         if (!gamepad) {
-          joysticks[i].gamepad = {
+          let oldGamepad = joysticks[i].gamepad;
+          let newGamepad = {
             connected: false
           };
+          joysticks[i].gamepad = newGamepad;
+          changes = !_.isEqual(newGamepad, oldGamepad);
         }
         else {
           const oldGamepad = joysticks[i].gamepad;
