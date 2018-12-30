@@ -2,6 +2,10 @@
 
 class MyUserPhysics extends UserPhysics {
 
+  init() {
+    this.addGyro('analog_gyro[0].angle');
+  }
+
   createRobotModel(robotConfig) {
     return new this.Models.MecanumDrivetrain();
   }
@@ -16,8 +20,6 @@ class MyUserPhysics extends UserPhysics {
     let rrMotor = pwm[0].value;
     let lfMotor = pwm[2].value;
     let rfMotor = pwm[1].value;
-
-    console.log(lrMotor, rrMotor, lfMotor, rfMotor);
 
     let { vx, vy, vw } = this.model.getVector(
       lrMotor, rrMotor, lfMotor, rfMotor

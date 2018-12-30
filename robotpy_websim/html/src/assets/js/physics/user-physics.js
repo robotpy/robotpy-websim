@@ -23,9 +23,30 @@ export default class UserPhysics {
     this.field = null;
     this.robot = null;
 
+    this.gyroKeys = [];
+
     this.init();
 
     this.reset();
+  }
+
+  addGyro(halKey) {
+    this.gyroKeys.push(halKey);
+  }
+
+  updateGyros() {
+    this.gyroKeys.forEach((key) => {
+      const angleDegrees = this.robot.angle * 180 / Math.PI;
+      this.updateHalDataIn(key, angleDegrees);
+    });
+  }
+
+  updateHalDataIn(key, value) {
+    self.postMessage({ 
+      type: 'halDataInUpdate', 
+      key,
+      value
+    });
   }
 
   // Override this

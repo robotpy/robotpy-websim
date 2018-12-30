@@ -39,6 +39,13 @@ import Worker from './matter.worker.js';
       const offscreen = this.refs.canvas.transferControlToOffscreen();
       worker.postMessage({ type: 'init', canvas: offscreen }, [offscreen]);
 
+      worker.onmessage = (e) => {
+        const type = e.data.type;
+        if (type === 'halDataInUpdate') {
+          this.updateHalDataIn(e.data.key, e.data.value);
+        }
+      }
+
       this.refs.canvas.style.background = '#0f0f13';
       this.refs.canvas.style.backgroundSize = "contain";
     });
@@ -56,7 +63,7 @@ import Worker from './matter.worker.js';
     };
 
     const mapDispatchToMethods = {
-      
+      updateHalDataIn: sim.actions.updateHalDataIn
     };
 
     this.reduxConnect(mapStateToOpts, mapDispatchToMethods);

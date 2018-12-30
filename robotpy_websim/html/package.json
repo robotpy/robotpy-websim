@@ -64,6 +64,7 @@
     "lodash": "^4.17.11",
     "mathjs": "^5.4.0",
     "matter-js": "^0.14.2",
+    "observable-slim": "^0.1.4",
     "open-iconic": "^1.1.1",
     "popper.js": "^1.14.4",
     "redux-throttle": "^0.1.1",

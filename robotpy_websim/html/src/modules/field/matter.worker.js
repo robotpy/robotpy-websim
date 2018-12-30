@@ -35,6 +35,8 @@ self.onmessage = function(e) {
     }
     time = e.data.time.total;
     halData = e.data.halData;
+
+
   }
   else if (type === 'reset') {
     userPhysics.reset();
@@ -59,6 +61,7 @@ function initialize(canvas, config) {
     }
     else if (time > nextUpdate) {
       userPhysics.updateSim(halData, 1/60);
+      userPhysics.updateGyros();
       Matter.Engine.update(engine, 1000 / 60);
       nextUpdate += 1 / 60;
     }
