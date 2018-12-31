@@ -44,6 +44,12 @@ import Worker from './matter.worker.js';
         if (type === 'halDataInUpdate') {
           this.updateHalDataIn(e.data.key, e.data.value);
         }
+        else if (type === 'gyroUpdate') {
+          sim.socket.updateGyros(e.data.da);
+        }
+        else if (type === 'addDeviceGyroChannel') {
+          sim.socket.addDeviceGyroChannel(e.data.angleKey);
+        }
       }
 
       this.refs.canvas.style.background = '#0f0f13';

@@ -2,10 +2,6 @@
 
 class MyUserPhysics extends UserPhysics {
 
-  init() {
-    this.addGyro('analog_gyro[0].angle');
-  }
-
   createRobotModel(robotConfig) {
     return new this.Models.MecanumDrivetrain();
   }

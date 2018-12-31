@@ -2,10 +2,6 @@
 
 class MyUserPhysics extends UserPhysics {
 
-  init() {
-    this.addGyro('analog_gyro[1].angle');
-  }
-
   createRobotModel(robotConfig) {
     let math = this.Math;
 

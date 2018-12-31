@@ -60,6 +60,7 @@ function initialize(canvas, config) {
       nextUpdate = time + 1 / 60;
     }
     else if (time > nextUpdate) {
+      userPhysics.halData = halData;
       userPhysics.updateSim(halData, 1/60);
       userPhysics.updateGyros();
       Matter.Engine.update(engine, 1000 / 60);

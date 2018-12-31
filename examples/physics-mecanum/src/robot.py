@@ -42,9 +42,6 @@ class MyRobot(wpilib.SampleRobot):
         self.lstick = wpilib.Joystick(self.lStickChannel)
         self.rstick = wpilib.Joystick(self.rStickChannel)
 
-        # Position gets automatically updated as robot moves
-        self.gyro = wpilib.AnalogGyro(1)
-
     def disabled(self):
         """Called when the robot is disabled"""
         while self.isDisabled():

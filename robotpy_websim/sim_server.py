@@ -66,6 +66,7 @@ class SimulationWebSocket(WebSocketHandler):
         self.connected = False
         self.sim_period = sim_period
         self.sim_path = sim_path
+        self.device_gyro_channels = []
 
     def check_origin(self, origin):
         '''Allow CORS requests from websim running on a different port in webpack'''
@@ -154,6 +155,10 @@ class SimulationWebSocket(WebSocketHandler):
         
         if msgtype == 'input':
             update_hal_data(msg['data'])
+        elif msgtype == 'add_device_gyro_channel':
+            self.add_device_gyro_channel(msg['angle_key'])
+        elif msgtype == 'update_gyros':
+            self.update_gyros(msg['da'])
         elif msgtype == 'mode':
             if self.is_mode_the_same(msg['mode'], msg['enabled']) is False:
                 fake_time.mode_start_tm = fake_time.get()
@@ -202,6 +207,24 @@ class SimulationWebSocket(WebSocketHandler):
             # This automagically disables, actually
             hal_data['control']['ds_attached'] = False
             hal_in_data['control']['ds_attached'] = False
+
+    def add_device_gyro_channel(self, angle_key):
+        '''
+            :param angle_key: The name of the angle key in ``hal_data['robot']``
+        '''
+        
+        # TODO: use hal_data to detect gyros
+        hal_data['robot'][angle_key] = 0
+        self.device_gyro_channels.append(angle_key)
+
+    def update_gyros(self, da):
+        
+        for k in self.device_gyro_channels:
+            hal_data['robot'][k] += da
+
+        for gyro in hal_data['analog_gyro']:
+            gyro['angle'] += da
+    
 
 class ApiHandler(tornado.web.RequestHandler):
 

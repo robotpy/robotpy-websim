@@ -65,10 +65,28 @@ export default class SimSocket {
     });
   }
 
+  addDeviceGyroChannel(angleKey) {
+    const msg = {
+      msgtype: 'add_device_gyro_channel',
+      angle_key: angleKey
+    };
+    this.socket.send(JSON.stringify(msg));
+  }
+
+  updateGyros(da) {
+    const msg = {
+      msgtype: 'update_gyros',
+      da
+    };
+    this.socket.send(JSON.stringify(msg));
+  }
+
   sendHalData() {
+    let halDataIn = { ...this.store.getState().halData.in };
+    delete halDataIn['analog_gyro'];
     const msg = {
       msgtype: 'input',
-      data: this.store.getState().halData.in
+      data: halDataIn
     };
     this.socket.send(JSON.stringify(msg));
   }

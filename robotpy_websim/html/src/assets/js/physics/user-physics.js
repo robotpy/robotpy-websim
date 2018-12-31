@@ -23,21 +23,35 @@ export default class UserPhysics {
     this.field = null;
     this.robot = null;
 
-    this.gyroKeys = [];
+    this.deviceGyroChannels = [];
+    this.halData = {};
+
+    this.prevAngle = null;
 
     this.init();
 
     this.reset();
   }
 
-  addGyro(halKey) {
-    this.gyroKeys.push(halKey);
+  /**
+   * 
+   * @param {*} angleKey - The name of the angle key in ``halData['robot']``
+   */
+  addDeviceGyroChannel(angleKey) {
+    self.postMessage({
+      type: 'addDeviceGyroChannel',
+      angleKey
+    });
   }
 
   updateGyros() {
-    this.gyroKeys.forEach((key) => {
-      const angleDegrees = this.robot.angle * 180 / Math.PI;
-      this.updateHalDataIn(key, angleDegrees);
+    let currentAngle = this.robot.angle * 180 / Math.PI;
+    let da = this.prevAngle === null ? 0 : (currentAngle - this.prevAngle);
+    this.prevAngle = currentAngle;
+
+    self.postMessage({
+      type: 'gyroUpdate',
+      da: da
     });
   }
 
