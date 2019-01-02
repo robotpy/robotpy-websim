@@ -27,7 +27,8 @@ module.exports = (env = {}) => {
       'auto-chooser': './modules/auto-chooser/index.js',
       'time': './modules/time/index.js',
       'field': './modules/field/index.js',
-      'gyro': './modules/gyro/index.js'
+      'gyro': './modules/gyro/index.js',
+      'encoder': './modules/encoder/index.js'
     },
     output: {
       filename: "[name].bundle.js",
