@@ -51,7 +51,7 @@
         else {
           ev.preventDefault();
           if ($(ev.target).closest(this.root).length === 0) {
-            this.show(ev.pageX, ev.pageY);
+            this.show(ev.clientX, ev.clientY);
           }
         }
       });
