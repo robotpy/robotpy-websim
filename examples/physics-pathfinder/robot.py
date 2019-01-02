@@ -34,7 +34,6 @@ class MyRobot(wpilib.TimedRobot):
         self.r_motor = wpilib.Spark(2)
 
         # Position gets automatically updated as robot moves
-        #self.gyro = wpilib.AnalogGyro(1)
         self.gyro = wpilib.ADXRS450_Gyro()
 
         self.robot_drive = wpilib.RobotDrive(self.l_motor, self.r_motor)

@@ -2,6 +2,10 @@
 
 class MyUserPhysics extends UserPhysics {
 
+  init() {
+    this.addDeviceGyroChannel("adxrs450_spi_0_angle");
+  }
+
   createRobotModel(robotConfig) {
     let math = this.Math;
 
