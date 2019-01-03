@@ -62,7 +62,8 @@ import Worker from './matter.worker.js';
       worker.postMessage({ 
         type: 'data', 
         halData: state.halData,
-        time: state.time
+        time: state.time,
+        robotMode: state.robotMode
       });
 
       return {};

@@ -6,7 +6,7 @@ export default class SimSocket {
     this.store = store;
     this.socket = null;
     this.setupSocket();
-    this.robotMode = null;
+    this.robotMode = 'disabled';
   }
 
   setupSocket() {

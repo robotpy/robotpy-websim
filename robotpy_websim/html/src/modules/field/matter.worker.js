@@ -16,6 +16,7 @@ let time = null;
 let nextUpdate = null;
 let userPhysics = null;
 let halData = {};
+let robotMode = 'disabled';
 
 self.onmessage = function(e) {
   const type = e.data.type;
@@ -35,7 +36,7 @@ self.onmessage = function(e) {
     }
     time = e.data.time.total;
     halData = e.data.halData;
-
+    robotMode = e.data.robotMode;
 
   }
   else if (type === 'reset') {
@@ -63,7 +64,13 @@ function initialize(canvas, config) {
     }
     else if (time > nextUpdate) {
       userPhysics.halData = halData;
-      userPhysics.updateSim(halData, 1/60);
+
+      if (robotMode !== 'disabled') {
+        userPhysics.updateSim(halData, 1/60);
+      }
+      else {
+        userPhysics.disableRobot(halData, 1/60);
+      }
       userPhysics.updateGyros();
       Matter.Engine.update(engine, 1000 / 60);
       nextUpdate += 1 / 60;

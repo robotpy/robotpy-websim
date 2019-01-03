@@ -19,7 +19,7 @@ const initialState = {
     robotConnected: false
   },
   gamepads: [],
-  robotMode: null,
+  robotMode: 'disabled',
   gameSpecificMessage: '',
   isRunning: false,
   simSocket: null,

@@ -133,6 +133,13 @@ export default class UserPhysics {
 
   }
 
+  // Override this if you want the disabling of the robot to be more realistic than
+  // stopping it instantaneously.
+  disableRobot(halData, dt) {
+    this.Matter.Body.setVelocity(this.robot, { x: 0, y: 0 });
+    this.Matter.Body.setAngularVelocity(this.robot, 0);
+  }
+
   // Override this
   updateSim(halData, dt) {}
 }
