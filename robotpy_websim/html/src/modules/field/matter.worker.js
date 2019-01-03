@@ -56,7 +56,9 @@ function initialize(canvas, config) {
     if (time === null) {
       return;
     }
-    else if (nextUpdate === null) {
+    // If time and nextUpdate are not close to each other, it's likely we switched
+    // modes. Let's sync them.
+    else if (nextUpdate === null || Math.abs(time - nextUpdate) > .5) {
       nextUpdate = time + 1 / 60;
     }
     else if (time > nextUpdate) {
