@@ -35,9 +35,13 @@ import Worker from './matter.worker.js';
     };
 
     this.on('mount', () => {
-      
+
       const offscreen = this.refs.canvas.transferControlToOffscreen();
-      worker.postMessage({ type: 'init', canvas: offscreen }, [offscreen]);
+      worker.postMessage({ 
+        type: 'init', 
+        canvas: offscreen,
+        config: this.opts.config
+      }, [offscreen]);
 
       worker.onmessage = (e) => {
         const type = e.data.type;
@@ -55,8 +59,19 @@ import Worker from './matter.worker.js';
       this.refs.canvas.style.background = '#0f0f13';
       this.refs.canvas.style.backgroundSize = "contain";
     });
+
+
+    const initialize = _.once((state) => {
+      const offscreen = this.refs.canvas.transferControlToOffscreen();
+      worker.postMessage({ 
+        type: 'init', 
+        canvas: offscreen,
+        config: state.config
+      }, [offscreen]);
+    });
   
     const mapStateToOpts = (state) => {
+
 
       // send hal data to physics web worker
       worker.postMessage({ 
@@ -66,7 +81,9 @@ import Worker from './matter.worker.js';
         robotMode: state.robotMode
       });
 
-      return {};
+      return {
+        config: state.config
+      };
     };
 
     const mapDispatchToMethods = {

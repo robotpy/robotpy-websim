@@ -22,13 +22,12 @@ self.onmessage = function(e) {
   const type = e.data.type;
 
   if (type === 'init') {
-    getConfig().then((config) => {
-      let canvas = e.data.canvas;
-      canvas.style = {};
-      OriginalMatter.Render = Render;
-      Matter = wrapMatter(OriginalMatter, config.pxPerFt, 60);
-      initialize(canvas, config);
-    }); 
+    const config = defaultsDeep(e.data.config, configDefaults);
+    const canvas = e.data.canvas;
+    canvas.style = {};
+    OriginalMatter.Render = Render;
+    Matter = wrapMatter(OriginalMatter, config.pxPerFt, 60);
+    initialize(canvas, config); 
   }
   else if (type === 'data') {
     if (!userPhysics) {
@@ -83,20 +82,17 @@ function initialize(canvas, config) {
 }
 
 function loadPhysics() {
-  self.importScripts('http://localhost:8000/user/physics.js');
-  return MyUserPhysics;
-}
-
-function getConfig() {
-  let l = window.location;
-  let port = process.env.socket_port || l.port;
-  let url = "http://" + l.hostname + ":" + port + "/user/config.json";
-  return axios.get(url)
-    .then(function(response) {
-      return defaultsDeep(response.data.websim, configDefaults);
-    })
-    .catch(function(error) {
-      return {};
-    });
+  try {
+    self.importScripts('http://localhost:8000/user/physics.js');
+    if (MyUserPhysics.prototype instanceof UserPhysics) {
+      return MyUserPhysics;
+    }
+    else {
+      return UserPhysics;
+    }
+  }
+  catch(e) {
+    return UserPhysics;
+  }
 }
 

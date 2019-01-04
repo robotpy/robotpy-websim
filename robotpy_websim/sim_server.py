@@ -96,18 +96,23 @@ class SimulationWebSocket(WebSocketHandler):
 
         config = {}
         user_config = {}
-
-        with open(join(self.sim_path, 'config.json'), 'r') as fp:
-            try:
-                config = json.loads(fp.read())
-            except:
-                logger.exception("Error reading config.json")
-
-        with open(join(self.sim_path, 'user-config.json'), 'r') as fp:
-            try:
-                user_config = json.loads(fp.read())
-            except:
-                logger.exception("Error reading user-config.json")
+        try: 
+            with open(join(self.sim_path, 'config.json'), 'r') as fp:
+                try:
+                    config = json.loads(fp.read())
+                except:
+                    logger.error("Error reading config.json")
+        finally:
+            pass
+        
+        try:
+            with open(join(self.sim_path, 'user-config.json'), 'r') as fp:
+                try:
+                    user_config = json.loads(fp.read())
+                except:
+                    logger.error("Error reading user-config.json")
+        finally:
+            pass
 
         
         # send it the initial seed data
