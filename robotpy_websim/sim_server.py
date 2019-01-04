@@ -15,7 +15,6 @@ except ImportError:
     import json
 
 import asyncio
-from asgiref.sync import async_to_sync, sync_to_async
 import tornado.gen
 import tornado.web
 from tornado.ioloop import IOLoop, PeriodicCallback
