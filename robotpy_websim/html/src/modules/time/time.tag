@@ -1,7 +1,7 @@
 import './time.css';
 
 <time>
-  <form>
+  <form ref="form" onsubmit={onStep}>
     <div class="form-check-inline">
       <input 
         class="form-check-input" 
@@ -26,9 +26,15 @@ import './time.css';
       <label class="form-check-label" for="pause-sim">Pause</label>
     </div>
     <div class="input-group mb-3">
-      <input ref="stepInput" type="number" class="form-control" class="step">
+      <input 
+        ref="stepInput" 
+        type="number" 
+        class="form-control step"
+        required={true}
+        min="0"
+        step=".001" />
       <div class="input-group-append">
-        <button class="btn btn-secondary" type="button" onclick={onStep}>Step</button>
+        <button class="btn btn-secondary" type="submit">Step</button>
       </div>
     </div>
   </form>
@@ -52,8 +58,11 @@ import './time.css';
     }
 
     this.onStep = (ev) => {
-      let value = this.refs.stepInput.value;
-      this.stepTime(value);
+      ev.preventDefault();
+      if (this.refs.form.checkValidity()) {
+        let value = this.refs.stepInput.value;
+        this.stepTime(value);
+      }
     }
 
     const mapStateToOpts = (state) => {

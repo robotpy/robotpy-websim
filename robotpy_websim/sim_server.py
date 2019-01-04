@@ -177,7 +177,7 @@ class SimulationWebSocket(WebSocketHandler):
                 if tm > 0:
                     fake_time.resume(tm)
             except ValueError:
-                logger.exception("Invalid step time", "'%s' is not a valid number" % msg['time'])
+                logger.error("Invalid step time", "'%s' is not a valid number", msg['time'])
                 
         
         # ignore other types for now... 
