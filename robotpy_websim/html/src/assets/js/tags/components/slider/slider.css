@@ -8,6 +8,10 @@ slider .wrapper {
   position: relative;
 }
 
+slider .wrapper:focus { 
+  outline: none; 
+}
+
 slider .slider-bar {
   position: absolute;
   width: 100%;

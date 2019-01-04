@@ -11,7 +11,7 @@ import * as _ from 'lodash';
         this.getValueLabel(value)}
       </span>
   </label>
-  <div draggable="false" class="wrapper {opts.disabled ? 'disabled': ''}">
+  <div ref="wrapper" tabindex="0" draggable="false" class="wrapper {opts.disabled ? 'disabled': ''}">
     <div ref="bar" draggable="false" class="slider-bar">
       <div class="background"></div>
       <div class="forground-and-button">
@@ -47,6 +47,18 @@ import * as _ from 'lodash';
           this.setValue(this.opts.val || 0);
         }
         this.update();
+      });
+
+      $(window).on('keyup', (ev) => {
+
+        if (!this.opts.disabled && 
+            !this.opts.setProgrammatically &&
+            this.refs.wrapper === document.activeElement && 
+            ev.key === '0'
+        ) {
+          this.setValue(0);
+          this.update();
+        }
       });
     });
 
