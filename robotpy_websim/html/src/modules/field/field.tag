@@ -40,7 +40,7 @@ import Worker from './matter.worker.js';
       worker.postMessage({ 
         type: 'init', 
         canvas: offscreen,
-        config: this.opts.config
+        config: this.opts.config.websim
       }, [offscreen]);
 
       worker.onmessage = (e) => {
