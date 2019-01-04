@@ -50,7 +50,9 @@
         }
         else {
           ev.preventDefault();
-          if ($(ev.target).closest(this.root).length === 0) {
+          const clickedOnContextMenu = $(ev.target).closest(this.root).length > 0;
+          const clickedOnModal = $(ev.target).closest('modal').length > 0;
+          if (!clickedOnContextMenu && !clickedOnModal) {
             this.show(ev.clientX, ev.clientY);
           }
         }
