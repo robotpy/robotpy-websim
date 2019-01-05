@@ -14,18 +14,42 @@ import './components';
 
   <script>
     let tag = this;
+    let initialized = false;
     let myLayout = null;
     this.onMenuUpdate = this.opts.onmenuupdate;
 
-    initLayout();
-
-    function initLayout() {
+    let initialize = _.once(() => {
       let config = JSON.parse(localStorage.getItem('savedState')) || {
         content: []
       };
       myLayout = new GoldenLayout( config, '.golden-layout' );
+
+      myLayout.on('itemCreated', (item) => {
+        let tagName = item.componentName;
+
+        if (tagName) {
+          tag.addedToLayout(tagName);
+        }
+      });
+
+      myLayout.on('itemDestroyed', (item) => {
+        if (!item.isComponent) {
+          return;
+        }
+        this.removeFromLayout(item.componentName)
+      });
+
+      myLayout.on( 'stateChanged', function(){
+        var state = JSON.stringify( myLayout.toConfig() );
+        localStorage.setItem( 'savedState', state );
+      });
+
+      initialized = true;
+    });
+
+    const initializeMyLayout = _.once(() => {
       myLayout.init();
-    }
+    });
 
 
     function getComponents(item) {
@@ -50,6 +74,24 @@ import './components';
     }
 
     this.mapStateToOpts = (state) => {
+
+      const emptyLayout = {
+        layout: {
+          registered: []
+        }
+      };
+      
+      if (!state.halData.initialized) {
+        return emptyLayout;
+      }
+
+      $(() => {
+        initialize();
+      });
+
+      if (!initialized) {
+        return emptyLayout;
+      }
 
       setTimeout(() => {
 
@@ -92,26 +134,6 @@ import './components';
       addedToLayout: actions.addedToLayout
     };
 
-    myLayout.on('itemCreated', (item) => {
-      let tagName = item.componentName;
-
-      if (tagName) {
-        tag.addedToLayout(tagName);
-      }
-    });
-
-    myLayout.on('itemDestroyed', (item) => {
-      if (!item.isComponent) {
-        return;
-      }
-      this.removeFromLayout(item.componentName)
-    });
-
-    myLayout.on( 'stateChanged', function(){
-      var state = JSON.stringify( myLayout.toConfig() );
-      localStorage.setItem( 'savedState', state );
-    });
-
 
     this.on('mount', () => {
       window.addEventListener("resize", () => {
@@ -120,6 +142,10 @@ import './components';
     });
 
     this.on('update', () => {
+
+      if (!initialized) {
+        return;
+      }
 
       _.forEach(this.opts.layout.registered, (config, tagName) => {
         
@@ -133,6 +159,8 @@ import './components';
           });
         }     
       });
+
+      initializeMyLayout();
     });
     
     this.reduxConnect(this.mapStateToOpts, this.mapDispatchToMethods);

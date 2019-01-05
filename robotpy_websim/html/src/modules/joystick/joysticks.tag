@@ -79,6 +79,10 @@ import * as _ from 'lodash';
 
       const gamepads = state.gamepads;
 
+      if (!dataOut.joysticks) {
+        return;
+      }
+
       initialize(dataOut.joysticks, gamepads);
 
       let changes = false;
