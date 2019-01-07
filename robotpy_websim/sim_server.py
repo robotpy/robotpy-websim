@@ -29,10 +29,13 @@ from pynetworktables2js import get_handlers as get_pynt2js_handlers
 import logging
 logger = logging.getLogger('websim')
 
-from ctre.basemotorcontroller import ControlMode
-can_mode_map = {
-    v: k for k,v in ControlMode.__members__.items()
-}
+try:
+    from ctre.basemotorcontroller import ControlMode
+    can_mode_map = {
+        v: k for k,v in ControlMode.__members__.items()
+    }
+except:
+    can_mode_map = {}
 
 from .fake_time import fake_time
 fake_time.mode_start_tm = fake_time.get()
