@@ -65,7 +65,6 @@ class MyUserPhysics extends UserPhysics {
     this.lDistance += this.model.lVelocity * dt;
     this.rDistance += this.model.rVelocity * dt;
 
-    //console.log('encoder:', parseInt(this.rDistance * this.kEncoder));
     this.updateHalDataIn('encoder[0].count', parseInt(this.lDistance * this.kEncoder));
     this.updateHalDataIn('encoder[1].count', parseInt(this.rDistance * this.kEncoder));
   }

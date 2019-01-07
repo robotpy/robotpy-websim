@@ -47,7 +47,9 @@ def pretty_json(d):
 class SetEncoder(json.JSONEncoder):
 
     def default(self, obj):
-        if isinstance(obj, set):
+        if isinstance(obj, bytes):
+            return obj.decode("utf-8") 
+        elif isinstance(obj, set):
             return list(obj)
         elif type(obj).__name__ is 'AnalogInputHandle':
             return {}
@@ -327,7 +329,7 @@ class ApiHandler(tornado.web.RequestHandler):
             
             # TODO: This blocks, which we shouldn't do.. 
             user_config = {}
-            with open(join(self.sim_path, 'user-config.json'), 'r+') as fp:
+            with open(join(self.sim_path, 'user-config.json'), 'w+') as fp:
                 try:
                     file_content = fp.read()
                     user_config = json.loads('{}' if file_content == '' else file_content)

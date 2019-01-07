@@ -50,7 +50,6 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
         pass
-        print('game data:', wpilib.DriverStation.getInstance().getGameSpecificMessage())
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
