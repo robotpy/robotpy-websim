@@ -1,0 +1,135 @@
+tableviewer {
+    
+}
+
+tableviewer .table {
+  min-width: 450px;
+}
+
+tableviewer .table-row {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid #bbb;
+}
+
+tableviewer .table-row.header > .row-item {
+  font-weight: bold;
+}
+
+tableviewer .row-item.key {
+  width: 45%;
+}
+
+tableviewer .row-item.type, .row-item.value {
+  width: 25%;
+}
+
+tableviewer .row-item {
+  white-space: nowrap;
+  overflow-x: scroll;
+  padding: 3px 0;
+  display: inline-block;
+}
+
+tableviewer .row-item::-webkit-scrollbar {
+  width: 0px;  /* remove scrollbar space */
+  height: 0px;
+  background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+tableviewer .level-space {
+  display: inline-block;
+  width: 15px;
+  height: 1px;
+}
+
+subtable {
+  .collapsed > .table-row:not(.subtable-header),
+    .collapsed > subtable {
+      display: none;
+    }
+
+    .wrapper > .subtable-header .caret .oi {
+      cursor: pointer;
+      font-size: 12px;
+      display: none;
+    }
+
+    .wrapper.expanded > .subtable-header .caret .oi-caret-bottom {
+      display: inline-block;
+    }
+
+    .wrapper.collapsed > .subtable-header .caret .oi-caret-right {
+      display: inline-block;
+    }
+
+    .row-item.array {
+      cursor: pointer;
+    }
+
+    input[type=text], input[type=number]  {
+      border: none;
+      background: transparent;
+      padding: 3px 5px;
+      line-height: normal;
+      height: auto;
+    }
+
+    input[type=text]:focus, input[type=number]:focus {
+      border: none;
+      box-shadow: none;
+    }
+}
+
+
+nt-boolean-array {
+  .form-check {
+    margin-left: 5px;
+    margin-top: 5px;
+  }
+
+  li:focus {
+    outline: none;
+    background-color: lightblue;
+  }
+}
+
+nt-string-array, nt-number-array, nt-boolean-array {
+  .add, .remove {
+    margin-top: 5px;
+  }
+
+  .list-group {
+    height: 290px;
+    border: 2px solid rgba(0, 0, 0, 0.125);
+    border-radius: .25rem;
+    overflow-y: scroll;
+  }
+
+  .list-group-item:last-child input {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  }
+
+  .list-group-item {
+    padding: 0;
+    position: relative;
+    height: 38px;
+  }
+
+  .list-group-item:hover {
+    z-index: auto;
+  }
+
+  .list-group-item input {
+    border: none;
+    position: relative;
+  }
+
+  .list-group-item input:focus {
+    box-shadow: none;
+    outline: auto;
+    background-color: lightblue;
+    border-width: 0;
+    z-index: 1000;
+  }
+}

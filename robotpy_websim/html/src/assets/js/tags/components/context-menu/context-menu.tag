@@ -45,16 +45,19 @@
       });
 
       $(window).on('contextmenu', (ev) => {
-        if ($(ev.target).closest(this.opts.container).length === 0) {
+        
+        const clickedOnContainer = $(ev.target).closest(this.opts.container).length > 0;
+        const clickedOnContextMenu = $(ev.target).closest(this.root).length > 0;
+        const clickedOnModal = $(ev.target).closest('modal').length > 0;
+        if (!clickedOnContainer) {
           this.hide();
         }
-        else {
+        else if (!clickedOnContextMenu && !clickedOnModal) { 
           ev.preventDefault();
-          const clickedOnContextMenu = $(ev.target).closest(this.root).length > 0;
-          const clickedOnModal = $(ev.target).closest('modal').length > 0;
-          if (!clickedOnContextMenu && !clickedOnModal) {
-            this.show(ev.clientX, ev.clientY);
-          }
+          this.show(ev.clientX, ev.clientY);
+        }
+        else if (clickedOnContextMenu) {
+          ev.preventDefault();
         }
       });
     });

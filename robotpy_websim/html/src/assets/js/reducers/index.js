@@ -183,7 +183,7 @@ const rootReducer = (state = initialState, action) => {
           return segment !== '';
         });
 
-      if (segments.length > 0) {
+      if (segments.length > 0 && !action.payload.key.endsWith('/')) {
         segments[segments.length - 1] += '/';
       }
 
@@ -192,6 +192,10 @@ const rootReducer = (state = initialState, action) => {
           return `['${segment}']`;
         })
         .join('');
+
+      if (action.payload.key.endsWith('/')) {
+        path += "['/']";
+      }
 
       set(values, path, action.payload.value);
 

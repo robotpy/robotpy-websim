@@ -33,7 +33,7 @@ import * as _ from 'lodash';
           <span class="row-item type">
             Array
           </span>
-          <span class="row-item value">
+          <span class="row-item value array">
             [{value.join(', ')}]
           </span>
         </div>
@@ -72,40 +72,6 @@ import * as _ from 'lodash';
     </virtual>
   </div>
 
-  <style>
-    .collapsed > .table-row:not(.subtable-header),
-    .collapsed > subtable {
-      display: none;
-    }
-
-    .wrapper > .subtable-header .caret .oi {
-      cursor: pointer;
-      font-size: 12px;
-      display: none;
-    }
-
-    .wrapper.expanded > .subtable-header .caret .oi-caret-bottom {
-      display: inline-block;
-    }
-
-    .wrapper.collapsed > .subtable-header .caret .oi-caret-right {
-      display: inline-block;
-    }
-
-    input[type=text], input[type=number]  {
-      border: none;
-      background: transparent;
-      padding: 3px 5px;
-      line-height: normal;
-      height: auto;
-    }
-
-    input[type=text]:focus, input[type=number]:focus {
-      border: none;
-      box-shadow: none;
-    }
-  </style>
-  
   <script>
     this.level = this.opts.level || 0;
     this.expanded = false;
