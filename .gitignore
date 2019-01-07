@@ -1,4 +1,5 @@
 *.py[cod]
+dist
 build
 MANIFEST
 __pycache__
