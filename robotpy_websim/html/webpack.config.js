@@ -118,7 +118,6 @@ module.exports = (env = {}) => {
       ]
     },
     plugins: [
-      new CleanWebpackPlugin(['dist']),
       new HtmlWebpackPlugin({
         template: 'index.html'
       }),

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-if sys.version_info[0] < 3:
-    sys.stderr.write("ERROR: robotpy-websim requires python 3!")
+
+if sys.version_info < (3, 5):
+    sys.stderr.write("ERROR: robot-websim requires Python 3.5+\n")
     exit(1)
 
 from os.path import dirname, exists, join
@@ -66,11 +67,11 @@ setup(
     zip_safe=False,
     entry_points={'robotpy': [ 'websim = robotpy_websim.sim_server:Main' ]},
     install_requires=[
-        'tornado>=4.0',
-        'wpilib>=2015.0.13',
-        'robotpy-hal-sim>=2015.0.13',
-        'pynetworktables>=2018.2.0',
-        #'pynetworktables2js>=2018.1.0'
+        'tornado>=5.0.2',
+        'wpilib>=2019.0.0,<2020.0.0',
+        'robotpy-hal-sim>=2019.0.0,<2020.0.0',
+        'pynetworktables>=2019.0.0',
+        'pynetworktables2js>=2019.0.0'
     ],
     license="BSD License",
     classifiers=[
