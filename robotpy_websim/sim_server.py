@@ -247,8 +247,15 @@ class ApiHandler(tornado.web.RequestHandler):
         '''Allow CORS requests from websim running on a different port in webpack'''
         
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
-        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+        self.set_header("Access-Control-Allow-Credentials", "true")
+        self.set_header("Access-Control-Allow-Headers",
+            "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, X-Requested-By, If-Modified-Since, X-File-Name, Cache-Control")
+        self.set_header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+
+    def options(self, options):
+        # no body
+        self.set_status(204)
+        self.finish()
 
     def _builtin_to_web_path(self, path):
         return path[len(self.root_path):]
@@ -280,6 +287,7 @@ class ApiHandler(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(404)
 
     def post(self, param):
+
         '''
             POST handler
             
@@ -304,20 +312,28 @@ class ApiHandler(tornado.web.RequestHandler):
             with open(join(self.sim_path, 'config.json'), 'w') as fp:
                 fp.write(pretty_json(data))
                 
-        elif param == 'user_config/save':
+        elif param == 'save_layout':
             
             # We ensure that the data being written is valid JSON
-            #data = json.loads(self.request.body.decode('utf-8'))
-            data = json.loads(self.get_argument('config'))
-            
+            data = json.loads(self.request.body.decode('utf-8'))
+
             # TODO: validate the format of the config file
             
             # TODO: Allow writing portions of the config file? or maybe module specific config files?
             # -> BUT don't allow arbitrary writes to the filesystem when we do that!
             
             # TODO: This blocks, which we shouldn't do.. 
-            with open(join(self.sim_path, 'user-config.json'), 'w') as fp:
-                fp.write(pretty_json(data))
+            user_config = {}
+            with open(join(self.sim_path, 'user-config.json'), 'r+') as fp:
+                try:
+                    file_content = fp.read()
+                    user_config = json.loads('{}' if file_content == '' else file_content)
+                    user_config['layout'] = data['layout']
+                    fp.seek(0)
+                    fp.write(pretty_json(user_config))
+                    fp.truncate()
+                except:
+                    logger.error("Error reading user-config.json")
             
         else:
             raise tornado.web.HTTPError(404)

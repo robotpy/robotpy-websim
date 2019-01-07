@@ -18,11 +18,22 @@ import './components';
     let myLayout = null;
     this.onMenuUpdate = this.opts.onmenuupdate;
 
-    let initialize = _.once(() => {
-      let config = JSON.parse(localStorage.getItem('savedState')) || {
-        content: []
-      };
-      myLayout = new GoldenLayout( config, '.golden-layout' );
+    let initialize = _.once((userConfig) => {
+
+      try {
+        let config = JSON.parse(userConfig.layout) || {
+          content: []
+        };
+        myLayout = new GoldenLayout( config, '.golden-layout' );
+      }
+      catch(e) {
+        // if parsing the JSON or setting up saved layout fails set up
+        // an empty layout
+        console.error(e.msg);
+        myLayout = new GoldenLayout( {
+          content: []
+        }, '.golden-layout' );
+      }
 
       myLayout.on('itemCreated', (item) => {
         let tagName = item.componentName;
@@ -41,7 +52,7 @@ import './components';
 
       myLayout.on( 'stateChanged', function(){
         var state = JSON.stringify( myLayout.toConfig() );
-        localStorage.setItem( 'savedState', state );
+        localStorage.setItem('layout', state );
       });
 
       initialized = true;
@@ -86,7 +97,7 @@ import './components';
       }
 
       $(() => {
-        initialize();
+        initialize(state.userConfig);
       });
 
       if (!initialized) {

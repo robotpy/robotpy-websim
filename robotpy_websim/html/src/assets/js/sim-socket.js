@@ -24,9 +24,9 @@ export default class SimSocket {
       // first message is in/out data, all other messages are just out data
       // -> TODO: support message types
       if (!state.halData.initialized) {
-        this.store.dispatch(actions.initializeHalData(data.out, data.in));
         this.store.dispatch(actions.updateConfig(data.config));
-        this.store.dispatch(actions.updateUserConfig(data.userConfig));
+        this.store.dispatch(actions.updateUserConfig(data.user_config));
+        this.store.dispatch(actions.initializeHalData(data.out, data.in));
       } 
       else {
         window.sim.periodicUpdater.addUpdates((updates) => {

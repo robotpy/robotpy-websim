@@ -57,7 +57,7 @@ const rootReducer = (state = initialState, action) => {
     case ActionTypes.UPDATE_USER_CONFIG:
       return {
         ...state,
-        userConfifg: action.payload.userConfig
+        userConfig: action.payload.userConfig
       };
     case ActionTypes.UPDATE_HAL_DATA_IN:
       let dataIn = { ...state.halData.in };
