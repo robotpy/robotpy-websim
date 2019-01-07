@@ -104,7 +104,7 @@ class SimulationWebSocket(WebSocketHandler):
                     config = json.loads(fp.read())
                 except:
                     logger.error("Error reading config.json")
-        finally:
+        except:
             pass
         
         try:
@@ -113,7 +113,7 @@ class SimulationWebSocket(WebSocketHandler):
                     user_config = json.loads(fp.read())
                 except:
                     logger.error("Error reading user-config.json")
-        finally:
+        except:
             pass
 
         

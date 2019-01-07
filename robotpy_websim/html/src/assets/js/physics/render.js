@@ -24,6 +24,8 @@ export default Render;
 
     var _requestAnimationFrame,
         _cancelAnimationFrame;
+		
+	global.window = global;
 
     if (typeof window !== 'undefined') {
         _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
