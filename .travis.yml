@@ -12,7 +12,7 @@ install:
 - "nvm install 11"
 - "npm install -g webpack-cli"
 - "npm install -g webpack"
-- "npm install --prefix ./robotpy_websim/html/"
+- "npm install --prefix ./robotpy_websim/html/ --no-save"
 
 # command to create build 
 script:
