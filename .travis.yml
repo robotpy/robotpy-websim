@@ -1,0 +1,36 @@
+sudo: required
+dist: xenial
+language: python
+python:
+- "3.7"
+
+matrix:
+  fast_finish: true
+
+# command to install dependencies
+install:
+- "nvm install 11"
+- "npm install -g webpack-cli"
+- "npm install -g webpack"
+- "npm install --prefix ./robotpy_websim/html/"
+
+# command to create build 
+script:
+- "npm run --prefix ./robotpy_websim/html/ build:prod"
+
+deploy:
+- provider: pypi
+  skip_cleanup: true
+  user: $PYPI_USERNAME
+  password: $PYPI_PASSWORD
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/2fb1c026e64fdd70d27b
+    on_success: change
+    on_failure: always
+    on_start: never

@@ -45,6 +45,9 @@ else:
 with open(join(setup_dir, 'README.rst'), 'r') as readme_file:
     long_description = readme_file.read()
 
+with open(join(setup_dir, "requirements.txt")) as fp:
+    install_requires = fp.readlines()
+
 package_data = []
 
 for d, folders, files in os.walk(join(setup_dir, base_package, 'html')):
@@ -66,13 +69,7 @@ setup(
     package_data={'': ['bower_components**']},
     zip_safe=False,
     entry_points={'robotpy': [ 'websim = robotpy_websim.sim_server:Main' ]},
-    install_requires=[
-        'tornado>=5.0.2',
-        'wpilib>=2019.0.0,<2020.0.0',
-        'robotpy-hal-sim>=2019.0.0,<2020.0.0',
-        'pynetworktables>=2019.0.0',
-        'pynetworktables2js>=2019.0.0'
-    ],
+    install_requires=install_requires,
     license="BSD License",
     classifiers=[
         "Development Status :: 4 - Beta",
