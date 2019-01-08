@@ -9,6 +9,7 @@ matrix:
   fast_finish: true
 
 jobs:
+  include:
   - stage: build webpack
     language: node_js
     # command to install dependencies
