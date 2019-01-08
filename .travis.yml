@@ -7,10 +7,6 @@ python:
   - "3.6"
   - "3.5"
 
-node_js:
-  - "9"
-  - "10"
-
 matrix:
   fast_finish: true
 
