@@ -17,6 +17,7 @@ jobs:
     install: skip
     script: skip
     deploy:
+      skip_cleanup: true
     - provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
