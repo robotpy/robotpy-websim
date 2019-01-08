@@ -4,36 +4,35 @@ dist: xenial
 
 python:
   - "3.7"
-  - "3.6"
-  - "3.5"
 
 matrix:
   fast_finish: true
 
 jobs:
+  - stage: build webpack
+    language: node_js
+    # command to install dependencies
+    install:
+      - "npm install -g webpack-cli"
+      - "npm install -g webpack"
+      - "npm install --prefix ./robotpy_websim/html/"
+    # command to create build 
+    script:
+      - "npm run --prefix ./robotpy_websim/html/ build:prod"
+
   - stage: deploy
     if: tag IS present
-    python: "3.6"
+    python: "3.7"
     install: skip
     script: skip
     deploy:
-      skip_cleanup: true
     - provider: pypi
+      skip_cleanup: true
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
       distributions: sdist bdist_wheel
       on:
         tags: true
-
-# command to install dependencies
-install:
-  - "pip install -r requirements.txt"
-  - "npm install -g webpack-cli"
-  - "npm install -g webpack"
-  - "npm install --prefix ./robotpy_websim/html/"
-# command to create build 
-script:
-  - "npm run --prefix ./robotpy_websim/html/ build:prod"
 
 notifications:
   webhooks:
