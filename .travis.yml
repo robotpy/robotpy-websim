@@ -1,21 +1,22 @@
 sudo: required
 dist: xenial
-language: node_js
-node_js:
-- "10"
+language: python
+python:
+- "3.7"
 
 matrix:
   fast_finish: true
 
 # command to install dependencies
 install:
-  - "npm install -g webpack-cli"
-  - "npm install -g webpack"
-  - "npm install --prefix ./robotpy_websim/html/"
+- "nvm install 11"
+- "npm install -g webpack-cli"
+- "npm install -g webpack"
+- "npm install --prefix ./robotpy_websim/html/"
 
 # command to create build 
 script:
-  - "npm run --prefix ./robotpy_websim/html/ build:prod"
+- "npm run --prefix ./robotpy_websim/html/ build:prod"
 
 deploy:
 - provider: pypi
