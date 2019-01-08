@@ -1,9 +1,5 @@
-language: python
 sudo: required
 dist: xenial
-
-python:
-  - "3.7"
 
 matrix:
   fast_finish: true
@@ -25,6 +21,7 @@ jobs:
 
   - stage: deploy
     if: tag IS present
+    language: python
     python: "3.7"
     install: skip
     script: skip
