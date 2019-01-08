@@ -12,6 +12,8 @@ jobs:
   include:
   - stage: build webpack
     language: node_js
+    node_js:
+    - "10"
     # command to install dependencies
     install:
       - "npm install -g webpack-cli"
