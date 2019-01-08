@@ -45,9 +45,14 @@ import './components';
 
       myLayout.on('itemDestroyed', (item) => {
         if (!item.isComponent) {
-          return;
+          let components = getComponents(item);
+          components.forEach((component) => {
+            this.removeFromLayout(component.componentName);
+          });
+        } 
+        else {
+          this.removeFromLayout(item.componentName);
         }
-        this.removeFromLayout(item.componentName)
       });
 
       myLayout.on( 'stateChanged', function(){
@@ -148,7 +153,10 @@ import './components';
 
     this.on('mount', () => {
       window.addEventListener("resize", () => {
-        myLayout.updateSize();
+        console.log('sdfdsfd', myLayout);
+        if (myLayout) {
+          myLayout.updateSize();
+        }
       });
     });
 
