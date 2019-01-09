@@ -19,3 +19,5 @@ user-config.json
 docs/_build
 bower_components*
 node_modules*
+
+.vscode
