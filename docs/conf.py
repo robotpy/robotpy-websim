@@ -29,7 +29,8 @@ import robotpy_websim
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx_js'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -54,7 +55,7 @@ copyright = '2015, RobotPy development team'
 # built documents.
 #
 # The short X.Y version.
-version = robotpy_websim.__version__.split('.')[:2]
+version = '.'.join(robotpy_websim.__version__.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
 release = robotpy_websim.__version__
 
@@ -341,3 +342,6 @@ epub_exclude_files = ['search.html']
 
 # If false, no index is generated.
 #epub_use_index = True
+
+# This lets sphinx_js know where the js source code is
+js_source_path = '../robotpy_websim/html/src'
