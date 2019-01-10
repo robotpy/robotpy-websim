@@ -1,5 +1,6 @@
 
 /**
+ * 
  * Real motors won't actually move unless you give them some minimum amount
  * of input. This computes an output speed for a motor and causes it to
  * 'not move' if the input isn't high enough. Additionally, the output is
@@ -16,9 +17,9 @@
  * returned function to one of the drivetrain simulation functions as the
  * ``deadzone`` parameter.
  *       
- * @param {*} deadzone 
+ * @param {Number} deadzone
  */
-export const linearDeadzone = (deadzone) => {
+function linearDeadzone(deadzone) {
   if (deadzone <= 0 || deadzone >= 1) {
     throw new Error('deadzone must be a value between 0 and 1');
   }
@@ -40,28 +41,29 @@ export const linearDeadzone = (deadzone) => {
 
 /**
  * Two center-mounted motors with a simple drivetrain. The
- * motion equations are as follows:
+ * motion equations are as follows::
  *   
- *  FWD = (L+R)/2
- *  RCW = (L-R)/W
+ *    FWD = (L+R)/2
+ *    RCW = (L-R)/W
  *       
- *    L is forward speed of the left wheel(s), all in sync
- *    R is forward speed of the right wheel(s), all in sync
- *    W is wheelbase in feet
+ * * L is forward speed of the left wheel(s), all in sync
+ * * R is forward speed of the right wheel(s), all in sync
+ * * W is wheelbase in feet
  *       
- *  If you called "SetInvertedMotor" on any of your motors in RobotDrive,
- *  then you will need to multiply that motor's value by -1.
+ * If you called "SetInvertedMotor" on any of your motors in RobotDrive,
+ * then you will need to multiply that motor's value by -1.
  *       
- *  @note: WPILib RobotDrive assumes that to make the robot go forward,
- *  the left motor must be set to -1, and the right to +1
+ * .. note:: WPILib RobotDrive assumes that to make the robot go forward,
+ *    the left motor must be set to -1, and the right to +1
+ * 
  */
-export class TwoMotor {
+class TwoMotorDrivetrain {
 
   /**
    * 
-   * @param {*} xWheelbase - The distance in feet between right and left wheels.
-   * @param {*} speed - Speed of robot in feet per second (see above)
-   * @param {*} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
+   * @param {Number} xWheelbase - The distance in feet between right and left wheels.
+   * @param {Number} speed - Speed of robot in feet per second (see above)
+   * @param {Function} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
    */
   constructor(xWheelbase = 2, speed = 5, deadzone = null) {
     this.xWheelbase = xWheelbase;
@@ -73,11 +75,12 @@ export class TwoMotor {
     this.rSpeed = 0
   }
 
+
   /**
    * Given motor values, retrieves the vector of (distance, speed) for your robot
    * 
-   * @param {*} lMotor - Left motor value (-1 to 1); -1 is forward
-   * @param {*} rMotor - Right motor value (-1 to 1); 1 is forward
+   * @param {Number} lMotor - Left motor value (-1 to 1); -1 is forward
+   * @param {Number} rMotor - Right motor value (-1 to 1); 1 is forward
    */
   getVector(lMotor, rMotor) {
 
@@ -101,35 +104,34 @@ export class TwoMotor {
       rcw
     };
   }
-}
 
+}
 
 /**
  * Four motors, each side chained together. The motion equations are
- * as follows:
+ * as follows::
  *   
- *  FWD = (L+R)/2
- *  RCW = (L-R)/W
+ *    FWD = (L+R)/2
+ *    RCW = (L-R)/W
  *       
- *    L is forward speed of the left wheel(s), all in sync
- *    R is forward speed of the right wheel(s), all in sync
- *    W is wheelbase in feet
+ * * L is forward speed of the left wheel(s), all in sync
+ * * R is forward speed of the right wheel(s), all in sync
+ * * W is wheelbase in feet
  *       
- *  If you called "SetInvertedMotor" on any of your motors in RobotDrive,
- *  then you will need to multiply that motor's value by -1.
+ * If you called "SetInvertedMotor" on any of your motors in RobotDrive,
+ * then you will need to multiply that motor's value by -1.
  *       
- *  @note: WPILib RobotDrive assumes that to make the robot go forward,
- *  the left motors must be set to -1, and the right to +1
- *       
+ * .. note:: WPILib RobotDrive assumes that to make the robot go forward,
+ *            the left motors must be set to -1, and the right to +1
  */
   
-export class FourMotorDrivetrain {
+class FourMotorDrivetrain {
   
   /**
    * 
-   * @param {*} xWheelbase - The distance in feet between right and left wheels.
-   * @param {*} speed - Speed of robot in feet per second (see above)
-   * @param {*} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
+   * @param {Number} xWheelbase - The distance in feet between right and left wheels.
+   * @param {Number} speed - Speed of robot in feet per second (see above)
+   * @param {Function} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
    */
   constructor(xWheelbase = 2, speed = 5, deadzone = null) {
     this.xWheelbase = xWheelbase;
@@ -143,12 +145,12 @@ export class FourMotorDrivetrain {
 
   /**
    * 
-   * @param {*} lrMotor - Left rear motor value (-1 to 1); -1 is forward
-   * @param {*} rrMotor - Right rear motor value (-1 to 1); 1 is forward
-   * @param {*} lfMotor - Left front motor value (-1 to 1); -1 is forward
-   * @param {*} rfMotor - Right front motor value (-1 to 1); 1 is forward
+   * @param {Number} lrMotor - Left rear motor value (-1 to 1); -1 is forward
+   * @param {Number} rrMotor - Right rear motor value (-1 to 1); 1 is forward
+   * @param {Number} lfMotor - Left front motor value (-1 to 1); -1 is forward
+   * @param {Number} rfMotor - Right front motor value (-1 to 1); 1 is forward
    * 
-   * @returns {Object} - speed of robot (ft/s), clockwise rotation of robot (radians/s)
+   * @returns {Object} Speed of robot (ft/s), clockwise rotation of robot (radians/s)
    */
   getVector(lrMotor, rrMotor, lfMotor, rfMotor) {
 
@@ -183,17 +185,17 @@ export class FourMotorDrivetrain {
  * If you called "SetInvertedMotor" on any of your motors in RobotDrive,
  * then you will need to multiply that motor's value by -1.
  *       
- * @note: WPILib RobotDrive assumes that to make the robot go forward,
+ * .. note:: WPILib RobotDrive assumes that to make the robot go forward,
  * all motors are set to +1
  */
-export class MecanumDrivetrain {
+class MecanumDrivetrain {
 
   /**
    * 
-   * @param {*} xWheelbase - The distance in feet between right and left wheels.
-   * @param {*} yWheelbase - The distance in feet between forward and rear wheels.
-   * @param {*} speed - Speed of robot in feet per second (see above)
-   * @param {*} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
+   * @param {Number} xWheelbase - The distance in feet between right and left wheels.
+   * @param {Number} yWheelbase - The distance in feet between forward and rear wheels.
+   * @param {Number} speed - Speed of robot in feet per second (see above)
+   * @param {Function} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
    */
   constructor(xWheelbase = 2, yWheelbase = 3, speed = 5, deadzone = null) {
       this.xWheelbase = xWheelbase;
@@ -211,12 +213,12 @@ export class MecanumDrivetrain {
   /**
    * Given motor values, retrieves the vector of (distance, speed) for your robot
    * 
-   * @param {*} lrMotor - Left rear motor value (-1 to 1); 1 is forward
-   * @param {*} rrnotor - Right rear motor value (-1 to 1); 1 is forward
-   * @param {*} lfNotor - Left front motor value (-1 to 1); 1 is forward
-   * @param {*} rfMotor - Right front motor value (-1 to 1); 1 is forward
+   * @param {Number} lrMotor - Left rear motor value (-1 to 1); 1 is forward
+   * @param {Number} rrnotor - Right rear motor value (-1 to 1); 1 is forward
+   * @param {Number} lfNotor - Left front motor value (-1 to 1); 1 is forward
+   * @param {Number} rfMotor - Right front motor value (-1 to 1); 1 is forward
    * 
-   * @returns {Object} - Speed of robot in x (ft/s), Speed of robot in y (ft/s),
+   * @returns {Object} Speed of robot in x (ft/s), Speed of robot in y (ft/s),
                     clockwise rotation of robot (radians/s)
     */
   getVector(lrMotor, rrMotor, lfMotor, rfMotor) {
@@ -268,15 +270,14 @@ export class MecanumDrivetrain {
 }
 
 
-
-export class FourMotorSwerveDrivetrain {
+class FourMotorSwerveDrivetrain {
 
   /**
    * 
-   * @param {*} xWheelbase - The distance in feet between right and left wheels.
-   * @param {*} yWheelbase - The distance in feet between forward and rear wheels.
-   * @param {*} speed - Speed of robot in feet per second (see above)
-   * @param {*} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
+   * @param {Number} xWheelbase - The distance in feet between right and left wheels.
+   * @param {Number} yWheelbase - The distance in feet between forward and rear wheels.
+   * @param {Number} speed - Speed of robot in feet per second (see above)
+   * @param {Function} deadzone - A function that adjusts the output of the motor (see :func:`linear_deadzone`)
    */
   constructor(xWheelbase = 2, yWheelbase = 2, speed = 5, deadzone = null) {
     this.xWheelbase = xWheelbase;
@@ -291,16 +292,16 @@ export class FourMotorSwerveDrivetrain {
    * If any motors are inverted, then you will need to multiply that motor's
    * value by -1.
    * 
-   * @param {*} lrMotor - Left rear motor value (-1 to 1); 1 is forward
-   * @param {*} rrMotor - Right rear motor value (-1 to 1); 1 is forward
-   * @param {*} lfMotor - Left front motor value (-1 to 1); 1 is forward
-   * @param {*} rfMotor - Right front motor value (-1 to 1); 1 is forward
-   * @param {*} lrAngle - Left rear motor angle in degrees (0 to 360 measured clockwise from forward position)
-   * @param {*} rrAngle - Right rear motor angle in degrees (0 to 360 measured clockwise from forward position)
-   * @param {*} lfAngle - Left front motor angle in degrees (0 to 360 measured clockwise from forward position)
-   * @param {*} rfAngle - Right front motor angle in degrees (0 to 360 measured clockwise from forward position)
+   * @param {Number} lrMotor - Left rear motor value (-1 to 1); 1 is forward
+   * @param {Number} rrMotor - Right rear motor value (-1 to 1); 1 is forward
+   * @param {Number} lfMotor - Left front motor value (-1 to 1); 1 is forward
+   * @param {Number} rfMotor - Right front motor value (-1 to 1); 1 is forward
+   * @param {Number} lrAngle - Left rear motor angle in degrees (0 to 360 measured clockwise from forward position)
+   * @param {Number} rrAngle - Right rear motor angle in degrees (0 to 360 measured clockwise from forward position)
+   * @param {Number} lfAngle - Left front motor angle in degrees (0 to 360 measured clockwise from forward position)
+   * @param {Number} rfAngle - Right front motor angle in degrees (0 to 360 measured clockwise from forward position)
    * 
-   * @returns {Object} - Speed of robot in x (ft/s), Speed of robot in y (ft/s),
+   * @returns {Object} Speed of robot in x (ft/s), Speed of robot in y (ft/s),
                   clockwise rotation of robot (radians/s)
    */
   getVector(lrMotor, rrMotor, lfMotor, rfMotor, lrAngle, rrAngle, lfAngle, rfAngle) {
@@ -368,3 +369,11 @@ export class FourMotorSwerveDrivetrain {
   }
 }
 
+
+module.exports = {
+  linearDeadzone: linearDeadzone,
+  TwoMotorDrivetrain: TwoMotorDrivetrain,
+  FourMotorDrivetrain: FourMotorDrivetrain,
+  MecanumDrivetrain: MecanumDrivetrain,
+  FourMotorSwerveDrivetrain: FourMotorSwerveDrivetrain
+};

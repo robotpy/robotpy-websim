@@ -10,13 +10,14 @@ Contents
   :maxdepth: 2
   :caption: Physics
 
+  physics-intro
   enabling-physics-support
   matter-js
   drivetrain-support
   motor-configurations
   tank-drive-model-support
   unit-conversion
-  
+
 
 .. _usage:
 

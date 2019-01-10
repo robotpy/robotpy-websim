@@ -347,5 +347,7 @@ epub_exclude_files = ['search.html']
 root_for_relative_js_paths = '../robotpy_websim/html/src'
 js_source_path = [
     '../robotpy_websim/html/src',
-    '../robotpy_websim/html/src/assets/js'
+    '../robotpy_websim/html/src/assets/js',
+    '../robotpy_websim/html/src/assets/js/physics',
+    '../robotpy_websim/html/src/assets/js/physics/models'
 ]
