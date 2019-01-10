@@ -14,7 +14,7 @@ import sys
 import os
 
 from os.path import abspath, join, dirname
-
+sys.path.insert(0, os.path.abspath('../robotpy_websim'))
 sys.path.insert(0, abspath(join(dirname(__file__), '..', 'robotpy_websim')))
 
 import robotpy_websim
@@ -344,4 +344,8 @@ epub_exclude_files = ['search.html']
 #epub_use_index = True
 
 # This lets sphinx_js know where the js source code is
-js_source_path = '../robotpy_websim/html/src'
+root_for_relative_js_paths = '../robotpy_websim/html/src'
+js_source_path = [
+    '../robotpy_websim/html/src',
+    '../robotpy_websim/html/src/assets/js'
+]
