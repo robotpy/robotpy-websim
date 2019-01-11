@@ -10,19 +10,10 @@ class MyUserPhysics extends UserPhysics {
   createRobotModel(robotConfig) {
     let math = this.Math;
 
-    let MOTOR_CFG_CIM = {
-      name: 'CIM', 
-      nominalVoltage: math.unit(12, 'volt'),
-      freeSpeed: math.unit(5310, 'cpm'),
-      freeCurrent: math.unit(2.7, 'A'),
-      stallTorque: math.unit(2.42, 'Nm'),
-      stallCurrent: math.unit(133, 'A')
-    };
-    
     let bumperWidth = math.unit(3.25, 'inch');
 
     let model = this.Models.TankModel.theory(
-      MOTOR_CFG_CIM,
+      this.Models.MotorConfigs.MOTOR_CFG_CIM,
       math.unit(50, 'kg'),     
       10.71,
       2,
