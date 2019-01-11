@@ -30,6 +30,7 @@ import robotpy_websim
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
     'sphinx_js'
 ]
 

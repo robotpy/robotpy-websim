@@ -28,10 +28,6 @@ class MyUserPhysics extends UserPhysics {
 
     let lrMotor = pwm[1].value;
     let rrMotor = pwm[2].value;
-
-    // Not needed because front and rear should be in sync
-    // lfMotor = pwm[3].value;
-    // rfMotor = pwm[4].value;
     
     let {rcw, fwd} = this.model.getVector(lrMotor, rrMotor, dt);
 

@@ -1,5 +1,18 @@
-import * as math from 'mathjs';
+/**
+ * The equations used in our :class:`TankModel` is derived from
+ * `Noah Gleason and Eli Barnett's motor characterization whitepaper
+ * <https://www.chiefdelphi.com/media/papers/3402>`_. It is
+ * recommended that users of this model read the paper so they can
+ * more fully understand how this works.
+ *   
+ * In the interest of making progress, this API may receive
+ * backwards-incompatible changes before the start of the 2019
+ * FRC season.
+ */
+
+const math = require('mathjs');
 require('../units');
+
 
 // default parameters for a kitbot
 const _bumperLength = math.unit(3.25, 'in');
@@ -14,14 +27,14 @@ let _kitbotLength = math.add(math.unit(30, 'in'), math.multiply(_bumperLength, 2
  * Motor model used by the :class:`TankModel`. You should not need to create
  * this object if you're using the :class:`TankModel` class.
  */
-export class MotorModel {
+class MotorModel {
 
   /**
    * 
-   * @param {*} motorConfig - The specification data for your motor
-   * @param {*} kv - Computed ``kv`` for your robot
-   * @param {*} ka - Computed ``ka`` for your robot
-   * @param {*} vintercept - The minimum voltage required to generate enough
+   * @param {Object} motorConfig - The specification data for your motor
+   * @param {tm_kv} kv - Computed ``kv`` for your robot
+   * @param {tm_ka} ka - Computed ``ka`` for your robot
+   * @param {volt} vintercept - The minimum voltage required to generate enough
    *                         torque to overcome steady-state friction (see the
    *                         paper for more details)
    */
@@ -98,19 +111,54 @@ export class MotorModel {
  * more information about measuring your own values, see the paper and
  * `this thread on ChiefDelphi <https://www.chiefdelphi.com/forums/showthread.php?t=161539>`_.
  *       
- * @note: You must specify the You can use whatever units you would like to specify the input
- *        parameter for your robot, RobotPy will convert them all
- *        to the correct units for computation.
+ * .. note:: You can use whatever units you would like to specify the input
+ *           parameter for your robot, the websim will convert them all
+ *           to the correct units for computation.
  *                 
- *        Output units for velocity and acceleration are in ft/s and
- *        ft/s^2
- *
- *
- * Example usage for a 90lb robot with 2 CIM motors on each side with 6 inch
+ *           Output units for velocity and acceleration are in ft/s and
+ *           ft/s^2
+ *  
+ * Example usage for a 40kg robot with 2 CIM motors on each side with 6 inch
  * wheels:
- * 
+ *
+ * .. code:: javascript
+ *
+ *  class MyUserPhysics extends UserPhysics {
+ *
+ *    createRobotModel(robotConfig) {
+ *      let math = this.Math;
+ *
+ *      let model = this.Models.TankModel.theory(
+ *        this.Models.MotorConfigs.MOTOR_CFG_CIM,
+ *        math.unit(40, 'kg'),     
+ *        10.71,
+ *        2,
+ *        math.unit(2, 'ft'),
+ *        math.unit(6, 'inch')
+ *      );
+ *
+ *      return model;
+ *    }
+ *
+ *    updateSim(halData, dt) {
+ *
+ *      const dataOut = halData.out;
+ *      const pwm = dataOut.pwm;
+ *
+ *      let lrMotor = pwm[1].value;
+ *      let rrMotor = pwm[2].value;
+ *      
+ *      let {rcw, fwd} = this.model.getVector(lrMotor, rrMotor, dt);
+ *
+ *      let xSpeed = fwd * Math.cos(this.robot.angle);
+ *      let ySpeed = fwd * Math.sin(this.robot.angle);
+ *    
+ *      this.Matter.Body.setVelocity(this.robot, { x: xSpeed, y: ySpeed });
+ *      this.Matter.Body.setAngularVelocity(this.robot, rcw);
+ *    }
+ *  }
  */
-export class TankModel {
+class TankModel {
 
 
   /**
@@ -125,17 +173,17 @@ export class TankModel {
    * The robot width/length is used to compute the moment of inertia of
    * the robot. Don't forget about bumpers!
    * 
-   * @param {*} motorConfig - Motor specification
-   * @param {*} robotMass - Mass of robot
-   * @param {*} xWheelbase - Wheelbase of the robot
-   * @param {*} robotWidth - Width of the robot
-   * @param {*} robotLength - Length of the robot
-   * @param {*} lKv - Left side ``kv``
-   * @param {*} lKa - Left side ``ka``
-   * @param {*} lVi - Left side ``Vintercept``
-   * @param {*} rKv - Right side ``kv``
-   * @param {*} rKa - Right side ``ka``
-   * @param {*} rVi - Right side ``Vintercept``
+   * @param {Object} motorConfig - Motor specification
+   * @param {Quantity} robotMass - Mass of robot
+   * @param {Quantity} xWheelbase - Wheelbase of the robot
+   * @param {Quantity} robotWidth - Width of the robot
+   * @param {Quantity} robotLength - Length of the robot
+   * @param {Quantity} lKv - Left side ``kv``
+   * @param {Quantity} lKa - Left side ``ka``
+   * @param {volt} lVi - Left side ``Vintercept``
+   * @param {Quantity} rKv - Right side ``kv``
+   * @param {Quantity} rKa - Right side ``ka``
+   * @param {Quantity} rVi - Right side ``Vintercept``
    */
   constructor(
     motorConfig,
@@ -164,22 +212,30 @@ export class TankModel {
     this._bm = math.multiply(math.divide(xWheelbase, 2.0), robotMass).toNumber('bm');
   }
 
-  // The velocity of the left side (in ft/s)
+  /**
+   * The velocity of the left side (in ft/s)
+   */
   get lVelocity() {
     return this._lmotor.velocity;
   }
   
-  // The velocity of the right side (in ft/s)
+  /**
+   * The velocity of the left side (in ft/s)
+   */
   get rVelocity() {
     return this._rmotor.velocity;
   }
 
-  // The linear position of the left side wheel (in feet)
+  /**
+   * The linear position of the left side wheel (in feet)
+   */
   get lPosition() {
     return this._lmotor.position;
   }
 
-  // The linear position of the right side wheel (in feet)
+  /**
+   * The linear position of the right side wheel (in feet)
+   */
   get rPosition() {
     return this._rmotor.position;
   }
@@ -201,14 +257,19 @@ export class TankModel {
 
 
   /**
+   * Given motor values and the amount of time elapsed since this was last
+   * called, retrieves the velocity and anglular velocity of the robot.
    * 
-   * @param {*} lMotor - Left motor value (-1 to 1); -1 is forward
-   * @param {*} rMotor - Right motor value (-1 to 1); 1 is forward
-   * @param {*} tmDiff - Elapsed time since last call to this function
+   * To update your encoders, use the ``lPosition`` and ``rPosition``
+   * attributes of this object.
    * 
-   * @note: If you are using more than 2 motors, it is assumed that
-   *        all motors on each side are set to the same speed. Only
-   *        pass in one of the values from each side
+   * .. note:: If you are using more than 2 motors, it is assumed that
+   *           all motors on each side are set to the same speed. Only
+   *           pass in one of the values from each side
+   *
+   * @param {Number} lMotor - Left motor value (-1 to 1); -1 is forward
+   * @param {Number} rMotor - Right motor value (-1 to 1); 1 is forward
+   * @param {Number} tmDiff - Elapsed time since last call to this function
    */
   getVector(lMotor, rMotor, tmDiff) {
 
@@ -233,33 +294,39 @@ export class TankModel {
 /**
  * Use this to create the drivetrain model when you haven't measured
  * ``kv`` and ``ka`` for your robot.
- * @param motorConfig - Specifications for your motor
- * @param robotMass - Mass of the robot
- * @param gearing - Gear ratio .. so for a 10.74:1 ratio, you would pass 10.74
- * @param nmotors - Number of motors per side
- * @param xWheelbase - Wheelbase of the robot
- * @param robotWidth - Width of the robot
- * @param robotLength - Length of the robot
- * @param wheelDiameter - Diameter of the wheel
- * @param vintercept - The minimum voltage required to generate enough
+ * 
+ * Computation of ``kv`` and ``ka`` are done as follows:
+ * 
+ * * :math:`\omega_{free}` is the free speed of the motor
+ * * :math:`\tau_{stall}` is the stall torque of the motor
+ * * :math:`n` is the number of drive motors
+ * * :math:`m_{robot}` is the mass of the robot
+ * * :math:`d_{wheels}` is the diameter of the robot's wheels
+ * * :math:`r_{gearing}` is the total gear reduction between the motors and the wheels
+ * * :math:`V_{max}` is the nominal max voltage of the motor
+ * 
+ * .. math::
+ * 
+ *    velocity_{max} = \frac{\omega_{free} \cdot \pi \cdot d_{wheels} }{r_{gearing}}
+ *    
+ *    acceleration_{max} = \frac{2 \cdot n \cdot \tau_{stall} \cdot r_{gearing} }{d_{wheels} \cdot m_{robot}}
+ *    
+ *    k_{v} = \frac{V_{max}}{velocity_{max}}
+ * 
+ *    k_{a} = \frac{V_{max}}{acceleration_{max}}
+ * 
+ * @param {Object} motorConfig - Specifications for your motor
+ * @param {Quantity} robotMass - Mass of the robot
+ * @param {Number} gearing - Gear ratio .. so for a 10.74:1 ratio, you would pass 10.74
+ * @param {Number} nmotors - Number of motors per side
+ * @param {Quantity} xWheelbase - Wheelbase of the robot
+ * @param {Quantity} robotWidth - Width of the robot
+ * @param {Quantity} robotLength - Length of the robot
+ * @param {Quantity}wheelDiameter - Diameter of the wheel
+ * @param {Volt} vintercept - The minimum voltage required to generate enough
  *                     torque to overcome steady-state friction (see the
  *                     paper for more details)
  * 
- * :math:`\omega_{free}` is the free speed of the motor
- * :math:`\tau_{stall}` is the stall torque of the motor
- * :math:`n` is the number of drive motors
- * :math:`m_{robot}` is the mass of the robot
- * :math:`d_{wheels}` is the diameter of the robot's wheels
- * :math:`r_{gearing}` is the total gear reduction between the motors and the wheels
- * :math:`V_{max}` is the nominal max voltage of the motor
- * .. math::
- *   velocity_{max} = \frac{\omega_{free} \cdot \pi \cdot d_{wheels} }{r_{gearing}}
- * 
- *   acceleration_{max} = \frac{2 \cdot n \cdot \tau_{stall} \cdot r_{gearing} }{d_{wheels} \cdot m_{robot}}
- * 
- *   k_{v} = \frac{V_{max}}{velocity_{max}}
- * 
- *   k_{a} = \frac{V_{max}}{acceleration_{max}}
  * 
  */
 TankModel.theory = function(
@@ -291,3 +358,9 @@ TankModel.theory = function(
              kv, ka, vintercept)
 }
 
+
+
+module.exports = {
+  MotorModel,
+  TankModel
+};
