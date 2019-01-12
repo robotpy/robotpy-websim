@@ -128,8 +128,8 @@ class UserPhysics {
       canvas: this.canvas,
       engine: this.engine,
       options: {
-        width: this.config.field.width,
-        height: this.config.field.height,
+        width: this.config.field.w,
+        height: this.config.field.h,
         wireframes: false,
         showAngleIndicator: true
       }
@@ -158,10 +158,10 @@ class UserPhysics {
    */
   createField(fieldConfig) {
     let field = this.Field.rectangle(
-      toUnit(fieldConfig.width).toNumber('ft') / 2,
-      toUnit(fieldConfig.height).toNumber('ft') / 2,
-      fieldConfig.width,
-      fieldConfig.height
+      toUnit(fieldConfig.w).toNumber('ft') / 2,
+      toUnit(fieldConfig.h).toNumber('ft') / 2,
+      fieldConfig.w,
+      fieldConfig.h
     );
 
     return field;
@@ -175,10 +175,10 @@ class UserPhysics {
    */
   createRobot(robotConfig) {
     let robot = this.Robot.simple(
-      robotConfig.startingX,
-      robotConfig.startingY,
-      robotConfig.width,
-      robotConfig.height,
+      robotConfig.starting_x,
+      robotConfig.starting_y,
+      robotConfig.w,
+      robotConfig.h,
     );
 
     return robot;

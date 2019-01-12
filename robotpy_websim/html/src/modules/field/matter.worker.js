@@ -26,7 +26,7 @@ self.onmessage = function(e) {
     const canvas = e.data.canvas;
     canvas.style = {};
     OriginalMatter.Render = Render;
-    Matter = wrapMatter(OriginalMatter, config.pxPerFt, 60);
+    Matter = wrapMatter(OriginalMatter, config.field.px_per_ft, 60);
     initialize(canvas, config); 
   }
   else if (type === 'data') {

@@ -57,7 +57,7 @@ export default class Field {
     for (let i = 0; i < verticalLineCount; i++) {
       let x = i * unitWidth;
       let y = top + height / 2;
-      let w = 1 / this.config.pxPerFt;
+      let w = 1 / this.config.field.px_per_ft;
       let h = height;
 
       parts.push(Bodies.rectangle(x, y, w, h, {
@@ -77,7 +77,7 @@ export default class Field {
       let x = left + width / 2;
       let y = i * unitHeight;
       let w = width;
-      let h = 1 / this.config.pxPerFt;
+      let h = 1 / this.config.field.px_per_ft;
       parts.push(Bodies.rectangle(x, y, w, h, {
         render: {
           strokeStyle: 'white',

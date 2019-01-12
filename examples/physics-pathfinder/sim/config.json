@@ -1,11 +1,10 @@
 {
   "websim": {
-    "pxPerFt": 20,
   	"robot": {
-  	  "width": "2ft",
-  	  "height": "3ft",
-      "startingX": "1.8ft",
-      "startingY": "14ft"
+  	  "w": "2ft",
+  	  "h": "3ft",
+      "starting_x": "1.8ft",
+      "starting_y": "14ft"
   	}
   }
 }
