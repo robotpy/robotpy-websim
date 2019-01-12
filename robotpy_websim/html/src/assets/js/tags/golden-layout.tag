@@ -153,7 +153,6 @@ import './components';
 
     this.on('mount', () => {
       window.addEventListener("resize", () => {
-        console.log('sdfdsfd', myLayout);
         if (myLayout) {
           myLayout.updateSize();
         }
