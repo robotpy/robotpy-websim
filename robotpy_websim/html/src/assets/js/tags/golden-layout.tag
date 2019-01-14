@@ -7,6 +7,7 @@ import * as actions from 'assets/js/actions';
 import "./module-menu.tag";
 import * as drag from './drag.js';
 import './components';
+import defaultLayout from './golden-layout-default';
 
 <golden-layout>
 
@@ -20,19 +21,17 @@ import './components';
 
     let initialize = _.once((userConfig) => {
 
+      console.log("userConfig.layout:", userConfig.layout);
+
       try {
-        let config = JSON.parse(userConfig.layout) || {
-          content: []
-        };
+        let config = JSON.parse(userConfig.layout) || defaultLayout;
         myLayout = new GoldenLayout( config, '.golden-layout' );
       }
       catch(e) {
         // if parsing the JSON or setting up saved layout fails set up
         // an empty layout
         console.error(e.msg);
-        myLayout = new GoldenLayout( {
-          content: []
-        }, '.golden-layout' );
+        myLayout = new GoldenLayout(defaultLayout, '.golden-layout' );
       }
 
       myLayout.on('itemCreated', (item) => {
@@ -55,7 +54,7 @@ import './components';
         }
       });
 
-      myLayout.on( 'stateChanged', function(){
+      myLayout.on('stateChanged', function() {
         var state = JSON.stringify( myLayout.toConfig() );
         localStorage.setItem('layout', state );
       });
@@ -112,6 +111,8 @@ import './components';
       setTimeout(() => {
 
         state.layout.menuItems.forEach((item) => {
+
+          let moduleConfig = state.layout.registered[item.tagName];
           
           drag.fixBrokenDragSource(myLayout, item.tagName, item.element, dragStopCallback);
 
@@ -120,7 +121,12 @@ import './components';
             return;
           }
 
-          drag.createDragSource(myLayout, item.element, item.tagName);
+          drag.createDragSource(myLayout, item.element, {
+            componentName: item.tagName,
+            title: moduleConfig.label,
+            width: moduleConfig.width,
+            height: moduleConfig.height
+          });
 
           drag.onDragStop(myLayout, item.tagName, dragStopCallback);
         });

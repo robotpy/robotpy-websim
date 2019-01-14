@@ -91,16 +91,25 @@ const rootReducer = (state = initialState, action) => {
         }
       };
     case ActionTypes.ADDED_TO_LAYOUT:
+
+      var added = [...state.layout.added];
+
+      if (added.indexOf(action.payload.tagName) === -1) {
+        added.push(action.payload.tagName);
+      }
+
       return {
         ...state,
         layout: {
           ...state.layout,
-          added: [...state.layout.added, action.payload.tagName]
+          added
         }
       };
     case ActionTypes.REMOVED_FROM_LAYOUT:
-      let added = [...state.layout.added];
+
+      var added = [...state.layout.added];
       var index = added.indexOf(action.payload.tagName);
+      
       if (index !== -1) 
         added.splice(index, 1);
 

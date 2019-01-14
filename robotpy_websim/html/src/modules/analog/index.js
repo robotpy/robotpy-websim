@@ -2,5 +2,7 @@ import './analog.tag';
 
 sim.registerWithLayout('analog', {
   label: 'Analog',
-  category: 'IO'
+  category: 'IO',
+  width: 10,
+  height: 10
 });

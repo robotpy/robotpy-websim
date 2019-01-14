@@ -29,10 +29,13 @@ export function removeDragSource(myLayout, tag) {
 }
 
 
-export function createDragSource(myLayout, element, tagName) {
+export function createDragSource(myLayout, element, config) {
   myLayout.createDragSource(element, {
     type:'component',
-    componentName: tagName,
+    componentName: config.componentName,
+    title: config.title,
+    width: 10,
+    height: 10,
     componentState: {}
   });
 }
