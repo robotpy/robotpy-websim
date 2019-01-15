@@ -21,8 +21,6 @@ import defaultLayout from './golden-layout-default';
 
     let initialize = _.once((userConfig) => {
 
-      console.log("userConfig.layout:", userConfig.layout);
-
       try {
         let config = JSON.parse(userConfig.layout) || defaultLayout;
         myLayout = new GoldenLayout( config, '.golden-layout' );

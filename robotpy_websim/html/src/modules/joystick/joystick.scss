@@ -30,3 +30,14 @@ joystick .buttons {
   margin-left: 4px;
   margin-top: 15px;
 }
+
+joysticks context-menu {
+  .dropdown-header, form {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  #gamepad-select {
+    width: 200px;
+  }
+}

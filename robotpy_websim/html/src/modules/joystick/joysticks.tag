@@ -1,6 +1,7 @@
 import './joystick.tag';
-import './joystick.css';
+import './joystick.scss';
 import * as _ from 'lodash';
+import ObservableSlim from 'observable-slim';
 
 <joysticks>
   <div class="joystick" each={joystick in opts.joysticks}>
@@ -14,11 +15,60 @@ import * as _ from 'lodash';
         onupdate={joystick.onUpdate} />
     </virtual>
   </div>
+  <context-menu 
+    container={root} 
+    should-show={shouldShowContextMenu} 
+    joystick-index={opts.contextMenuJoystickIndex}
+    gamepad-index={opts.gamepadIndex}
+    gamepads={opts.gamepads}
+    on-gamepad-select={onGamepadSelect}>
+
+    <div class="Joystick-options">
+      <h6 class="dropdown-header">Joystick {opts.joystickIndex}</h6>
+      <form>
+        <div class="form-group">
+          <label for="gamepad-select">Paired gamepad:</label>
+          <select class="form-control" id="gamepad-select" onchange={opts.onGamepadSelect} value={opts.gamepadIndex}>
+            <option value="-1">None</option>
+            <option value={index} if={gamepad && gamepad.connected} each={gamepad, index in opts.gamepads}>
+              {gamepad.id}
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </context-menu>
+
+  <style>
+    
+
+  </style>
 
   <script>
-
     const axisLabels = ['X', 'Y', 'Z', 'T'];
     let joysticks = [];
+    let contextMenuJoystickIndex = -1;
+
+
+    this.shouldShowContextMenu = (ev) => {
+      let $joystick = $(ev.target).closest('joystick');
+        let clickedOnJoystick = $joystick.length > 0;
+        let joystickIndex = $joystick.attr('index');
+
+        if (clickedOnJoystick) {
+          contextMenuJoystickIndex = joystickIndex;
+          return true;
+        } 
+        else {
+          contextMenuJoystickIndex = -1;
+          return false;
+        }
+    };
+
+    this.onGamepadSelect = (ev) => {
+      let value = $(ev.target).val();
+      joysticks[contextMenuJoystickIndex].gamepadIndex = value;
+    };
 
     this.getAxisLabel = (index) => {
       if (axisLabels.length > index) {
@@ -33,7 +83,8 @@ import * as _ from 'lodash';
       joysticks = sticks.map((stick, stickIndex) => {
         return {
           index: stickIndex,
-          gamepad: gamepads[stickIndex] || { connected: false },
+          gamepadIndex: -1,
+          gamepad: { connected: false },
           visible: stickIndex <= 1,
           axes: stick.axes.map((value, index) => {
             return {
@@ -79,46 +130,23 @@ import * as _ from 'lodash';
 
       const gamepads = state.gamepads;
 
-      if (!dataOut.joysticks) {
-        return;
-      }
-
       initialize(dataOut.joysticks, gamepads);
-
-      let changes = false;
       
       for (let i = 0; i < joysticks.length; i++) {
-        const gamepad = gamepads[i];
+        const gamepad = gamepads[joysticks[i].gamepadIndex];
         if (!gamepad) {
-          let oldGamepad = joysticks[i].gamepad;
-          let newGamepad = {
+          joysticks[i].gamepad = {
             connected: false
           };
-          joysticks[i].gamepad = newGamepad;
-          changes = !_.isEqual(newGamepad, oldGamepad);
         }
         else {
-          const oldGamepad = joysticks[i].gamepad;
-          const newGamepad = {
+          joysticks[i].gamepad = {
             connected: gamepad.connected,
             buttons: gamepad.buttons.map(button => {
               return button.pressed;
             }),
             axes: [...gamepad.axes]
           };
-          joysticks[i].gamepad = newGamepad;
-
-          // check if there are differences in the objects. If there are,
-          // then update
-          if (!changes) {
-            changes = !_.isEqual(newGamepad, oldGamepad);
-          }
-        }
-
-        if (changes) {
-          setTimeout(() => {
-            this.update();
-          });
         }
         // Set visibility of joysticks
       }
@@ -129,8 +157,18 @@ import * as _ from 'lodash';
 
       this.updateJoysticks(state);
 
+      if (contextMenuJoystickIndex < 0) {
+        var gamepadIndex = -1;
+      }
+      else {
+        var gamepadIndex = joysticks[contextMenuJoystickIndex].gamepadIndex;
+      }
+  
       return {
-        joysticks
+        joysticks,
+        gamepads: state.gamepads,
+        contextMenuJoystickIndex,
+        gamepadIndex
       };
     };
 
