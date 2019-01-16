@@ -406,16 +406,18 @@ class Main:
         IOLoop.instance().start()
     
     def launch_browser(self):
+		
         try:
             time.sleep(1.0)
             w = None
             
             # Prefer chrome if available
-            for b in ['chrome', 'google-chrome', 'chromium', 'chromium-browser']:
+            for b in ['chrome', 'google-chrome', 'chromium', 'chromium-browser', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s']:
                 if w is not None:
                     break
                 try:
                     w = webbrowser.get(using=b)
+					
                 except:
                     pass
             
