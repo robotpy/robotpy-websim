@@ -1,3 +1,6 @@
+**OBSOLETE**: This repo is no longer being updated or maintained. https://github.com/frc-web-components
+is developing similar things that will work with all FRC languages 
+
 robotpy-websim
 ==============
 
